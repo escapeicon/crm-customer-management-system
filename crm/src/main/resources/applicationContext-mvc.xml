@@ -23,7 +23,7 @@ http://www.springframework.org/schema/util/spring-util.xsd">
     <!-- dispatcherServlet截获所有URL请求 -->
     <mvc:default-servlet-handler />
     <!-- spring mvc 扫描包下的controller -->
-    <context:component-scan base-package="com.bjpowernode.crm.web.controller"/>
+    <context:component-scan base-package="com.mycode.crm.web.controller"/>
     <!-- 配置注解驱动 -->
     <mvc:annotation-driven/>
     <!-- 配置视图解析器 -->
