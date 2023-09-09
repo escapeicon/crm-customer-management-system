@@ -15,7 +15,7 @@ public class UserController {
     @Autowired
     private UserService userService;
     @RequestMapping("/settings/qx/user/toLogin.do")
-    public String login(){
+    public String login(String loginAct,String loginPwd,String isRemPwd){
         Map<String, Object> loginInfo = new HashMap<>();
 
         loginInfo.put("loginAct","ls");
