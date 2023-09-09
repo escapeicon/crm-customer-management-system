@@ -20,6 +20,9 @@ http://www.springframework.org/schema/mvc
 http://www.springframework.org/schema/mvc/spring-mvc.xsd
 http://www.springframework.org/schema/util
 http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <mvc:view-controller path="/" view-name="index" />
+
     <!-- dispatcherServlet截获所有URL请求 -->
     <mvc:default-servlet-handler />
     <!-- spring mvc 扫描包下的controller -->
@@ -30,7 +33,7 @@ http://www.springframework.org/schema/util/spring-util.xsd">
     <bean id="viewResolver"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/pages/"/>
-        <property name="suffix" value=".jsp"/>
+        <property name="suffix" value=".html"/>
     </bean>
     <!-- 配置文件上传解析器 id:必须是multipartResolver-->
     <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
