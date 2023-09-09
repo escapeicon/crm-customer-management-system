@@ -23,7 +23,7 @@
 			<div class="page-header">
 				<h1>登录</h1>
 			</div>
-			<form action="../../../workbench/index.html" class="form-horizontal" role="form">
+			<form class="form-horizontal" role="form" >
 				<div class="form-group form-group-lg">
 					<div style="width: 350px;">
 						<input class="form-control" type="text" placeholder="用户名">
@@ -38,10 +38,47 @@
 						&nbsp;&nbsp;
 						<span id="msg"></span>
 					</div>
-					<button type="submit" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;">登录</button>
+					<button type="button" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;">登录</button>
 				</div>
 			</form>
 		</div>
 	</div>
+	<script type="text/javascript" >
+		document.addEventListener("DOMContentLoaded",function (){
+			$("button").click(function (event){
+				//获取用户名
+				const loginAct = $.trim($(".form-control").eq(0).val());
+				const loginPwd = $.trim($(".form-control").eq(1).val());
+				const isRemPwd = $(".checkbox").prop("checked");
+
+				if (""===loginAct || ""===loginPwd){
+					alert("用户名或密码不能为空!");
+					return;
+				}
+
+				$.ajax({
+					url:"settings/qx/user/login.do",
+					type:"post",
+					data:{
+						loginAct,loginAct,
+						loginPwd,loginPwd,
+						isRemPwd,isRemPwd
+					},
+					success(result){
+						const code = result.code;
+						if (+code) {
+							//可以跳转
+							window.location.href="settings/qx/index.do";
+						}else {
+							//跳出警告
+							$("#msg").text(result.message);
+							return;
+						}
+					}
+				})
+
+			})
+		})
+	</script>
 </body>
 </html>
