@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace为Dao包全限定名-->
+<mapper namespace="com.mycode.crm.settings.web.mapper.UserMapper">
+    <!--id为接口方法名，resultType如果config没有配置则使用pojo全限定名-->
+    <select id="selectUserByLoginActAndPwd" resultType="User">
+        select * from tbl_user where login_act = #{loginAct} and login_pwd = #{loginPwd}
+    </select>
+</mapper>
