@@ -1,6 +1,7 @@
 package com.mycode.crm.settings.web.service;
 
-import com.mycode.crm.settings.web.pojo.User;
+import com.mycode.crm.settings.domain.User;
+import com.mycode.crm.settings.service.impl.UserServiceImpl;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,14 +13,12 @@ public class TestService {
 
     @Test
     public void testLogin() throws IOException {
-        UserService userService = new UserService();
-        Map<String, String> loginInfo = new HashMap<>();
-
+        UserServiceImpl userService = new UserServiceImpl();
+        Map<String, Object> loginInfo = new HashMap<>();
         loginInfo.put("loginAct","ls");
         loginInfo.put("loginPwd","yf123");
 
         User user = userService.queryUserByLoginActAndPwd(loginInfo);
-
         System.out.println(user);
     }
 }
