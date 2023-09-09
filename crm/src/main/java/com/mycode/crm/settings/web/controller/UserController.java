@@ -16,10 +16,11 @@ public class UserController {
     private UserService userService;
     @RequestMapping("/settings/qx/user/toLogin.do")
     public String login(String loginAct,String loginPwd,String isRemPwd){
-        Map<String, Object> loginInfo = new HashMap<>();
 
-        loginInfo.put("loginAct","ls");
-        loginInfo.put("loginPwd","yf123");
+        //创建map集合且存放用户登录信息
+        Map<String, Object> loginInfo = new HashMap<>();
+        loginInfo.put("loginAct",loginAct);
+        loginInfo.put("loginPwd",loginPwd);
 
         User user = userService.queryUserByLoginActAndPwd(loginInfo);
 
