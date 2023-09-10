@@ -86,13 +86,14 @@
 						isRemPwd,isRemPwd
 					},
 					success(result){
-						$("#login").text("已登陆");//修改登录按钮文字体现登录成功
 						const code = result.code;
 
 						if (+code) {
+							$("#login").text("已登陆");//修改登录按钮文字体现登录成功
 							//可以跳转
-							window.location.href="settings/qx/index.do";
+							window.location.href="workbench/index.do";
 						}else {
+							$("#login").text("登录失败");//修改登录按钮文字体现登录成功
 							//跳出警告
 							$("#msg").text(result.message);
 							return;

@@ -25,8 +25,8 @@ http://www.springframework.org/schema/util/spring-util.xsd">
 
     <!-- spring mvc 扫描包下的controller -->
     <context:component-scan base-package="com.mycode.crm.web.controller"/>
-    <context:component-scan base-package="com.mycode.crm.workbench.web.controller"/>
-    <context:component-scan base-package="com.mycode.crm.settings.web.controller" />
+    <context:component-scan base-package="com.mycode.crm.workbench.web"/>
+    <context:component-scan base-package="com.mycode.crm.settings.web" />
     <!-- 配置注解驱动 -->
     <mvc:annotation-driven/>
 
@@ -41,6 +41,17 @@ http://www.springframework.org/schema/util/spring-util.xsd">
         <property name="prefix" value="/WEB-INF/pages/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/settings/**"/>
+            <mvc:mapping path="/workbench/**" />
+            <mvc:exclude-mapping path="/settings/qx/user/toLogin.do"/>
+            <mvc:exclude-mapping path="/settings/qx/user/login.do"/>
+            <ref bean="loginInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
     <!-- 配置文件上传解析器 id:必须是multipartResolver-->
     <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="#{1024*1024*80}"/>
