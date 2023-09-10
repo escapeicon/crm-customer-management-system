@@ -33,21 +33,6 @@ public class UserController {
      */
     @RequestMapping("/settings/qx/user/toLogin.do")
     public String login(HttpServletRequest request){
-        //判断用户是否有在上次登录时是否记住密码的cookie
-        Cookie[] cookies = request.getCookies();
-
-        //遍历cookies
-        Arrays.stream(cookies).forEach(cookie -> {
-            //获取用户名cookie
-            if ("loginAct".equals(cookie.getName())) {
-                //向请求域中添加用户名
-                request.setAttribute("loginAct",cookie.getValue());
-            }else if ("loginPwd".equals(cookie.getName())){
-                //向请求域中添加用户密码
-                request.setAttribute("loginPwd",cookie.getValue());
-            }
-        });
-
         return "settings/qx/user/login";
     }
 
@@ -102,14 +87,18 @@ public class UserController {
                 //用户同意十天内登录
                 Cookie loginActCookie = new Cookie("loginAct", loginAct);//创建用户名cookie
                 Cookie loginPwdCookie = new Cookie("loginPwd", loginPwd);//创建密码cookie
-
                 loginActCookie.setMaxAge(60 * 60 * 24 * 10);//设置寿命为10天
                 loginPwdCookie.setMaxAge(60 * 60 * 24 * 10);//设置寿命为10天
-
-                //loginActCookie.setMaxAge(5);//测试
-                //loginPwdCookie.setMaxAge(5);//测试
                 response.addCookie(loginActCookie);//响应cookie
                 response.addCookie(loginPwdCookie);//响应cookie
+            }else if ("false".equals(isRemPwd)){
+                //用户取消十天内登录
+                Cookie loginActCookie = new Cookie("loginAct", loginAct);
+                Cookie loginPwdCookie = new Cookie("loginPwd", loginPwd);
+                loginActCookie.setMaxAge(0);//设置寿命为0
+                loginPwdCookie.setMaxAge(0);
+                response.addCookie(loginActCookie);
+                response.addCookie(loginPwdCookie);
             }
         }
         return returnInfo;
