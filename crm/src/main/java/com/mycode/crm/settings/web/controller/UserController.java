@@ -103,4 +103,22 @@ public class UserController {
         }
         return returnInfo;
     }
+
+    /**
+     * 安全退出控制层
+     * @return
+     */
+    @RequestMapping("/settings/qx/user/toExit.do")
+    public String doExit(HttpServletResponse response,HttpSession session){
+        //清空cookie
+        Cookie loginActCookie = new Cookie("loginAct", "1");
+        Cookie loginPwdCookie = new Cookie("loginPwd", "1");
+        loginActCookie.setMaxAge(0);
+        loginPwdCookie.setMaxAge(0);
+        response.addCookie(loginActCookie);
+        response.addCookie(loginPwdCookie);
+        //销毁session
+        session.invalidate();
+        return "redirect:/settings/qx/user/toLogin.do";
+    }
 }

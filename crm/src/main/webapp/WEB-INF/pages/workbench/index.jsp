@@ -41,7 +41,6 @@
 	});
 	
 </script>
-
 </head>
 <body>
 	
@@ -129,7 +128,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href='login.html';">确定</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href='settings/qx/user/toExit.do';">确定</button>
 				</div>
 			</div>
 		</div>
@@ -204,6 +203,6 @@
 	
 	<!-- 底部 -->
 	<div id="down" style="height: 30px; width: 100%; position: absolute;bottom: 0px;"></div>
-	
+
 </body>
 </html>
