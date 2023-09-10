@@ -1,4 +1,4 @@
-package com.mycode.crm.pojo;
+package com.mycode.crm.commons.domain;
 
 import java.util.Objects;
 

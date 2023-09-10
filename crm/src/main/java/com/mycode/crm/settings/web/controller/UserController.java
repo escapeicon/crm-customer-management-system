@@ -1,6 +1,8 @@
 package com.mycode.crm.settings.web.controller;
 
-import com.mycode.crm.pojo.ReturnInfo;
+import com.mycode.crm.commons.constants.ResponseInfo;
+import com.mycode.crm.commons.domain.ReturnInfo;
+import com.mycode.crm.commons.utils.DateFormat;
 import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,29 +41,31 @@ public class UserController {
         //创建要返回的json对象
         ReturnInfo returnInfo = new ReturnInfo();
 
-        //获取用于判断用户账户是否过期的当前日期
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String nowTime = simpleDateFormat.format(new Date());
+        //通过封装日期工具类获取用于判断用户账户是否过期的当前日期
+        String nowTime = DateFormat.formatDateTime(new Date());
         //获取用户请求的ip地址
         String remoteAddr = request.getRemoteAddr();
 
         if (null == user) {
-            returnInfo.setCode("0");
+            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("用户名或密码错误!");
         }else if (user.getExpireTime().compareTo(nowTime) < 0){
-            returnInfo.setCode("0");
+            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("用户已过期!");
         } else if ("0".equals(user.getLockState())){
-            returnInfo.setCode("0");
+            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("用户状态被锁定");
         } else if(!user.getAllowIps().contains(remoteAddr)){
-            returnInfo.setCode("0");
+            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("用户ip受限");
         } else {
             //成功登录
-            returnInfo.setCode("1");
+            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_SUCCESS);
             //判断用户是否同意十天内登录
-
+            System.out.println(isRemPwd);
+            if ("true".equals(isRemPwd)){
+                //用户同意十天内登录
+            }
         }
         return returnInfo;
     }

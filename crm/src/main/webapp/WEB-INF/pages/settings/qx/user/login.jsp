@@ -33,7 +33,7 @@
 					</div>
 					<div class="checkbox"  style="position: relative;top: 30px; left: 10px;">
 						<label>
-							<input type="checkbox"> 十天内免登录
+							<input id="checkbox" type="checkbox"> 十天内免登录
 						</label>
 						&nbsp;&nbsp;
 						<span id="msg"></span>
@@ -49,7 +49,7 @@
 				//获取用户名
 				const loginAct = $.trim($(".form-control").eq(0).val());
 				const loginPwd = $.trim($(".form-control").eq(1).val());
-				const isRemPwd = $(".checkbox").prop("checked");
+				const isRemPwd = $("#checkbox").prop("checked");
 
 				if (""===loginAct || ""===loginPwd){
 					alert("用户名或密码不能为空!");
@@ -66,6 +66,7 @@
 					},
 					success(result){
 						const code = result.code;
+
 						if (+code) {
 							//可以跳转
 							window.location.href="settings/qx/index.do";
