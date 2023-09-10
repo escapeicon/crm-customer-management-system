@@ -26,10 +26,10 @@
 			<form class="form-horizontal" role="form" >
 				<div class="form-group form-group-lg">
 					<div style="width: 350px;">
-						<input class="form-control" type="text" placeholder="用户名">
+						<input class="form-control" type="text" placeholder="用户名" value="${loginAct}">
 					</div>
 					<div style="width: 350px; position: relative;top: 20px;">
-						<input class="form-control" type="password" placeholder="密码">
+						<input class="form-control" type="password" placeholder="密码" value="${loginPwd}">
 					</div>
 					<div class="checkbox"  style="position: relative;top: 30px; left: 10px;">
 						<label>
@@ -38,13 +38,25 @@
 						&nbsp;&nbsp;
 						<span id="msg"></span>
 					</div>
-					<button type="button" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;">登录</button>
+					<button type="button" id="login" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;">登录</button>
 				</div>
 			</form>
 		</div>
 	</div>
 	<script type="text/javascript" >
 		document.addEventListener("DOMContentLoaded",function (){
+			$("#login").text("登陆");//刷新登录状态
+
+			const requestLogin = null;
+
+			//实现通过回车键登录
+			$(document).keydown(function (ev){
+				if (ev.keyCode === 13) {
+					//在指定的标签模拟发送单击事件
+					$('button').click();//调用button的click事件
+				}
+			})
+
 			$("button").click(function (event){
 				//获取用户名
 				const loginAct = $.trim($(".form-control").eq(0).val());
@@ -56,6 +68,9 @@
 					return;
 				}
 
+				//修改登录按钮文字体现登录状态
+				$("#login").text("登陆中...");
+
 				$.ajax({
 					url:"settings/qx/user/login.do",
 					type:"post",
@@ -65,6 +80,7 @@
 						isRemPwd,isRemPwd
 					},
 					success(result){
+						$("#login").text("已登陆");//修改登录按钮文字体现登录成功
 						const code = result.code;
 
 						if (+code) {
@@ -75,9 +91,13 @@
 							$("#msg").text(result.message);
 							return;
 						}
+					},
+					beforeSend:function (){
+						/*该函数内部可以验证请求携带的参数
+						如果返回true才会通过ajax向后端发送请求
+						返回false ajax不会做任何行为*/
 					}
 				})
-
 			})
 		})
 	</script>

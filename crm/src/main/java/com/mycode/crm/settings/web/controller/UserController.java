@@ -10,8 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,13 +26,42 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * 加载登录页面请求
+     * @param request
+     * @return
+     */
     @RequestMapping("/settings/qx/user/toLogin.do")
-    public String login(){
+    public String login(HttpServletRequest request){
+        //判断用户是否有在上次登录时是否记住密码的cookie
+        Cookie[] cookies = request.getCookies();
+
+        //遍历cookies
+        Arrays.stream(cookies).forEach(cookie -> {
+            //获取用户名cookie
+            if ("loginAct".equals(cookie.getName())) {
+                //向请求域中添加用户名
+                request.setAttribute("loginAct",cookie.getValue());
+            }else if ("loginPwd".equals(cookie.getName())){
+                //向请求域中添加用户密码
+                request.setAttribute("loginPwd",cookie.getValue());
+            }
+        });
+
         return "settings/qx/user/login";
     }
 
+    /**
+     * 请求登录控制器
+     * @param loginAct
+     * @param loginPwd
+     * @param isRemPwd
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping("/settings/qx/user/login.do")//路径应与响应页面一致
-    public @ResponseBody Object login(String loginAct, String loginPwd, String isRemPwd, HttpServletRequest request){
+    public @ResponseBody Object login(String loginAct, String loginPwd, String isRemPwd, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 
         //创建map集合且存放用户登录信息
         Map<String, Object> loginInfo = new HashMap<>();
@@ -61,10 +94,22 @@ public class UserController {
         } else {
             //成功登录
             returnInfo.setCode(ResponseInfo.RESPONSE_CODE_SUCCESS);
-            //判断用户是否同意十天内登录
-            System.out.println(isRemPwd);
+
+            //在session请求域中设置用户信息,且使用常量作为session的key
+            session.setAttribute(ResponseInfo.SESSION_USER_KEY,user);
+
             if ("true".equals(isRemPwd)){
                 //用户同意十天内登录
+                Cookie loginActCookie = new Cookie("loginAct", loginAct);//创建用户名cookie
+                Cookie loginPwdCookie = new Cookie("loginPwd", loginPwd);//创建密码cookie
+
+                loginActCookie.setMaxAge(60 * 60 * 24 * 10);//设置寿命为10天
+                loginPwdCookie.setMaxAge(60 * 60 * 24 * 10);//设置寿命为10天
+
+                //loginActCookie.setMaxAge(5);//测试
+                //loginPwdCookie.setMaxAge(5);//测试
+                response.addCookie(loginActCookie);//响应cookie
+                response.addCookie(loginPwdCookie);//响应cookie
             }
         }
         return returnInfo;
