@@ -2,6 +2,7 @@ package com.mycode.crm.settings.mapper;
 
 import com.mycode.crm.settings.domain.User;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -60,4 +61,6 @@ public interface UserMapper {
      * @return
      */
     User selectUserByLoginActAndPwd(Map<String, Object> loginInfo);
+
+    List<User> selectAll();
 }
