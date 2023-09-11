@@ -21,30 +21,92 @@
 		let owner = null;
 		//获取名称
 		let name = null;
+		//获取开始日期
+		let startTime = null;
+		//获取截止日期
+		let endTime = null;
+		//获取成本
+		let cost = null;
 
-		//每次点击创建市场活动页面时刷新所有者和名称信息来对保存按钮是否添加disabled属性做判断
-		$("#createActivityModal").click(function (){
+		//设置主要选项是否解禁提交按钮的flag
+		let isSubmitMain = false;
+		//设置日期选项是否解禁提交按钮的flag
+		let isSubmitDate = true;
+		//设置成本选项是否解禁提交按钮的flag
+		let isSubmitCost = true;
+
+		/**
+		 * 所有者和名称不能为空
+		 */
+		$("#create-marketActivityOwner").blur(function (){
 			//获取所有者
 			owner = $("#create-marketActivityOwner").val();
 			//获取名称
 			name = $("#create-marketActivityName").val();
 			if (owner != "---" && name != "") {
-				//解封保存按钮
-				$("#create-preserve").removeAttr("disabled");
+				isSubmitMain = true;
 			}else {
 				//封禁保存按钮
+				isSubmitMain = false;
+			}
+		})
+		//当名称输入框失去焦点时代码复用所有者输入框失去焦点时的方法
+		$("#create-marketActivityName").blur(function (){
+			$("#create-marketActivityOwner").blur();
+		})
+
+		/*
+        *如果开始日期和结束日期都不为空,则结束日期不能比开始日期小
+        * */
+		$("#create-startTime").blur(function (){
+			//获取开始日期
+			startTime = $("#create-startTime").val();
+			//获取截止日期
+			endTime = $("#create-endTime").val();
+			//判断是否为空字符串
+			if (startTime != "" && endTime != ""){
+				//判断开始日期是否比截至日期大
+				if (startTime >= endTime) {
+					//弹出警告框且锁定保存键
+					alert("开始日期不能超过截止日期!");
+					isSubmitDate = false;
+				}else {
+					isSubmitDate = true;
+				}
+			}else {
+				isSubmitDate = true;
+			}
+		})
+		$("#create-endTime").blur(function (){
+			$("#create-startTime").blur();
+		})
+
+		/**
+		 * 成本只能为非负整数
+		 */
+		$("#create-cost").blur(function (event){
+			cost = $("#create-cost").val()
+			//正则匹配非负整数
+			if (!/^[+]?\d*$/.test(cost)){
+				alert("成本必须为非负整数!");
+				isSubmitCost = false;
+			}else {
+				isSubmitCost = true;
+			}
+		})
+
+		//不论哪个输入框输入信息后都进行最后的规则判断
+		$("input").blur(function (){
+			//最后判断所有选项是否都输入合法
+			if (isSubmitMain && isSubmitDate && isSubmitCost) {
+				$("#create-preserve").removeAttr("disabled");
+			}else {
 				$("#create-preserve").attr("disabled",true);
 			}
 		})
 
 		//创建活动市场保存方法
 		$("#create-preserve").click(function (){
-			//获取开始日期
-			const startTime = $("#create-startTime").val();
-			//获取截止日期
-			const endTime = $("#create-endTime").val();
-			//获取成本
-			const cost = $("#create-cost").val();
 			//获取描述
 			const describe = $("#create-describe").val();
 
@@ -55,10 +117,10 @@
 				data:{
 					owner:owner,
 					name:name,
-					startTime:startTime,
-					endTime:endTime,
+					startDate:startTime,
+					endDate:endTime,
 					cost:cost,
-					describe:describe,
+					description:describe,
 				},
 				success(res){
 					const code = res.code;//获取响应状态码

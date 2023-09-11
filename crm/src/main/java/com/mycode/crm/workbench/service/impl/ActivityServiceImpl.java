@@ -1,7 +1,7 @@
 package com.mycode.crm.workbench.service.impl;
 
-import com.mycode.crm.workbench.domain.MarketingActivities;
-import com.mycode.crm.workbench.mapper.MarketingActivitiesMapper;
+import com.mycode.crm.workbench.domain.Activity;
+import com.mycode.crm.workbench.mapper.ActivitiesMapper;
 import com.mycode.crm.workbench.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,15 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
-    private MarketingActivitiesMapper marketingActivitiesMapper;
+    private ActivitiesMapper activitiesMapper;
 
     /**
      * 创建市场活动
-     * @param marketingActivities
+     * @param activity
      * @return 数据库更新条数
      */
     @Override
-    public int create(MarketingActivities marketingActivities) {
-        return marketingActivitiesMapper.insertSelective(marketingActivities);
+    public int create(Activity activity) {
+        return activitiesMapper.insertSelective(activity);
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.mycode.crm.workbench.mapper.MarketingActivitiesMapper" >
-  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.MarketingActivities" >
+<mapper namespace="com.mycode.crm.workbench.mapper.ActivitiesMapper" >
+  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.Activity" >
     <id column="id" property="id" jdbcType="CHAR" />
     <result column="owner" property="owner" jdbcType="CHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
@@ -31,7 +31,7 @@
     delete from tbl_activity
     where id = #{id,jdbcType=CHAR}
   </delete>
-  <insert id="insert" parameterType="com.mycode.crm.workbench.domain.MarketingActivities" >
+  <insert id="insert" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
     insert into tbl_activity (id, owner, name, start_date,
       end_date, cost, description, 
@@ -42,7 +42,7 @@
       #{createTime,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, 
       #{editBy,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.mycode.crm.workbench.domain.MarketingActivities" >
+  <insert id="insertSelective" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
     insert into tbl_activity
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -116,7 +116,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.MarketingActivities" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
     update tbl_activity
     <set >
@@ -153,7 +153,7 @@
     </set>
     where id = #{id,jdbcType=CHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.mycode.crm.workbench.domain.MarketingActivities" >
+  <update id="updateByPrimaryKey" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
     update tbl_activity
     set owner = #{owner,jdbcType=CHAR},

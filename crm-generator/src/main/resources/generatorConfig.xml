@@ -145,11 +145,11 @@
                 </table>
 
 -->
-                <table tableName="tbl_activity" domainObjectName="MarketingActivities"
+                <!--<table tableName="tbl_activity" domainObjectName="Activity"
                        enableCountByExample="false" enableUpdateByExample="false"
                        enableDeleteByExample="false" enableSelectByExample="false"
                        selectByExampleQueryId="false">
-                </table>
+                </table>-->
 <!--
 
                 <table tableName="tbl_marketing_activities_remark" domainObjectName="MarketingActivitiesRemark"

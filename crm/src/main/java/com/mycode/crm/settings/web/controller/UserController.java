@@ -1,6 +1,6 @@
 package com.mycode.crm.settings.web.controller;
 
-import com.mycode.crm.commons.constants.ResponseInfo;
+import com.mycode.crm.commons.constants.Constants;
 import com.mycode.crm.commons.domain.ReturnInfo;
 import com.mycode.crm.commons.utils.DateFormat;
 import com.mycode.crm.settings.domain.User;
@@ -14,8 +14,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,23 +63,23 @@ public class UserController {
         String remoteAddr = request.getRemoteAddr();
 
         if (null == user) {
-            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_ERROR);
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("用户名或密码错误!");
         }else if (user.getExpireTime().compareTo(nowTime) < 0){
-            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_ERROR);
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("用户已过期!");
         } else if ("0".equals(user.getLockState())){
-            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_ERROR);
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("用户状态被锁定");
         } else if(!user.getAllowIps().contains(remoteAddr)){
-            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_ERROR);
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("用户ip受限");
         } else {
             //成功登录
-            returnInfo.setCode(ResponseInfo.RESPONSE_CODE_SUCCESS);
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
 
             //在session请求域中设置用户信息,且使用常量作为session的key
-            session.setAttribute(ResponseInfo.SESSION_USER_KEY,user);
+            session.setAttribute(Constants.SESSION_USER_KEY,user);
 
             if ("true".equals(isRemPwd)){
                 //用户同意十天内登录

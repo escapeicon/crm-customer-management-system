@@ -2,7 +2,7 @@ package com.mycode.crm.workbench.domain;
 
 import java.util.Objects;
 
-public class MarketingActivities {
+public class Activity {
 
     private String id;
     private String owner;
@@ -16,10 +16,10 @@ public class MarketingActivities {
     private String editTime;
     private String editBy;
 
-    public MarketingActivities() {
+    public Activity() {
     }
 
-    public MarketingActivities(String id, String owner, String name, String startDate, String endDate, String cost, String description, String createTime, String createBy, String editTime, String editBy) {
+    public Activity(String id, String owner, String name, String startDate, String endDate, String cost, String description, String createTime, String createBy, String editTime, String editBy) {
         this.id = id;
         this.owner = owner;
         this.name = name;
@@ -102,7 +102,7 @@ public class MarketingActivities {
 
     @Override
     public String toString() {
-        return "MarketingActivities{" +
+        return "Activity{" +
                 "id='" + id + '\'' +
                 ", owner='" + owner + '\'' +
                 ", name='" + name + '\'' +
@@ -121,7 +121,7 @@ public class MarketingActivities {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MarketingActivities that = (MarketingActivities) o;
+        Activity that = (Activity) o;
         return Objects.equals(id, that.id) && Objects.equals(owner, that.owner) && Objects.equals(name, that.name) && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate) && Objects.equals(cost, that.cost) && Objects.equals(description, that.description) && Objects.equals(createTime, that.createTime) && Objects.equals(createBy, that.createBy) && Objects.equals(editTime, that.editTime) && Objects.equals(editBy, that.editBy);
     }
 
