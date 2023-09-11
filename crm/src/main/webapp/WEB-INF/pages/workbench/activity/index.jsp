@@ -16,13 +16,65 @@
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
-
 	$(function(){
-		
-		
+		//获取所有者
+		let owner = null;
+		//获取名称
+		let name = null;
+
+		//每次点击创建市场活动页面时刷新所有者和名称信息来对保存按钮是否添加disabled属性做判断
+		$("#createActivityModal").click(function (){
+			//获取所有者
+			owner = $("#create-marketActivityOwner").val();
+			//获取名称
+			name = $("#create-marketActivityName").val();
+			if (owner != "---" && name != "") {
+				//解封保存按钮
+				$("#create-preserve").removeAttr("disabled");
+			}else {
+				//封禁保存按钮
+				$("#create-preserve").attr("disabled",true);
+			}
+		})
+
+		//创建活动市场保存方法
+		$("#create-preserve").click(function (){
+			//获取开始日期
+			const startTime = $("#create-startTime").val();
+			//获取截止日期
+			const endTime = $("#create-endTime").val();
+			//获取成本
+			const cost = $("#create-cost").val();
+			//获取描述
+			const describe = $("#create-describe").val();
+
+			//发送ajax请求
+			$.ajax({
+				type:"post",
+				url:"workbench/activity/saveCreateActivity.do",
+				data:{
+					owner:owner,
+					name:name,
+					startTime:startTime,
+					endTime:endTime,
+					cost:cost,
+					describe:describe,
+				},
+				success(res){
+					const code = res.code;//获取响应状态码
+					if (code == "1") {
+						//成功创建
+						$("#createActivityModal").removeClass("in");
+					}else {
+						//创建失败
+						const message = res.message;//获取失败响应消息
+						alert(message);
+					}
+				}
+			})
+		})
 		
 	});
-	
 </script>
 </head>
 <body>
@@ -47,9 +99,9 @@
 								<select class="form-control" id="create-marketActivityOwner">
 <%--								  <option>zhangsan</option>--%>
 <%--								  <option>lisi</option>--%>
-<%--								  <option>wangwu</option>--%>
+									<option>---</option>
 									<c:forEach var="user" items="${users}" >
-										<option>${user.name}</option>
+										<option value="${user.name}">${user.name}</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -88,7 +140,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button id="create-preserve" type="button" class="btn btn-primary" disabled>保存</button>
 				</div>
 			</div>
 		</div>
@@ -112,9 +164,12 @@
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-marketActivityOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+<%--								  <option>zhangsan</option>--%>
+<%--								  <option>lisi</option>--%>
+<%--								  <option>wangwu</option>--%>
+									<c:forEach var="user" items="${users}" >
+										<option>${user.name}</option>
+									</c:forEach>
 								</select>
 							</div>
                             <label for="edit-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>

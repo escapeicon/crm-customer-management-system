@@ -5,8 +5,10 @@ import com.mycode.crm.workbench.mapper.MarketingActivitiesMapper;
 import com.mycode.crm.workbench.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("activityService")
+@Transactional
 public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
