@@ -38,11 +38,13 @@
 		/**
 		 * 所有者和名称不能为空
 		 */
-		$("#create-marketActivityOwner").blur(function (){
+		$("#create-marketActivityOwner,#create-marketActivityName").blur(function (){
+			console.log("create-marketActivityOwner触发了")
 			//获取所有者
 			owner = $("#create-marketActivityOwner").val();
 			//获取名称
 			name = $("#create-marketActivityName").val();
+			console.log("owner != 请选择 && name != 结果为"+(owner != "请选择" && name != ""))
 			if (owner != "请选择" && name != "") {
 				isSubmitMain = true;
 			}else {
@@ -50,15 +52,11 @@
 				isSubmitMain = false;
 			}
 		})
-		//当名称输入框失去焦点时代码复用所有者输入框失去焦点时的方法
-		$("#create-marketActivityName").blur(function (){
-			$("#create-marketActivityOwner").blur();
-		})
 
 		/*
         *如果开始日期和结束日期都不为空,则结束日期不能比开始日期小
         * */
-		$("#create-startTime").blur(function (){
+		$("#create-startTime,#create-endTime").blur(function (){
 			//获取开始日期
 			startTime = $("#create-startTime").val();
 			//获取截止日期
@@ -77,9 +75,6 @@
 				isSubmitDate = true;
 			}
 		})
-		$("#create-endTime").blur(function (){
-			$("#create-startTime").blur();
-		})
 
 		/**
 		 * 成本只能为非负整数
@@ -96,7 +91,9 @@
 		})
 
 		//不论哪个输入框输入信息后都进行最后的规则判断
-		$(".modal-content").click(function (){
+		$("input,select").blur(function (){
+
+			console.log("$(input).blur触发了 isSubmitMain && isSubmitDate && isSubmitCost结果为"+isSubmitMain && isSubmitDate && isSubmitCost)
 			//最后判断所有选项是否都输入合法
 			if (isSubmitMain && isSubmitDate && isSubmitCost) {
 				$("#create-preserve").removeAttr("disabled");
@@ -126,10 +123,11 @@
 					const code = res.code;//获取响应状态码
 					if (code == "1") {
 						//成功创建
-						$("#createActivityModal").removeClass("in");
+						$("#createActivityModal").modal("hide");
 					}else {
 						//创建失败
 						const message = res.message;//获取失败响应消息
+						$("#createActivityModal").modal("show");
 						alert(message);
 					}
 				}

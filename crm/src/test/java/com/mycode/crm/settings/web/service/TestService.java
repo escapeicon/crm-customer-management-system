@@ -21,4 +21,10 @@ public class TestService {
         User user = userService.queryUserByLoginActAndPwd(loginInfo);
         System.out.println(user);
     }
+
+    @Test
+    public void testTemp(){
+        String a = "a" + 3;
+        float b = 3 + 0.1F;
+    }
 }
