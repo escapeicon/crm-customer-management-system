@@ -43,7 +43,7 @@
 			owner = $("#create-marketActivityOwner").val();
 			//获取名称
 			name = $("#create-marketActivityName").val();
-			if (owner != "---" && name != "") {
+			if (owner != "请选择" && name != "") {
 				isSubmitMain = true;
 			}else {
 				//封禁保存按钮
@@ -96,7 +96,7 @@
 		})
 
 		//不论哪个输入框输入信息后都进行最后的规则判断
-		$("input").blur(function (){
+		$(".modal-content").click(function (){
 			//最后判断所有选项是否都输入合法
 			if (isSubmitMain && isSubmitDate && isSubmitCost) {
 				$("#create-preserve").removeAttr("disabled");
@@ -161,7 +161,7 @@
 								<select class="form-control" id="create-marketActivityOwner">
 <%--								  <option>zhangsan</option>--%>
 <%--								  <option>lisi</option>--%>
-									<option>---</option>
+									<option>请选择</option>
 									<c:forEach var="user" items="${users}" >
 										<option value="${user.name}">${user.name}</option>
 									</c:forEach>
