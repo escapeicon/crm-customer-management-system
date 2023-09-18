@@ -9,72 +9,181 @@
 <meta charset="UTF-8">
 <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 <link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bs_pagination-master/css/jquery.bs_pagination.min.css">
 
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="jquery/bs_pagination-master/js/jquery.bs_pagination.min.js" ></script>
+<script type="text/javascript" src="jquery/bs_pagination-master/localization/en.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
-	$(function(){
-		//获取所有者
-		let owner = null;
-		//获取名称
-		let name = null;
-		//获取开始日期
-		let startTime = null;
-		//获取截止日期
-		let endTime = null;
-		//获取成本
-		let cost = null;
+	//获取所有者
+	let owner = null;
+	//获取名称
+	let name = null;
+	//获取开始日期
+	let startTime = null;
+	//获取截止日期
+	let endTime = null;
+	//获取成本
+	let cost = null;
 
-		//设置主要选项是否解禁提交按钮的flag
-		let isSubmitMain = false;
-		//设置日期选项是否解禁提交按钮的flag
-		let isSubmitDate = true;
-		//设置成本选项是否解禁提交按钮的flag
-		let isSubmitCost = true;
+	//设置主要选项是否解禁提交按钮的flag
+	let isSubmitMain = false;
+	//设置日期选项是否解禁提交按钮的flag
+	let isSubmitDate = true;
+	//设置成本选项是否解禁提交按钮的flag
+	let isSubmitCost = true;
+
+	/**
+	 * 条件查询方法
+	 * @param pageNo
+	 */
+	function queryForPage(pageNo = 1,pageSize = 10){
+
+		//获取查询的条件
+		const queryName = $("#queryName").val();
+		const queryOwner = $("#queryOwner").val();
+		const queryStartDate = $("#queryStartDate").val();
+		const queryEndDate = $("#queryEndDate").val();
+
+		//加载页面顺便加载市场活动列表
+		$.ajax({
+			type: "post",
+			url: "workbench/activity/queryActivityForPage.do",
+			data: {
+				name: queryName,
+				owner: queryOwner,
+				startDate: queryStartDate,
+				endDate: queryEndDate,
+				pageNo: pageNo,
+				pageSize: pageSize
+			},
+			success(res) {
+				const totalRows = res.totalRows;//获取总数
+				const activityList = res.activityList;//获取查询到的所有数据
+
+				$("#allResultB").text(totalRows);//修改总条数显示内容
+
+				$("tbody").empty();//删除所有子元素，刷新市场活动列表
+
+				//拼接HTML代码
+				$(activityList).each(function (index,item){
+					const statement = '' +
+							'<tr class="active">'+
+							'<td><input type="checkbox" value="'+item.id+'"/></td>'+
+							'<td><a style="text-decoration: none; cursor: pointer;" onClick="window.location.href='+ 'detail.html' + ';">'+item.name + '</a></td>'+
+							'<td>' + item.owner + '</td>'+
+							'<td>' + item.startDate + '</td>'+
+							'<td>' + item.endDate + '</td>'+
+							'</tr>';
+
+					$("tbody").append(statement);
+				})
+
+
+				//计算总页数
+				let totalPages = 1;
+				if (totalRows % pageSize == 0) {
+					totalPages = totalRows / pageSize;
+				}else {
+					totalPages = parseInt((totalRows / pageSize) + 1);
+				}
+
+				//分页插件
+				$("#demo_pag1").bs_pagination({
+					currentPage: pageNo,//当前页面
+					rowsPerPage: pageSize,//每页显示条数
+					totalRows:totalRows,//总条数
+					totalPages: totalPages,//总页数，必填参数
+
+					showGoToPage: true,//展示跳转页面组件
+					showRowsPerPage: true,//是否显示“每页显示条数”部分
+					showRowsInfo:true,//是否显示记录的信息
+
+					visiblePageLinks: 10,//可视的页面连接数
+					onChangePage:function (event,data){
+						const currentPage = data.currentPage;//获取当前页面
+						const rowsPerPage = data.rowsPerPage;//获取每页显示条数
+						queryForPage(currentPage,rowsPerPage);//刷新页面
+					}
+				});
+			}
+		})
+	}
+
+	/**
+	 * 判断日期是否符合规则的方法
+	 */
+	function judgeDate(){
+		//获取开始日期
+		startTime = $("#create-startTime").val();
+		//获取截止日期
+		endTime = $("#create-endTime").val();
+		//判断是否为空字符串
+		if (startTime != "" && endTime != ""){
+			//判断开始日期是否比截至日期大
+			if (startTime >= endTime) {
+				//弹出警告框且锁定保存键
+				alert("开始日期不能超过截止日期!");
+				isSubmitDate = false;
+			}else {
+				isSubmitDate = true;
+			}
+		}else {
+			isSubmitDate = true;
+		}
+	}
+
+	/**
+	 * 规则判断函数
+	 */
+	function judgeAll(){
+		//最后判断所有选项是否都输入合法
+		if (isSubmitMain && isSubmitDate && isSubmitCost) {
+			$("#create-preserve").removeAttr("disabled");
+		}else {
+			$("#create-preserve").attr("disabled",true);
+		}
+	}
+
+	//入口函数
+	$(function(){
 
 		/**
 		 * 所有者和名称不能为空
 		 */
 		$("#create-marketActivityOwner,#create-marketActivityName").blur(function (){
-			console.log("create-marketActivityOwner触发了")
 			//获取所有者
 			owner = $("#create-marketActivityOwner").val();
 			//获取名称
 			name = $("#create-marketActivityName").val();
-			console.log("owner != 请选择 && name != 结果为"+(owner != "请选择" && name != ""))
 			if (owner != "请选择" && name != "") {
 				isSubmitMain = true;
 			}else {
 				//封禁保存按钮
 				isSubmitMain = false;
 			}
+
+			judgeAll();
 		})
 
-		/*
-        *如果开始日期和结束日期都不为空,则结束日期不能比开始日期小
-        * */
-		$("#create-startTime,#create-endTime").blur(function (){
-			//获取开始日期
-			startTime = $("#create-startTime").val();
-			//获取截止日期
-			endTime = $("#create-endTime").val();
-			//判断是否为空字符串
-			if (startTime != "" && endTime != ""){
-				//判断开始日期是否比截至日期大
-				if (startTime >= endTime) {
-					//弹出警告框且锁定保存键
-					alert("开始日期不能超过截止日期!");
-					isSubmitDate = false;
-				}else {
-					isSubmitDate = true;
-				}
-			}else {
-				isSubmitDate = true;
-			}
-		})
+		//生成js日历
+		$("#create-startTime,#create-endTime").datetimepicker({
+			format:"yyyy-mm-dd",//日期格式
+			language:"zh-CN",//语言
+			minView:'month',
+			initialDate:new Date(),//初始化时显示当前日期
+			autoclose:true,//设置选择完日期或时间之后，是否自动关闭日历
+			clearBtn:true,//设置是否显示清空按钮，默认为false
+			todayBtn:true//设置是否显示今日按钮
+		}).on('changeDate', function (e) {
+			// 添加日期判断逻辑
+			judgeDate();
+			judgeAll();
+		});
 
 		/**
 		 * 成本只能为非负整数
@@ -88,18 +197,19 @@
 			}else {
 				isSubmitCost = true;
 			}
+
+			judgeAll();
 		})
 
-		//不论哪个输入框输入信息后都进行最后的规则判断
-		$("input,select").blur(function (){
+		/**
+		 * 手动跳出创建市场活动页面
+		 */
+		$("#btnCreate").click(function (){
+			//清空表单信息
+			document.getElementsByClassName("form-horizontal")[0].reset();
 
-			console.log("$(input).blur触发了 isSubmitMain && isSubmitDate && isSubmitCost结果为"+isSubmitMain && isSubmitDate && isSubmitCost)
-			//最后判断所有选项是否都输入合法
-			if (isSubmitMain && isSubmitDate && isSubmitCost) {
-				$("#create-preserve").removeAttr("disabled");
-			}else {
-				$("#create-preserve").attr("disabled",true);
-			}
+			//显示创建市场活动模态窗口
+			$("#createActivityModal").modal("show");
 		})
 
 		//创建活动市场保存方法
@@ -124,6 +234,8 @@
 					if (code == "1") {
 						//成功创建
 						$("#createActivityModal").modal("hide");
+						//刷新市场活动列表
+						queryForPage(1,$("#demo_pag1").bs_pagination('getOption', 'rowsPerPage'));
 					}else {
 						//创建失败
 						const message = res.message;//获取失败响应消息
@@ -133,8 +245,16 @@
 				}
 			})
 		})
-		
+
+		//查询市场活动函数
+		$("#querySubmit").click(function (){
+			queryForPage(1,$("#demo_pag1").bs_pagination('getOption', 'rowsPerPage'));
+		})
+
+		//加载页面顺便加载市场活动列表
+		queryForPage();
 	});
+
 </script>
 </head>
 <body>
@@ -150,9 +270,9 @@
 					<h4 class="modal-title" id="myModalLabel1">创建市场活动</h4>
 				</div>
 				<div class="modal-body">
-				
+
 					<form class="form-horizontal" role="form">
-					
+
 						<div class="form-group">
 							<label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -161,7 +281,7 @@
 <%--								  <option>lisi</option>--%>
 									<option>请选择</option>
 									<c:forEach var="user" items="${users}" >
-										<option value="${user.name}">${user.name}</option>
+										<option value="${user.id}">${user.name}</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -170,15 +290,15 @@
                                 <input type="text" class="form-control" id="create-marketActivityName">
                             </div>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-startTime">
+								<input type="text" class="form-control" id="create-startTime" autocomplete="off" readonly>
 							</div>
 							<label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-endTime">
+								<input type="text" class="form-control" id="create-endTime" autocomplete="off" readonly>
 							</div>
 						</div>
                         <div class="form-group">
@@ -194,9 +314,9 @@
 								<textarea class="form-control" rows="3" id="create-describe"></textarea>
 							</div>
 						</div>
-						
+
 					</form>
-					
+
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -205,7 +325,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- 修改市场活动的模态窗口 -->
 	<div class="modal fade" id="editActivityModal" role="dialog">
 		<div class="modal-dialog" role="document" style="width: 85%;">
@@ -217,9 +337,9 @@
 					<h4 class="modal-title" id="myModalLabel2">修改市场活动</h4>
 				</div>
 				<div class="modal-body">
-				
+
 					<form class="form-horizontal" role="form">
-					
+
 						<div class="form-group">
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -248,23 +368,23 @@
 								<input type="text" class="form-control" id="edit-endTime" value="2020-10-20">
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="edit-cost" class="col-sm-2 control-label">成本</label>
 							<div class="col-sm-10" style="width: 300px;">
 								<input type="text" class="form-control" id="edit-cost" value="5,000">
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
 								<textarea class="form-control" rows="3" id="edit-describe">市场活动Marketing，是指品牌主办或参与的展览会议与公关市场活动，包括自行主办的各类研讨会、客户交流会、演示会、新产品发布会、体验会、答谢会、年会和出席参加并布展或演讲的展览会、研讨会、行业交流会、颁奖典礼等</textarea>
 							</div>
 						</div>
-						
+
 					</form>
-					
+
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -273,7 +393,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- 导入市场活动的模态窗口 -->
     <div class="modal fade" id="importActivityModal" role="dialog">
         <div class="modal-dialog" role="document" style="width: 85%;">
@@ -311,8 +431,8 @@
             </div>
         </div>
     </div>
-	
-	
+
+
 	<div>
 		<div style="position: relative; left: 10px; top: -10px;">
 			<div class="page-header">
@@ -322,21 +442,21 @@
 	</div>
 	<div style="position: relative; top: -20px; left: 0px; width: 100%; height: 100%;">
 		<div style="width: 100%; position: absolute;top: 5px; left: 10px;">
-		
+
 			<div class="btn-toolbar" role="toolbar" style="height: 80px;">
 				<form class="form-inline" role="form" style="position: relative;top: 8%; left: 5px;">
-				  
+
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">名称</div>
-				      <input class="form-control" type="text">
+				      <input id="queryName" class="form-control" type="text">
 				    </div>
 				  </div>
-				  
+
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">所有者</div>
-				      <input class="form-control" type="text">
+				      <input id="queryOwner" class="form-control" type="text">
 				    </div>
 				  </div>
 
@@ -344,23 +464,23 @@
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
-					  <input class="form-control" type="text" id="startTime" />
+					  <input id="queryStartDate" class="form-control" type="text" id="startTime" />
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input class="form-control" type="text" id="endTime">
+					  <input id="queryEndDate" class="form-control" type="text" id="endTime">
 				    </div>
 				  </div>
-				  
-				  <button type="submit" class="btn btn-default">查询</button>
-				  
+
+				  <button id="querySubmit" type="button" class="btn btn-default">查询</button>
+
 				</form>
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createActivityModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+				  <button type="button" id="btnCreate" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
@@ -382,7 +502,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr class="active">
+						<%--<tr class="active">
 							<td><input type="checkbox" /></td>
 							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
                             <td>zhangsan</td>
@@ -395,14 +515,15 @@
                             <td>zhangsan</td>
                             <td>2020-10-10</td>
                             <td>2020-10-20</td>
-                        </tr>
+                        </tr>--%>
 					</tbody>
 				</table>
+				<div id="demo_pag1"></div>
 			</div>
-			
+
 			<div style="height: 50px; position: relative;top: 30px;">
-				<div>
-					<button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
+				<%--<div>
+					<button type="button" class="btn btn-default" style="cursor: default;">共<b id="allResultB">50</b>条记录</button>
 				</div>
 				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
 					<button type="button" class="btn btn-default" style="cursor: default;">显示</button>
@@ -432,11 +553,11 @@
 							<li class="disabled"><a href="#">末页</a></li>
 						</ul>
 					</nav>
-				</div>
+				</div>--%>
 			</div>
-			
+
 		</div>
-		
+
 	</div>
 </body>
 </html>

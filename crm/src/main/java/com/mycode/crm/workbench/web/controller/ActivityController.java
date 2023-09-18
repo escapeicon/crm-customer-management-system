@@ -10,12 +10,14 @@ import com.mycode.crm.workbench.domain.Activity;
 import com.mycode.crm.workbench.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
@@ -58,7 +60,7 @@ public class ActivityController {
         ReturnInfo returnInfo = new ReturnInfo();
         try{
             //调用业务层
-            int count = activityService.create(activity);
+            int count = activityService.saveCreateActivity(activity);
 
             if (count == 1) {
                 returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
@@ -74,4 +76,31 @@ public class ActivityController {
         return returnInfo;
     }
 
+    /**
+     * 分页查询数据控制器方法
+     * @return json数据
+     */
+    @RequestMapping("/workbench/activity/queryActivityForPage.do")
+    public @ResponseBody Object queryActivityForPage(String name,String owner,String startDate,String endDate,int pageNo,int pageSize){
+        HashMap<String, Object> pageInfo = new HashMap<>();
+        pageInfo.put("name",name);
+        pageInfo.put("owner",owner);
+        pageInfo.put("startDate",startDate);
+        pageInfo.put("endDate",endDate);
+        pageInfo.put("beginNo",(pageNo - 1) * pageSize);
+        pageInfo.put("pageSize",pageSize);
+
+        //查询数据库表信息
+            List<Activity> activityList = activityService.queryActivityByConditionForPage(pageInfo);
+            //查询表信息总条数
+            int count = activityService.queryCountOfActivityByCondition(pageInfo);
+
+            //封装结果集
+            HashMap<String, Object> retObj = new HashMap<>();
+            retObj.put("activityList",activityList);
+            retObj.put("totalRows",count);
+
+            //返回结果集对象
+            return retObj;
+    }
 }
