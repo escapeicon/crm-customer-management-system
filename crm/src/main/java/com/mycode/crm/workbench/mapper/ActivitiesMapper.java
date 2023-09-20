@@ -7,11 +7,18 @@ import java.util.List;
 import java.util.Map;
 
 public interface ActivitiesMapper {
-    int deleteByPrimaryKey(String id);
+    /**
+     * 查询分页查询所查到的记录总数
+     * @param pageInfo 封装的页面信息
+     * @return 记录总数
+     */
+    int selectCountOfActivityByCondition(Map<String,Object> pageInfo);
 
-    int insert(Activity record);
-
-    int insertSelective(Activity record);
+    /**
+     * 获取全部市场活动信息
+     * @return 全部市场活动集合
+     */
+    List<Activity> selectAllActivities();
 
     /**
      * 根据市场活动id查询市场活动信息
@@ -20,8 +27,6 @@ public interface ActivitiesMapper {
      */
     Activity selectById(String id);
 
-    int updateByPrimaryKey(Activity record);
-
     /**
      * 分页查询
      * @param pageInfo 封装的页面信息
@@ -29,12 +34,14 @@ public interface ActivitiesMapper {
      */
     List<Activity> selectActivityByConditionForPage(Map<String,Object> pageInfo);
 
-    /**
-     * 查询分页查询所查到的记录总数
-     * @param pageInfo 封装的页面信息
-     * @return 记录总数
-     */
-    int selectCountOfActivityByCondition(Map<String,Object> pageInfo);
+
+    int deleteByPrimaryKey(String id);
+
+    int insert(Activity record);
+
+    int insertSelective(Activity record);
+
+    int updateByPrimaryKey(Activity record);
 
     /**
      * 根据id删除市场活动记录条数

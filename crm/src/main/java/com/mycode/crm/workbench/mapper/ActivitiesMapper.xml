@@ -110,6 +110,28 @@
     </trim>
   </insert>
 
+  <select id="selectAllActivities" resultMap="BaseResultMap">
+    select
+    t.id,
+    u1.name as owner,
+    t.name,
+    t.start_date,
+    t.end_date,
+    t.cost,
+    t.description,
+    t.create_time,
+    u2.name as create_by,
+    t.edit_time,
+    u3.name as edit_by
+    from
+    tbl_activity as t
+    join tbl_user as u1 on t.owner = u1.id
+    join tbl_user as u2 on not t.create_by = u2.id
+    left join tbl_user as u3 on t.edit_by = u3.id
+  </select>
+
+
+  <!--分页查询-->
   <update id="updateByPrimaryKey" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
     update tbl_activity
@@ -125,8 +147,7 @@
       edit_by = #{editBy,jdbcType=VARCHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
-
-  <!--分页查询-->
+  <!--查询总条数-->
   <select id="selectActivityByConditionForPage" parameterType="map" resultMap="BaseResultMap">
         select
             a.id,u1.name as owner,a.name,a.start_date,a.end_date,a.cost,a.description,
@@ -152,7 +173,7 @@
         order by a.create_time desc
         limit #{beginNo} , #{pageSize}
   </select>
-  <!--查询总条数-->
+  <!--根据id获取市场活动信息-->
   <select id="selectCountOfActivityByCondition" parameterType="map" resultType="int">
     select
         count(*)
@@ -175,6 +196,13 @@
       </if>
     </where>
   </select>
+  <!--获取全部市场活动-->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_activity
+    where id = #{id,jdbcType=CHAR}
+  </select>
   <!--删除指定条数-->
   <delete id="deleteActivityByIds" parameterType="string">
     delete from tbl_activity where id in
@@ -182,13 +210,6 @@
          #{id}
        </foreach>
   </delete>
-  <!--根据id获取市场活动信息-->
-  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select
-    <include refid="Base_Column_List" />
-    from tbl_activity
-    where id = #{id,jdbcType=CHAR}
-  </select>
 
   <!--根据id动态修改市场活动信息-->
   <update id="updateByIdSelective" parameterType="com.mycode.crm.workbench.domain.Activity" >

@@ -3,6 +3,7 @@ package com.mycode.crm.workbench.web.controller;
 import com.mycode.crm.commons.constants.Constants;
 import com.mycode.crm.commons.domain.ReturnInfo;
 import com.mycode.crm.commons.utils.DateFormat;
+import com.mycode.crm.commons.utils.GenerateExcelFile;
 import com.mycode.crm.commons.utils.UUIDUtil;
 import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.UserService;
@@ -11,14 +12,20 @@ import com.mycode.crm.workbench.service.ActivityService;
 import com.sun.tools.internal.jxc.ap.Const;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -180,5 +187,22 @@ public class ActivityController {
         }
 
         return returnInfo;
+    }
+
+    /**
+     * 提供用户下载所有市场活动excel表
+     * @return 所有市场活动的excel表
+     */
+    @RequestMapping("/workbench/activity/downloadAllActivities.do")
+    public ResponseEntity<byte[]> downloadExcel(){
+        List<Activity> activities = activityService.queryAllActivities();//获取所有activity条数
+
+        try {
+            GenerateExcelFile.generateFile("市场活动信息",Activity.class,activities,"E:\\86523\\Desktop\\activities.xls");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
     }
 }

@@ -13,6 +13,20 @@ public interface ActivityService {
     int saveCreateActivity(Activity activity);
 
     /**
+     * 根据id修改市场活动信息
+     * @param activity 市场活动实体类
+     * @return 更新条数
+     */
+    int saveEditActivity(Activity activity);
+
+    /**
+     * 根据id删除市场活动
+     * @param ids 市场活动id
+     * @return 删除条数
+     */
+    int deleteActivityByIds(String[] ids);
+
+    /**
      * 根据分页数据查询指定市场活动数据
      * @param pageInfo
      * @return 市场活动list集合
@@ -27,13 +41,6 @@ public interface ActivityService {
     int queryCountOfActivityByCondition(Map<String,Object> pageInfo);
 
     /**
-     * 根据id删除市场活动
-     * @param ids 市场活动id
-     * @return 删除条数
-     */
-    int deleteActivityByIds(String[] ids);
-
-    /**
      * 根据id查询指定市场活动
      * @param id
      * @return 市场活动信息
@@ -41,9 +48,8 @@ public interface ActivityService {
     Activity queryActivityById(String id);
 
     /**
-     * 根据id修改市场活动信息
-     * @param activity 市场活动实体类
-     * @return 更新条数
+     * 获取所有市场活动
+     * @return 市场活动集合
      */
-    int saveEditActivity(Activity activity);
+    List<Activity> queryAllActivities();
 }
