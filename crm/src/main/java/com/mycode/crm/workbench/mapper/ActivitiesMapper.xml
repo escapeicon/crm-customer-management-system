@@ -19,13 +19,6 @@
     id, owner, name, start_date, end_date, cost, description, create_time, create_by,
     edit_time, edit_by
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-
-    select
-    <include refid="Base_Column_List" />
-    from tbl_activity
-    where id = #{id,jdbcType=CHAR}
-  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
 
     delete from tbl_activity
@@ -116,43 +109,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
-    update tbl_activity
-    <set >
-      <if test="owner != null" >
-        owner = #{owner,jdbcType=CHAR},
-      </if>
-      <if test="name != null" >
-        name = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="startDate != null" >
-        start_date = #{startDate,jdbcType=CHAR},
-      </if>
-      <if test="endDate != null" >
-        end_date = #{endDate,jdbcType=CHAR},
-      </if>
-      <if test="cost != null" >
-        cost = #{cost,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null" >
-        description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=CHAR},
-      </if>
-      <if test="createBy != null" >
-        create_by = #{createBy,jdbcType=VARCHAR},
-      </if>
-      <if test="editTime != null" >
-        edit_time = #{editTime,jdbcType=CHAR},
-      </if>
-      <if test="editBy != null" >
-        edit_by = #{editBy,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=CHAR}
-  </update>
   <update id="updateByPrimaryKey" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
     update tbl_activity
@@ -219,5 +176,55 @@
     </where>
   </select>
   <!--删除指定条数-->
-  
+  <delete id="deleteActivityByIds" parameterType="string">
+    delete from tbl_activity where id in
+       <foreach collection="ids" item="id" separator="," open="(" close=")">
+         #{id}
+       </foreach>
+  </delete>
+  <!--根据id获取市场活动信息-->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_activity
+    where id = #{id,jdbcType=CHAR}
+  </select>
+
+  <!--根据id动态修改市场活动信息-->
+  <update id="updateByIdSelective" parameterType="com.mycode.crm.workbench.domain.Activity" >
+    update tbl_activity
+    <set >
+      <if test="owner != null and owner != ''" >
+        owner = #{owner,jdbcType=CHAR},
+      </if>
+      <if test="name != null and name != ''" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null and startDate != ''" >
+        start_date = #{startDate,jdbcType=CHAR},
+      </if>
+      <if test="endDate != null and endDate != ''" >
+        end_date = #{endDate,jdbcType=CHAR},
+      </if>
+      <if test="cost != null and cost != ''" >
+        cost = #{cost,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null and description != ''" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null and createTime != ''" >
+        create_time = #{createTime,jdbcType=CHAR},
+      </if>
+      <if test="createBy != null and createBy != ''" >
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null and editTime != ''" >
+        edit_time = #{editTime,jdbcType=CHAR},
+      </if>
+      <if test="editBy != null and editBy != ''" >
+        edit_by = #{editBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=CHAR}
+  </update>
 </mapper>

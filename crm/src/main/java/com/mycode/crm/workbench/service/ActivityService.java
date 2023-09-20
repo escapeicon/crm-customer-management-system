@@ -25,4 +25,25 @@ public interface ActivityService {
      * @return 结果条数的总和
      */
     int queryCountOfActivityByCondition(Map<String,Object> pageInfo);
+
+    /**
+     * 根据id删除市场活动
+     * @param ids 市场活动id
+     * @return 删除条数
+     */
+    int deleteActivityByIds(String[] ids);
+
+    /**
+     * 根据id查询指定市场活动
+     * @param id
+     * @return 市场活动信息
+     */
+    Activity queryActivityById(String id);
+
+    /**
+     * 根据id修改市场活动信息
+     * @param activity 市场活动实体类
+     * @return 更新条数
+     */
+    int saveEditActivity(Activity activity);
 }

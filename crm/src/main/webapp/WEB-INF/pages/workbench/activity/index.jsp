@@ -23,12 +23,15 @@
 	let owner = null;
 	//获取名称
 	let name = null;
-	//获取开始日期
-	let startTime = null;
-	//获取截止日期
-	let endTime = null;
 	//获取成本
 	let cost = null;
+	//获取开始日期
+	let startDate = null;
+	//获取结束日期
+	let endDate = null;
+
+	//判断规则需要的类型
+	let type = null;
 
 	//设置主要选项是否解禁提交按钮的flag
 	let isSubmitMain = false;
@@ -37,11 +40,21 @@
 	//设置成本选项是否解禁提交按钮的flag
 	let isSubmitCost = true;
 
+	let noEdit = true;//是否是编辑状态
+
+	//设置pageSize
+	let pageSize = 10;
+
 	/**
 	 * 条件查询方法
 	 * @param pageNo
 	 */
 	function queryForPage(pageNo = 1,pageSize = 10){
+		//重置判断条件
+		isSubmitMain = false;
+		isSubmitDate = true;
+		isSubmitCost = true;
+		noEdit = true;
 
 		//获取查询的条件
 		const queryName = $("#queryName").val();
@@ -67,7 +80,7 @@
 
 				$("#allResultB").text(totalRows);//修改总条数显示内容
 
-				$("tbody").empty();//删除所有子元素，刷新市场活动列表
+				$("#tBody").empty();//删除所有子元素，刷新市场活动列表
 
 				//拼接HTML代码
 				$(activityList).each(function (index,item){
@@ -80,9 +93,11 @@
 							'<td>' + item.endDate + '</td>'+
 							'</tr>';
 
-					$("tbody").append(statement);
+					$("#tBody").append(statement);
 				})
 
+				//切换页数的时候刷新市场活动列表时取消全选按钮
+				$("#checkAll").prop("checked",false);
 
 				//计算总页数
 				let totalPages = 1;
@@ -114,82 +129,39 @@
 		})
 	}
 
-	/**
-	 * 判断日期是否符合规则的方法
-	 */
-	function judgeDate(){
-		//获取开始日期
-		startTime = $("#create-startTime").val();
-		//获取截止日期
-		endTime = $("#create-endTime").val();
-		//判断是否为空字符串
-		if (startTime != "" && endTime != ""){
-			//判断开始日期是否比截至日期大
-			if (startTime >= endTime) {
-				//弹出警告框且锁定保存键
-				alert("开始日期不能超过截止日期!");
-				isSubmitDate = false;
-			}else {
-				isSubmitDate = true;
-			}
-		}else {
-			isSubmitDate = true;
-		}
-	}
-
-	/**
-	 * 规则判断函数
-	 */
-	function judgeAll(){
-		//最后判断所有选项是否都输入合法
-		if (isSubmitMain && isSubmitDate && isSubmitCost) {
-			$("#create-preserve").removeAttr("disabled");
-		}else {
-			$("#create-preserve").attr("disabled",true);
-		}
-	}
-
 	//入口函数
 	$(function(){
+		queryForPage();//加载页面顺便加载市场活动列表
+
+		//----------------------添加输入框规则判断-------------------
 
 		/**
-		 * 所有者和名称不能为空
+		 * 对所有者和姓名进行规则判断
+		 * 所有者和姓名必填
 		 */
-		$("#create-marketActivityOwner,#create-marketActivityName").blur(function (){
+		$("#create-marketActivityOwner,#create-marketActivityName,#edit-marketActivityOwner,#edit-marketActivityName").blur(function (){
+
 			//获取所有者
-			owner = $("#create-marketActivityOwner").val();
+			owner = $("#"+type+"-marketActivityOwner").val();
 			//获取名称
-			name = $("#create-marketActivityName").val();
-			if (owner != "请选择" && name != "") {
+			name = $.trim($("#"+type+"-marketActivityName").val());
+
+			if (owner != "" && name != "") {
 				isSubmitMain = true;
 			}else {
 				//封禁保存按钮
 				isSubmitMain = false;
 			}
-
 			judgeAll();
 		})
 
-		//生成js日历
-		$("#create-startTime,#create-endTime").datetimepicker({
-			format:"yyyy-mm-dd",//日期格式
-			language:"zh-CN",//语言
-			minView:'month',
-			initialDate:new Date(),//初始化时显示当前日期
-			autoclose:true,//设置选择完日期或时间之后，是否自动关闭日历
-			clearBtn:true,//设置是否显示清空按钮，默认为false
-			todayBtn:true//设置是否显示今日按钮
-		}).on('changeDate', function (e) {
-			// 添加日期判断逻辑
-			judgeDate();
-			judgeAll();
-		});
-
 		/**
+		 * 对成本进行规则判断
 		 * 成本只能为非负整数
 		 */
-		$("#create-cost").blur(function (event){
-			cost = $("#create-cost").val()
+		$("#create-cost,#edit-cost").blur(function (){
+
+			cost = $.trim($("#"+type+"-cost").val());
 			//正则匹配非负整数
 			if (!/^[+]?\d*$/.test(cost)){
 				alert("成本必须为非负整数!");
@@ -197,25 +169,85 @@
 			}else {
 				isSubmitCost = true;
 			}
-
 			judgeAll();
 		})
 
 		/**
+		 * 判断日期是否符合规则的方法
+		 */
+		function judgeDate(){
+
+			startDate = $("#"+type+"-startTime").val();
+			endDate = $("#"+type+"-endTime").val();
+
+			//判断是否为空字符串
+			if (startDate != "" && endDate != ""){
+				//判断开始日期是否比截至日期大
+				if (startDate >= endDate) {
+					//弹出警告框且锁定保存键
+					alert("开始日期不能超过截止日期!");
+					isSubmitDate = false;
+				}else {
+					isSubmitDate = true;
+				}
+			}else {
+				isSubmitDate = true;
+			}
+			judgeAll();
+		}
+
+		/**
+		 * 规则判断函数
+		 */
+		function judgeAll(){
+			//最后判断所有选项是否都输入合法
+			if (isSubmitMain && isSubmitDate && isSubmitCost && noEdit) {
+				$("#"+type+"-preserve").removeAttr("disabled");
+			}else {
+				$("#"+type+"-preserve").attr("disabled",true);
+			}
+		}
+
+		/**
+		 * 生成js日历
+		 */
+		$("#create-startTime,#create-endTime,#edit-startTime,#edit-endTime,#queryStartDate,#queryEndDate").datetimepicker({
+			format:"yyyy-mm-dd",//日期格式
+			language:"zh-CN",//语言
+			minView:'month',
+			initialDate:new Date(),//初始化时显示当前日期
+			autoclose:true,//设置选择完日期或时间之后，是否自动关闭日历
+			clearBtn:true,//设置是否显示清空按钮，默认为false
+			todayBtn:true//设置是否显示今日按钮
+		})
+				.on('changeDate', function (e) {
+
+			// 添加日期判断逻辑
+			judgeDate();
+		});
+
+		//----------------------------添加------------------------
+
+		/**
 		 * 手动跳出创建市场活动页面
 		 */
-		$("#btnCreate").click(function (){
+		$("#create-btn").click(function (){
 			//清空表单信息
 			document.getElementsByClassName("form-horizontal")[0].reset();
+
+			//获取当前需要判断的方法类型：create or edit
+			type = this.id.split("-")[0];
 
 			//显示创建市场活动模态窗口
 			$("#createActivityModal").modal("show");
 		})
 
-		//创建活动市场保存方法
+		/**
+		 * 创建活动市场点击事件
+		 */
 		$("#create-preserve").click(function (){
 			//获取描述
-			const describe = $("#create-describe").val();
+			let description = $.trim($("#create-describe").val());
 
 			//发送ajax请求
 			$.ajax({
@@ -224,10 +256,10 @@
 				data:{
 					owner:owner,
 					name:name,
-					startDate:startTime,
-					endDate:endTime,
+					startDate:startDate,
+					endDate:endDate,
 					cost:cost,
-					description:describe,
+					description:description,
 				},
 				success(res){
 					const code = res.code;//获取响应状态码
@@ -246,13 +278,173 @@
 			})
 		})
 
-		//查询市场活动函数
+		//---------------------------查询--------------------------------
+
+		/**
+		 * 查询市场活动函数
+		 */
 		$("#querySubmit").click(function (){
 			queryForPage(1,$("#demo_pag1").bs_pagination('getOption', 'rowsPerPage'));
 		})
 
-		//加载页面顺便加载市场活动列表
-		queryForPage();
+		//-------------------------复选框--------------------------------
+
+		/**
+		 * 绑定全选复选框点击事件
+		 */
+		$("#checkAll").click(function (){
+			//实现全选
+			$("#tBody input[type='checkbox']").prop("checked",this.checked);
+		})
+
+		/**
+		 * 绑定所有复选框点击事件
+		 */
+		$("tbody").on("click","input[type='checkbox']",function (){
+			//根据选中的单选框的数量判断是否全部选中
+			if ($("#tBody input[type='checkbox']").size() == $("#tBody input[type='checkbox']:checked").size()) {
+				$("#checkAll").prop("checked",true);
+			}else{
+				$("#checkAll").prop("checked",false);
+			}
+		})
+
+		//------------------------删除---------------------------------
+
+		/**
+		 * 绑定删除按钮删除事件
+		 */
+		$("#deleteBtn").click(function (){
+			let deleteTarArr = $("#tBody input[type='checkbox']:checked");
+			//判断用户是否选择目标
+			if (deleteTarArr.size() === 0) {
+				alert("请选择要删除的市场活动");
+				return;
+			}
+
+			const isDelete = window.confirm("是否确认删除");//弹出确认删除弹框
+			//确认删除
+			if (isDelete) {
+				let ids = "";
+				//获取选中的市场活动id
+				deleteTarArr.each(function (){
+					ids += "id="+this.value+"&";
+				})
+				ids = ids.substring(0,ids.length-1);
+
+				//发送ajax请求
+				$.ajax({
+					type:'post',
+					url:'workbench/activity/deleteActivityById.do',
+					data:ids,
+					dataType:'json',
+					success(response){
+						if (response.code == "1") {
+							queryForPage(1,$("#demo_pag1").bs_pagination("getOption","rowsPerPage"));
+						}else{
+							alert(response.message);
+						}
+					}
+				})
+
+			}
+		})
+
+		//-----------------------修改----------------------------------
+
+		/**
+		 * 对是否修改进行简单判断
+		 */
+		$("#edit-form-horizontal input,select,textarea").change(function (){
+			noEdit = true;
+		})
+
+		/**
+		 * 绑定修改按钮修改事件
+		 */
+		$("#edit-btn").click(function (){
+			//获取选中的checkbox
+			let checkedBoxs = $("#tBody input[type='checkbox']:checked");
+
+			//获取当前需要判断的方法类型：create or edit
+			type = this.id.split("-")[0];
+
+			//---为提升判断的体验提前设置owner和name为符合规则的
+			isSubmitMain = true;
+
+			noEdit = false;//进入编辑状态
+
+			//清空表单信息
+			document.getElementsByClassName("form-horizontal")[1].reset();
+			judgeAll();//先进行一遍检测
+
+			//验证选中的checkbox是否符合规则
+			if (checkedBoxs.size() !== 1) {
+				alert("请至少选择1个市场活动进行修改!");
+			}else {
+				//获取checkbox中的value
+				const id = checkedBoxs.val();
+
+				//发送ajax请求获取该市场活动的信息
+				$.ajax({
+					type:'post',
+					url:'workbench/activity/queryActivityById.do',
+					data:{
+						id:id
+					},
+					success(response){
+						//修改页面显示数据
+						$("#edit-id").val(response.id);
+						$("#edit-marketActivityOwner").val(response.owner);
+						$("#edit-marketActivityName").val(response.name);
+						$("#edit-startTime").val(response.startDate);
+						$("#edit-endTime").val(response.endDate);
+						$("#edit-cost").val(response.cost);
+						$("#edit-describe").val(response.description);
+
+						//弹出模态窗口
+						$("#editActivityModal").modal("show");
+					}
+				})
+			}
+		})
+
+		/**
+		 * 修改活动市场点击事件
+		 */
+		$("#edit-preserve").click(function (){
+			let description = $.trim($("#edit-describe").val());
+
+			$.ajax({
+				type:'post',
+				url:'workbench/activity/modifyActivityById.do',
+				data:{
+					id:$("#edit-id").val(),
+					owner:owner,
+					name:name,
+					startDate:startDate,
+					endDate:endDate,
+					cost:cost,
+					description:description,
+				},
+				success(response){
+					if (response.code !== "1") {
+						console.log(1)
+						//弹出警告框
+						alert(response.message);
+					}else{
+						//清空tupe，为下次使用type做准备
+						type = null;
+						//关闭修改模态窗口
+						$("#editActivityModal").modal("hide");
+						//清空表单信息
+						document.getElementsByClassName("form-horizontal")[1].reset();
+						//刷新页面
+						queryForPage(1,$("#demo_pag1").bs_pagination("getOption","rowsPerPage"));
+					}
+				}
+			})
+		})
 	});
 
 </script>
@@ -279,7 +471,6 @@
 								<select class="form-control" id="create-marketActivityOwner">
 <%--								  <option>zhangsan</option>--%>
 <%--								  <option>lisi</option>--%>
-									<option>请选择</option>
 									<c:forEach var="user" items="${users}" >
 										<option value="${user.id}">${user.name}</option>
 									</c:forEach>
@@ -338,9 +529,10 @@
 				</div>
 				<div class="modal-body">
 
-					<form class="form-horizontal" role="form">
+					<form id="edit-form-horizontal" class="form-horizontal" role="form">
 
 						<div class="form-group">
+							<input type="hidden" id="edit-id" />
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-marketActivityOwner">
@@ -348,7 +540,7 @@
 <%--								  <option>lisi</option>--%>
 <%--								  <option>wangwu</option>--%>
 									<c:forEach var="user" items="${users}" >
-										<option>${user.name}</option>
+										<option value="${user.id}">${user.name}</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -361,11 +553,11 @@
 						<div class="form-group">
 							<label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-startTime" value="2020-10-10">
+								<input readonly type="text" class="form-control" id="edit-startTime" value="2020-10-10">
 							</div>
 							<label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-endTime" value="2020-10-20">
+								<input readonly type="text" class="form-control" id="edit-endTime" value="2020-10-20">
 							</div>
 						</div>
 
@@ -388,7 +580,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button type="button" class="btn btn-primary" id="edit-preserve" disabled>更新</button>
 				</div>
 			</div>
 		</div>
@@ -464,13 +656,13 @@
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
-					  <input id="queryStartDate" class="form-control" type="text" id="startTime" />
+					  <input id="queryStartDate" class="form-control" type="text" readonly/>
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input id="queryEndDate" class="form-control" type="text" id="endTime">
+					  <input id="queryEndDate" class="form-control" type="text" readonly>
 				    </div>
 				  </div>
 
@@ -480,9 +672,9 @@
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" id="btnCreate" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button id="create-btn" type="button" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+				  <button id="edit-btn" type="button" class="btn btn-default" data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-danger" id="deleteBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				<div class="btn-group" style="position: relative; top: 18%;">
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#importActivityModal" ><span class="glyphicon glyphicon-import"></span> 上传列表数据（导入）</button>
@@ -494,14 +686,14 @@
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" /></td>
+							<td><input type="checkbox" id="checkAll"/></td>
 							<td>名称</td>
                             <td>所有者</td>
 							<td>开始日期</td>
 							<td>结束日期</td>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="tBody">
 						<%--<tr class="active">
 							<td><input type="checkbox" /></td>
 							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>

@@ -8,14 +8,18 @@ import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Activity;
 import com.mycode.crm.workbench.service.ActivityService;
+import com.sun.tools.internal.jxc.ap.Const;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -91,16 +95,90 @@ public class ActivityController {
         pageInfo.put("pageSize",pageSize);
 
         //查询数据库表信息
-            List<Activity> activityList = activityService.queryActivityByConditionForPage(pageInfo);
-            //查询表信息总条数
-            int count = activityService.queryCountOfActivityByCondition(pageInfo);
+        List<Activity> activityList = activityService.queryActivityByConditionForPage(pageInfo);
+        //查询表信息总条数
+        int count = activityService.queryCountOfActivityByCondition(pageInfo);
 
-            //封装结果集
-            HashMap<String, Object> retObj = new HashMap<>();
-            retObj.put("activityList",activityList);
-            retObj.put("totalRows",count);
+        //封装结果集
+        HashMap<String, Object> retObj = new HashMap<>();
+        retObj.put("activityList",activityList);
+        retObj.put("totalRows",count);
 
-            //返回结果集对象
-            return retObj;
+        //返回结果集对象
+        return retObj;
+    }
+
+    /**
+     * 根据市场活动id删除市场活动
+     * @param id
+     * @return json
+     */
+    @RequestMapping("/workbench/activity/deleteActivityById.do")
+    public @ResponseBody Object deleteActivityById(String[] id){
+        ReturnInfo returnInfo = new ReturnInfo();
+
+        try{
+            int count = activityService.deleteActivityByIds(id);//调用service层删除条数，返回更新条数
+            if (count > 0) {
+                returnInfo.setMessage("删除成功!");
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else{
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试");
+            }
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试");
+            e.printStackTrace();
+        }
+
+        return returnInfo;
+    }
+
+    /**
+     * 获取市场活动信息用来展示修改页面
+     * @param id 市场活动id
+     * @return 市场活动信息
+     */
+    @RequestMapping("/workbench/activity/queryActivityById.do")
+    public @ResponseBody Object queryActivityById(String id){
+        return activityService.queryActivityById(id);
+    }
+
+    /**
+     * 根据id修改市场活动信息
+     * @param activity 市场活动实体类
+     * @return 更新数据库记录条数
+     */
+    @RequestMapping("/workbench/activity/modifyActivityById.do")
+    public @ResponseBody Object modifyActivityById(Activity activity,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+
+        //创建修改时间
+        String editTime = DateFormat.formatDateTime(new Date());
+        //获取当前修改用户id
+        User userInfo = (User) session.getAttribute(Constants.SESSION_USER_KEY);
+        String editBy = userInfo.getId();
+
+        //修改activity实体属性
+        activity.setEditBy(editBy);
+        activity.setEditTime(editTime);
+
+        try{
+            int count = activityService.saveEditActivity(activity);//调用业务层进行修改
+            if (count>0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+                returnInfo.setMessage("修改成功");
+            }else{
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试!");
+            }
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试!");
+            e.printStackTrace();
+        }
+
+        return returnInfo;
     }
 }

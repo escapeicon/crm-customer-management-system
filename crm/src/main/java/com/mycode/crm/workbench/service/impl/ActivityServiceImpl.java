@@ -46,5 +46,35 @@ public class ActivityServiceImpl implements ActivityService {
         return activitiesMapper.selectCountOfActivityByCondition(pageInfo);
     }
 
+    /**
+     * 根据id删除市场活动
+     * @param id 市场活动id
+     * @return 删除条数
+     */
+    @Override
+    public int deleteActivityByIds(String[] ids) {
+        return activitiesMapper.deleteActivityByIds(ids);
+    }
+
+    /**
+     * 根据id查询指定市场活动
+     * @param id
+     * @return 市场活动信息
+     */
+    @Override
+    public Activity queryActivityById(String id) {
+        return activitiesMapper.selectById(id);
+    }
+
+    /**
+     * 根据id修改市场活动信息
+     * @param activity 市场活动实体类
+     * @return 更新条数
+     */
+    @Override
+    public int saveEditActivity(Activity activity) {
+        return activitiesMapper.updateByIdSelective(activity);
+    }
+
 
 }
