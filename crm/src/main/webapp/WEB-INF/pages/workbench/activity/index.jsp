@@ -445,6 +445,70 @@
 				}
 			})
 		})
+
+		/**
+		 * 批量导出市场活动
+		 */
+		$("#exportActivityAllBtn").click(function (){
+			window.location.href = "workbench/activity/downloadAllActivities.do";
+		})
+
+		/**
+		 * 选择导出
+		 */
+		/*$("#exportActivityXzBtn").click(function (){
+			const checkedActivity = $("#tBody input[type='checkbox']:checked");//获取用户选择的市场活动
+
+			if (checkedActivity.size() <= 0) {
+				alert("请至少选择一条市场活动进行导出!");
+				return;
+			}
+
+			//获取id
+			let ids = "";
+			checkedActivity.each(function (){
+				ids += "id="+$(this).val()+"&";
+			})
+            ids = ids.substring(0,ids.length-1);
+
+            window.location.href = "workbench/activity/downloadSingleActivity.do?"+ids;
+		})*/
+		$("#exportActivityXzBtn").click(function (){
+			const checkedActivity = $("#tBody input[type='checkbox']:checked"); // 获取用户选择的市场活动
+
+			if (checkedActivity.size() <= 0) {
+				alert("请至少选择一条市场活动进行导出!");
+				return;
+			}
+
+			// 获取id
+			let ids = [];
+			checkedActivity.each(function (){
+				ids.push($(this).val());
+			});
+
+			// 发送 POST 请求
+			const xhr = new XMLHttpRequest();
+			xhr.open("POST", "workbench/activity/downloadSingleActivity.do");
+			xhr.setRequestHeader("Content-Type", "application/json");
+			xhr.send(JSON.stringify(ids));
+			xhr.responseType = "blob";
+
+			xhr.onload = function () {
+				if (xhr.status === 200) {
+					const blob = xhr.response;
+					const a = document.createElement("a");
+					a.href = window.URL.createObjectURL(blob);
+					a.download = "exported_activity.xls";
+					document.body.appendChild(a);
+					a.style.display = "none";
+					a.click();
+					document.body.removeChild(a);
+				} else {
+					alert("导出失败，请重试！");
+				}
+			};
+		});
 	});
 
 </script>
@@ -623,7 +687,6 @@
             </div>
         </div>
     </div>
-
 
 	<div>
 		<div style="position: relative; left: 10px; top: -10px;">

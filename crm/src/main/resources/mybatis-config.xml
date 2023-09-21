@@ -7,7 +7,8 @@
         <setting name="logImpl" value="STDOUT_LOGGING"/>
     </settings>
     <typeAliases>
-        <package name="com.mycode.crm.settings.web.pojo"/>
+        <package name="com.mycode.crm.settings.domain"/>
+        <package name="com.mycode.crm.workbench.domain"/>
     </typeAliases>
     <mappers>
         <package name="com.mycode.crm.settings.web.mapper"/>

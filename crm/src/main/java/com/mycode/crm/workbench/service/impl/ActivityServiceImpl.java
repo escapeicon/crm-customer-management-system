@@ -86,4 +86,14 @@ public class ActivityServiceImpl implements ActivityService {
     public List<Activity> queryAllActivities() {
         return activitiesMapper.selectAllActivities();
     }
+
+    /**
+     * 根据id数组查询市场活动
+     * @param ids
+     * @return 查询市场活动结果
+     */
+    @Override
+    public List<Activity> queryActivitiesByIds(String[] ids) {
+        return activitiesMapper.selectActivitiesByIds(ids);
+    }
 }

@@ -19,11 +19,8 @@
     id, owner, name, start_date, end_date, cost, description, create_time, create_by,
     edit_time, edit_by
   </sql>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
 
-    delete from tbl_activity
-    where id = #{id,jdbcType=CHAR}
-  </delete>
+  <!--添加单条市场活动-->
   <insert id="insert" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
     insert into tbl_activity (id, owner, name, start_date,
@@ -35,6 +32,7 @@
       #{createTime,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, 
       #{editBy,jdbcType=VARCHAR})
   </insert>
+  <!--动态添加单条市场活动-->
   <insert id="insertSelective" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
     insert into tbl_activity
@@ -110,107 +108,36 @@
     </trim>
   </insert>
 
-  <select id="selectAllActivities" resultMap="BaseResultMap">
-    select
-    t.id,
-    u1.name as owner,
-    t.name,
-    t.start_date,
-    t.end_date,
-    t.cost,
-    t.description,
-    t.create_time,
-    u2.name as create_by,
-    t.edit_time,
-    u3.name as edit_by
-    from
-    tbl_activity as t
-    join tbl_user as u1 on t.owner = u1.id
-    join tbl_user as u2 on not t.create_by = u2.id
-    left join tbl_user as u3 on t.edit_by = u3.id
-  </select>
+  <!--根据给定id删除指定条数-->
+  <delete id="deleteActivityByIds" parameterType="string">
+    delete from tbl_activity where id in
+    <foreach collection="ids" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+  <!--通过id删除指定市场活动-->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
 
+    delete from tbl_activity
+    where id = #{id,jdbcType=CHAR}
+  </delete>
 
-  <!--分页查询-->
+  <!--通过id修改指定市场活动-->
   <update id="updateByPrimaryKey" parameterType="com.mycode.crm.workbench.domain.Activity" >
 
     update tbl_activity
     set owner = #{owner,jdbcType=CHAR},
-      name = #{name,jdbcType=VARCHAR},
-      start_date = #{startDate,jdbcType=CHAR},
-      end_date = #{endDate,jdbcType=CHAR},
-      cost = #{cost,jdbcType=VARCHAR},
-      description = #{description,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=CHAR},
-      create_by = #{createBy,jdbcType=VARCHAR},
-      edit_time = #{editTime,jdbcType=CHAR},
-      edit_by = #{editBy,jdbcType=VARCHAR}
+        name = #{name,jdbcType=VARCHAR},
+        start_date = #{startDate,jdbcType=CHAR},
+        end_date = #{endDate,jdbcType=CHAR},
+        cost = #{cost,jdbcType=VARCHAR},
+        description = #{description,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=CHAR},
+        create_by = #{createBy,jdbcType=VARCHAR},
+        edit_time = #{editTime,jdbcType=CHAR},
+        edit_by = #{editBy,jdbcType=VARCHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
-  <!--查询总条数-->
-  <select id="selectActivityByConditionForPage" parameterType="map" resultMap="BaseResultMap">
-        select
-            a.id,u1.name as owner,a.name,a.start_date,a.end_date,a.cost,a.description,
-            a.create_time,u2.name as create_by,a.edit_time,u3.name as edit_by
-        from tbl_activity as a
-        join tbl_user as u1 on a.owner = u1.id
-        join tbl_user as u2 on a.create_by = u2.id
-        left join tbl_user as u3 on a.edit_by = u3.id
-        <where>
-          <if test="name != null and name != ''">
-            and a.name like "%" #{name} "%"
-          </if>
-          <if test="owner != null and owner != ''">
-            and u1.name like "%" #{owner} "%"
-          </if>
-          <if test="startDate != null and startDate != ''">
-            and a.start_date >= #{startDate}
-          </if>
-          <if test="endDate != null and endDate != ''">
-            and a.end_date &lt;= #{endDate}
-          </if>
-        </where>
-        order by a.create_time desc
-        limit #{beginNo} , #{pageSize}
-  </select>
-  <!--根据id获取市场活动信息-->
-  <select id="selectCountOfActivityByCondition" parameterType="map" resultType="int">
-    select
-        count(*)
-    from tbl_activity as a
-    join tbl_user as u1 on a.owner = u1.id
-    join tbl_user as u2 on a.create_by = u2.id
-    left join tbl_user as u3 on a.edit_by = u3.id
-    <where>
-      <if test="name != null and name != ''">
-        and a.name like "%" #{name} "%"
-      </if>
-      <if test="owner != null and owner != ''">
-        and u1.name like "%" #{owner} "%"
-      </if>
-      <if test="startDate != null and startDate != ''">
-        and a.start_date >= #{startDate}
-      </if>
-      <if test="endDate != null and endDate != ''">
-        and a.end_date &lt;= #{endDate}
-      </if>
-    </where>
-  </select>
-  <!--获取全部市场活动-->
-  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select
-    <include refid="Base_Column_List" />
-    from tbl_activity
-    where id = #{id,jdbcType=CHAR}
-  </select>
-  <!--删除指定条数-->
-  <delete id="deleteActivityByIds" parameterType="string">
-    delete from tbl_activity where id in
-       <foreach collection="ids" item="id" separator="," open="(" close=")">
-         #{id}
-       </foreach>
-  </delete>
-
   <!--根据id动态修改市场活动信息-->
   <update id="updateByIdSelective" parameterType="com.mycode.crm.workbench.domain.Activity" >
     update tbl_activity
@@ -248,4 +175,107 @@
     </set>
     where id = #{id,jdbcType=CHAR}
   </update>
+
+  <!--分页查询-->
+  <select id="selectActivityByConditionForPage" parameterType="map" resultMap="BaseResultMap">
+
+  <!--查询总条数-->
+        select
+            a.id,u1.name as owner,a.name,a.start_date,a.end_date,a.cost,a.description,
+            a.create_time,u2.name as create_by,a.edit_time,u3.name as edit_by
+        from tbl_activity as a
+        join tbl_user as u1 on a.owner = u1.id
+        join tbl_user as u2 on a.create_by = u2.id
+        left join tbl_user as u3 on a.edit_by = u3.id
+        <where>
+          <if test="name != null and name != ''">
+            and a.name like "%" #{name} "%"
+          </if>
+          <if test="owner != null and owner != ''">
+            and u1.name like "%" #{owner} "%"
+          </if>
+          <if test="startDate != null and startDate != ''">
+            and a.start_date >= #{startDate}
+          </if>
+          <if test="endDate != null and endDate != ''">
+            and a.end_date &lt;= #{endDate}
+          </if>
+        </where>
+        order by a.create_time desc
+        limit #{beginNo} , #{pageSize}
+  </select>
+  <!--获取市场活动总条数-->
+  <select id="selectCountOfActivityByCondition" parameterType="map" resultType="int">
+    select
+        count(*)
+    from tbl_activity as a
+    join tbl_user as u1 on a.owner = u1.id
+    join tbl_user as u2 on a.create_by = u2.id
+    left join tbl_user as u3 on a.edit_by = u3.id
+    <where>
+      <if test="name != null and name != ''">
+        and a.name like "%" #{name} "%"
+      </if>
+      <if test="owner != null and owner != ''">
+        and u1.name like "%" #{owner} "%"
+      </if>
+      <if test="startDate != null and startDate != ''">
+        and a.start_date >= #{startDate}
+      </if>
+      <if test="endDate != null and endDate != ''">
+        and a.end_date &lt;= #{endDate}
+      </if>
+    </where>
+  </select>
+  <!--获取全部市场活动-->
+  <select id="selectAllActivities" resultMap="BaseResultMap">
+    select
+      t.id,
+      u1.name as owner,
+      t.name,
+      t.start_date,
+      t.end_date,
+      t.cost,
+      t.description,
+      t.create_time,
+      u2.name as create_by,
+      t.edit_time,
+      u3.name as edit_by
+    from
+      tbl_activity as t
+        join tbl_user as u1 on t.owner = u1.id
+        join tbl_user as u2 on t.create_by = u2.id
+        left join tbl_user as u3 on t.edit_by = u3.id
+  </select>
+  <!--根据id获取市场活动信息-->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_activity
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <!--根据id数组获取所有符合条件的市场活动-->
+  <select id="selectActivitiesByIds" resultType="activity" parameterType="string">
+    select
+      t.id,
+      u1.name as owner,
+      t.name,
+      t.start_date as startDate,
+      t.end_date as endDate,
+      t.cost,
+      t.description,
+      t.create_time as createTime,
+      u2.name as createBy,
+      t.edit_time as editTime,
+      u3.name as editBy
+    from
+      tbl_activity as t
+        join tbl_user as u1 on t.owner = u1.id
+        join tbl_user as u2 on t.create_by = u2.id
+        left join tbl_user as u3 on t.edit_by = u3.id
+    where t.id in
+    <foreach collection="array" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </select>
 </mapper>

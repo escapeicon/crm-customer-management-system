@@ -9,27 +9,23 @@ import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Activity;
 import com.mycode.crm.workbench.service.ActivityService;
-import com.sun.tools.internal.jxc.ap.Const;
-import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 @Controller
 public class ActivityController {
@@ -194,15 +190,57 @@ public class ActivityController {
      * @return 所有市场活动的excel表
      */
     @RequestMapping("/workbench/activity/downloadAllActivities.do")
-    public ResponseEntity<byte[]> downloadExcel(){
-        List<Activity> activities = activityService.queryAllActivities();//获取所有activity条数
-
+    public void downloadAllActivities(HttpServletRequest request, HttpServletResponse response){
         try {
-            GenerateExcelFile.generateFile("市场活动信息",Activity.class,activities,"E:\\86523\\Desktop\\activities.xls");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+            response.setContentType("application/octet-stream;charset=utf-8");
+            ServletOutputStream out = response.getOutputStream();//获取输出流
 
-        return null;
+            List<Activity> activities = activityService.queryAllActivities();//获取所有activity条数
+            //对获取到的市场活动列表判空
+            if (activities != null) {
+                String filename = "activities.xls";//设置文件名
+                GenerateExcelFile generateExcelFile = new GenerateExcelFile("市场活动信息",Activity.class);//新建包装生成excel类
+                HSSFWorkbook workbook = generateExcelFile.generateFileForList(activities);//创建excel文件
+
+                //设置下载方式和文件名
+                response.addHeader("Content-Disposition","attachment;filename="+filename);
+
+                workbook.write(out);
+
+                workbook.close();
+                out.flush();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 导出单个对象的excel表
+     * @param id
+     * @param response
+     */
+    @RequestMapping("/workbench/activity/downloadSingleActivity")
+    public void downloadSingleActivity(@RequestBody String[] ids, HttpServletResponse response){
+        try {
+            response.setContentType("application/octet-stream;charset=utf-8");//设置编码格式
+            ServletOutputStream out = response.getOutputStream();//获取响应输出流
+
+            List<Activity> activities = activityService.queryActivitiesByIds(ids);//根据id获取市场活动对象
+
+            GenerateExcelFile generateExcelFile = new GenerateExcelFile("市场活动表", Activity.class);//生成
+            HSSFWorkbook workbook = generateExcelFile.generateFileForList(activities);
+
+            response.addHeader("Content-Disposition","attachment;filename=activity.xls");
+
+            workbook.write(new File("E:\\86523\\Desktop\\activities.xls"));
+
+            workbook.write(out);
+
+            out.flush();
+            workbook.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
