@@ -4,11 +4,15 @@ import com.mycode.crm.commons.constants.Constants;
 import com.mycode.crm.commons.domain.ReturnInfo;
 import com.mycode.crm.commons.utils.DateFormat;
 import com.mycode.crm.commons.utils.GenerateExcelFile;
+import com.mycode.crm.commons.utils.HSSFUtils;
 import com.mycode.crm.commons.utils.UUIDUtil;
 import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Activity;
 import com.mycode.crm.workbench.service.ActivityService;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -17,14 +21,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 @Controller
@@ -217,7 +220,7 @@ public class ActivityController {
 
     /**
      * 导出单个对象的excel表
-     * @param id
+     * @param ids
      * @param response
      */
     @RequestMapping("/workbench/activity/downloadSingleActivity")
@@ -242,5 +245,78 @@ public class ActivityController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 上传excel文件导入市场活动信息
+     * @param activitiesFile
+     * @param session
+     * @return 上传的市场活动条数
+     */
+    @RequestMapping("/workbench/activity/uploadActivities.do")
+    public @ResponseBody Object uploadActivities(MultipartFile activitiesFile,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();//创建返回信息实体类
+        try {
+            InputStream inputStream = activitiesFile.getInputStream();//获取前端发送的文件载体实体类的输入流
+            HSSFWorkbook workbook = new HSSFWorkbook(inputStream);//通过输入流直接创建excel文件
+            HSSFSheet sheet = workbook.getSheetAt(0);//根据索引获取页面,页面下标从0开始
+
+            //创建用于装载市场活动实体类的list集合
+            ArrayList<Activity> activities = new ArrayList<>();
+
+            int lastRowNum = sheet.getLastRowNum();//获取一页共有多少行
+            //循环进行每一行数据的读取
+            for(int i = 1;i <= lastRowNum;i++){//最后一行下标为2
+                HSSFRow row = sheet.getRow(i);//获取行
+
+                //创建市场活动实体类
+                Activity activity = new Activity();
+                //id需要后台设置
+                activity.setId(UUIDUtil.getUUID());
+                //owner需要设置为当前登录用户的id
+                User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);
+                activity.setOwner(user.getId());
+                //设置创建事件
+                activity.setCreateTime(DateFormat.formatDateTime(new Date()));
+                //设置创建用户
+                activity.setCreateBy(user.getId());
+
+                //获取一行共有多少列
+                short lastCellNum = row.getLastCellNum();
+                for(int j = 0; j < lastCellNum; j++){//最后一列下标+1
+                    HSSFCell cell = row.getCell(j);//获取单元格
+                    String value = HSSFUtils.getCellValueForString(cell);
+
+                    switch (j){
+                        case 0:
+                            activity.setName(value);
+                            break;
+                        case 1:
+                            activity.setStartDate(value);
+                            break;
+                        case 2:
+                            activity.setEndDate(value);
+                            break;
+                        case 3:
+                            activity.setCost(value);
+                            break;
+                        case 4:
+                            activity.setDescription(value);
+                    }
+                }
+                activities.add(activity);//给集合中添加市场活动对象
+            }
+
+            int count = activityService.saveActivitiesByList(activities);
+
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            returnInfo.setData(count);
+
+        } catch (IOException e) {
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统忙碌，请稍后~");
+            throw new RuntimeException(e);
+        }
+        return returnInfo;
     }
 }

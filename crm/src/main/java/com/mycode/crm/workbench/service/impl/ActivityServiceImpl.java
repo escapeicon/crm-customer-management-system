@@ -27,6 +27,16 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     /**
+     * 以集合形式保存市场活动
+     * @param activities
+     * @return 影响数据库记录条数
+     */
+    @Override
+    public int saveActivitiesByList(List<Activity> activities) {
+        return activitiesMapper.insertActivitiesByList(activities);
+    }
+
+    /**
      * 根据id修改市场活动信息
      * @param activity 市场活动实体类
      * @return 更新条数

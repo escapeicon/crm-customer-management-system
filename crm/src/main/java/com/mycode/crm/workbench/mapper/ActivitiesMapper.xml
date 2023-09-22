@@ -107,6 +107,27 @@
       </if>
     </trim>
   </insert>
+  <!--以list集合添加市场活动-->
+  <insert id="insertActivitiesByList" parameterType="activity">
+    insert into tbl_activity
+        (<include refid="Base_Column_List" />)
+    values
+    <foreach collection="list" separator="," item="activity">
+    (
+      #{activity.id},
+      #{activity.owner},
+      #{activity.name},
+      #{activity.startDate},
+      #{activity.endDate},
+      #{activity.cost},
+      #{activity.description},
+      #{activity.createTime},
+      #{activity.createBy},
+      #{activity.editTime},
+      #{activity.editBy}
+    )
+    </foreach>
+  </insert>
 
   <!--根据给定id删除指定条数-->
   <delete id="deleteActivityByIds" parameterType="string">

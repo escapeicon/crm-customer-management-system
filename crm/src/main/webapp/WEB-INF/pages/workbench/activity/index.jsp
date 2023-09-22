@@ -509,6 +509,45 @@
 				}
 			};
 		});
+
+		$("#importActivityBtn").click(function (){
+			//获取提交的文件名
+			let filename = $("#activityFile").val();
+			//获取附件信息
+			const activitiesFile = $("#activityFile")[0].files[0];
+
+			//进行规则验证
+			let suffix = filename.substring(filename.lastIndexOf(".") + 1);//获取文件后缀名
+			//判断文件后缀名是否为xls
+			if (suffix !== "xls") {
+				alert("格式错误，请上传xls的excel表格!");
+			}
+			//判断文件大小是否超过5mb
+			if (activitiesFile.size > 1024 * 1024 * 5) {
+				alert("文件过大，请把文件大小限制在5mb以内!");
+			}
+
+			//创建formdata对象，因为普通请求只会以字符串类型进行传输
+			const formData = new FormData();
+			formData.set("activitiesFile",activitiesFile);//通过formdata传输二进制数据
+
+			//发送ajax请求
+			$.ajax({
+				type:'post',
+				url:'workbench/activity/uploadActivities.do',
+				processData:false,//设置在提交参数前，是否将所有参数统一转换为字符串，默认true
+				contentType:false,//设置在提交参数前，是否将所有参数统一编码为urlEncoded，默认true
+				data:formData,
+				success(data){
+					if (data.code === "1") {
+						alert("成功导入" + data.data + "条数据");
+						$("#importActivityModal").modal("hide");
+					}else{
+						alert(data.message);
+					}
+				}
+			})
+		})
 	});
 
 </script>

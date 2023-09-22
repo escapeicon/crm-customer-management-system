@@ -11,6 +11,12 @@ public interface ActivityService {
      * @return 数据库更新条数
      */
     int saveCreateActivity(Activity activity);
+    /**
+     * 以集合形式保存市场活动
+     * @param activities
+     * @return 影响数据库记录条数
+     */
+    int saveActivitiesByList(List<Activity> activities);
 
     /**
      * 根据id修改市场活动信息

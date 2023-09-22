@@ -19,6 +19,12 @@ public interface ActivitiesMapper {
      * @return 数据库更新条数
      */
     int insertSelective(Activity record);
+    /**
+     * 添加多个市场活动
+     * @param activities
+     * @return 数据库影响条数
+     */
+    int insertActivitiesByList(List<Activity> activities);
 
     /**
      * 根据id删除指定市场活动
