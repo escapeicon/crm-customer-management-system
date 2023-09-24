@@ -87,7 +87,7 @@
 					const statement = '' +
 							'<tr class="active">'+
 							'<td><input type="checkbox" value="'+item.id+'"/></td>'+
-							'<td><a style="text-decoration: none; cursor: pointer;" onClick="window.location.href='+ 'detail.html' + ';">'+item.name + '</a></td>'+
+							'<td><a style="text-decoration: none; cursor: pointer;" onClick="window.location.href='+ '\'workbench/activity/detailActivity.do' + "?id=" + item.id + '\';">'+item.name + '</a></td>'+
 							'<td>' + item.owner + '</td>'+
 							'<td>' + item.startDate + '</td>'+
 							'<td>' + item.endDate + '</td>'+
@@ -798,14 +798,14 @@
 					<tbody id="tBody">
 						<%--<tr class="active">
 							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
                             <td>zhangsan</td>
 							<td>2020-10-10</td>
 							<td>2020-10-20</td>
 						</tr>
                         <tr class="active">
                             <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
+                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
                             <td>zhangsan</td>
                             <td>2020-10-10</td>
                             <td>2020-10-20</td>

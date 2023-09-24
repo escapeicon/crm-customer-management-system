@@ -299,4 +299,25 @@
       #{id}
     </foreach>
   </select>
+  <!--根据id获取市场活动详细信息-->
+  <select id="selectActivitiyByIdForDetais" parameterType="string" resultMap="BaseResultMap">
+    select
+        a.id,
+        u1.name as owner,
+        a.name,
+        a.start_date,
+        a.end_date,
+        a.cost,
+        a.description,
+        a.create_time,
+        u2.name as create_by,
+        a.edit_time,
+        u3.name as edti_by
+    from
+        tbl_activity as a
+    join tbl_user as u1 on u1.id = a.owner
+    join tbl_user as u2 on u2.id = a.create_by
+    left join tbl_user as u3 on u3.id = a.edit_by
+    where a.id = #{id}
+  </select>
 </mapper>

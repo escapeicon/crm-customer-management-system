@@ -319,4 +319,17 @@ public class ActivityController {
         }
         return returnInfo;
     }
+
+    /**
+     * 查看市场活动明细
+     * @param id 市场活动id
+     * @return 市场活动信息和备注信息
+     */
+    @RequestMapping("workbench/activity/detailActivity.do")
+    public String detailActivity(String id,HttpServletRequest request){
+        //查询市场活动信息
+        Activity activity = activityService.queryActivityByIdForDetail(id);
+        request.setAttribute("activity",activity);//向请求域中添加市场活动信息
+        return "workbench/activity/detail";
+    }
 }

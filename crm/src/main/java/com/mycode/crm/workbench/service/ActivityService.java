@@ -65,4 +65,11 @@ public interface ActivityService {
      * @return 查询市场活动结果
      */
     List<Activity> queryActivitiesByIds(String[] ids);
+
+    /**
+     * 根据市场活动id查询市场活动明细信息
+     * @param id
+     * @return 市场活动
+     */
+    Activity queryActivityByIdForDetail(String id);
 }

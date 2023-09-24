@@ -75,5 +75,19 @@ public interface ActivitiesMapper {
      * @return 所查询到的所有记录
      */
     List<Activity> selectActivityByConditionForPage(Map<String,Object> pageInfo);
+
+    /**
+     * 通过id集合查询市场活动
+     * @param ids
+     * @return 查询到的市场活动集合
+     */
     List<Activity> selectActivitiesByIds(String[] ids);
+
+    /**
+     * 通过id获取市场活动明细信息，用于查看市场活动明细
+     * @param id
+     * @return 市场活动信息
+     */
+    Activity selectActivitiyByIdForDetais(String id);
+
 }
