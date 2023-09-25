@@ -510,6 +510,9 @@
 			};
 		});
 
+		/**
+		 * 批量导入市场活动
+		 */
 		$("#importActivityBtn").click(function (){
 			//获取提交的文件名
 			let filename = $("#activityFile").val();
@@ -542,6 +545,7 @@
 					if (data.code === "1") {
 						alert("成功导入" + data.data + "条数据");
 						$("#importActivityModal").modal("hide");
+						queryForPage(1,$("#demo_pag1").bs_pagination("getOption","rowsPerPage"));
 					}else{
 						alert(data.message);
 					}

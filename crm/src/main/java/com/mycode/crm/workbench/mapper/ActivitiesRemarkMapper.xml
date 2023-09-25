@@ -13,19 +13,23 @@
       <arg column="activity_id" jdbcType="CHAR" javaType="java.lang.String" />
     </constructor>
   </resultMap>
+
   <sql id="Base_Column_List" >
     id, note_content, create_time, create_by, edit_time, edit_by, edit_flag, activity_id
   </sql>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
     from tbl_activity_remark
     where id = #{id,jdbcType=CHAR}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from tbl_activity_remark
     where id = #{id,jdbcType=CHAR}
   </delete>
+
   <insert id="insert" parameterType="com.mycode.crm.workbench.domain.ActivityRemark" >
     insert into tbl_activity_remark (id, note_content, create_time, 
       create_by, edit_time, edit_by, 
@@ -89,6 +93,7 @@
       </if>
     </trim>
   </insert>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.ActivityRemark" >
     update tbl_activity_remark
     <set >
@@ -127,4 +132,21 @@
       activity_id = #{activityId,jdbcType=CHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+
+  <!--根据市场活动id查询所有该市场活动的备注-->
+  <select id="selectActivityRemarkForDetailById" parameterType="string" resultType="activityRemark">
+    select
+        t.id,
+        t.note_content,
+        t.create_time,
+        u1.name as create_by,
+        t.edit_time,
+        u2.name as edit_by,
+        t.edit_flag,
+        t.activity_id
+    from tbl_activity_remark as t
+    join tbl_user as u1 on u1.id = t.create_by
+    left join tbl_user as u2 on u2.id = t.edit_by
+    where t.activity_id = #{id}
+  </select>
 </mapper>

@@ -2,16 +2,15 @@ package com.mycode.crm.workbench.service.impl;
 
 import com.mycode.crm.workbench.domain.Activity;
 import com.mycode.crm.workbench.mapper.ActivitiesMapper;
-import com.mycode.crm.workbench.service.ActivityService;
+import com.mycode.crm.workbench.service.ActivitiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
-@Service("activityService")
-public class ActivityServiceImpl implements ActivityService {
+@Service("activitiesService")
+public class ActivitiesServiceImpl implements ActivitiesService {
 
     @Autowired
     private ActivitiesMapper activitiesMapper;

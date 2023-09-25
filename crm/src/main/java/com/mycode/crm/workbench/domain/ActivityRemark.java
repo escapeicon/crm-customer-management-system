@@ -2,19 +2,12 @@ package com.mycode.crm.workbench.domain;
 
 public class ActivityRemark {
     private String id;
-
     private String noteContent;
-
     private String createTime;
-
     private String createBy;
-
     private String editTime;
-
     private String editBy;
-
     private String editFlag;
-
     private String activityId;
 
     public ActivityRemark(String id, String noteContent, String createTime, String createBy, String editTime, String editBy, String editFlag, String activityId) {

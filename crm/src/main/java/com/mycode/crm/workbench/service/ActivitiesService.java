@@ -5,7 +5,7 @@ import com.mycode.crm.workbench.domain.Activity;
 import java.util.List;
 import java.util.Map;
 
-public interface ActivityService {
+public interface ActivitiesService {
     /**
      * 创建市场活动
      * @return 数据库更新条数

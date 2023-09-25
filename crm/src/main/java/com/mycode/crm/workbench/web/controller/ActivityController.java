@@ -9,17 +9,15 @@ import com.mycode.crm.commons.utils.UUIDUtil;
 import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Activity;
-import com.mycode.crm.workbench.service.ActivityService;
+import com.mycode.crm.workbench.domain.ActivityRemark;
+import com.mycode.crm.workbench.service.ActivitiesRemarkService;
+import com.mycode.crm.workbench.service.ActivitiesService;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +34,9 @@ public class ActivityController {
     @Autowired
     private UserService userService;
     @Autowired
-    private ActivityService activityService;
+    private ActivitiesService activitiesService;//市场活动
+    @Autowired
+    private ActivitiesRemarkService activitiesRemarkService;//市场活动备注
 
     /**
      * 跳转至市场活动页面控制器方法
@@ -70,7 +70,7 @@ public class ActivityController {
         ReturnInfo returnInfo = new ReturnInfo();
         try{
             //调用业务层
-            int count = activityService.saveCreateActivity(activity);
+            int count = activitiesService.saveCreateActivity(activity);
 
             if (count == 1) {
                 returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
@@ -101,9 +101,9 @@ public class ActivityController {
         pageInfo.put("pageSize",pageSize);
 
         //查询数据库表信息
-        List<Activity> activityList = activityService.queryActivityByConditionForPage(pageInfo);
+        List<Activity> activityList = activitiesService.queryActivityByConditionForPage(pageInfo);
         //查询表信息总条数
-        int count = activityService.queryCountOfActivityByCondition(pageInfo);
+        int count = activitiesService.queryCountOfActivityByCondition(pageInfo);
 
         //封装结果集
         HashMap<String, Object> retObj = new HashMap<>();
@@ -124,7 +124,7 @@ public class ActivityController {
         ReturnInfo returnInfo = new ReturnInfo();
 
         try{
-            int count = activityService.deleteActivityByIds(id);//调用service层删除条数，返回更新条数
+            int count = activitiesService.deleteActivityByIds(id);//调用service层删除条数，返回更新条数
             if (count > 0) {
                 returnInfo.setMessage("删除成功!");
                 returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
@@ -148,7 +148,7 @@ public class ActivityController {
      */
     @RequestMapping("/workbench/activity/queryActivityById.do")
     public @ResponseBody Object queryActivityById(String id){
-        return activityService.queryActivityById(id);
+        return activitiesService.queryActivityById(id);
     }
 
     /**
@@ -171,7 +171,7 @@ public class ActivityController {
         activity.setEditTime(editTime);
 
         try{
-            int count = activityService.saveEditActivity(activity);//调用业务层进行修改
+            int count = activitiesService.saveEditActivity(activity);//调用业务层进行修改
             if (count>0) {
                 returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
                 returnInfo.setMessage("修改成功");
@@ -198,7 +198,7 @@ public class ActivityController {
             response.setContentType("application/octet-stream;charset=utf-8");
             ServletOutputStream out = response.getOutputStream();//获取输出流
 
-            List<Activity> activities = activityService.queryAllActivities();//获取所有activity条数
+            List<Activity> activities = activitiesService.queryAllActivities();//获取所有activity条数
             //对获取到的市场活动列表判空
             if (activities != null) {
                 String filename = "activities.xls";//设置文件名
@@ -229,7 +229,7 @@ public class ActivityController {
             response.setContentType("application/octet-stream;charset=utf-8");//设置编码格式
             ServletOutputStream out = response.getOutputStream();//获取响应输出流
 
-            List<Activity> activities = activityService.queryActivitiesByIds(ids);//根据id获取市场活动对象
+            List<Activity> activities = activitiesService.queryActivitiesByIds(ids);//根据id获取市场活动对象
 
             GenerateExcelFile generateExcelFile = new GenerateExcelFile("市场活动表", Activity.class);//生成
             HSSFWorkbook workbook = generateExcelFile.generateFileForList(activities);
@@ -287,6 +287,8 @@ public class ActivityController {
                     HSSFCell cell = row.getCell(j);//获取单元格
                     String value = HSSFUtils.getCellValueForString(cell);
 
+                    System.out.println(value);
+
                     switch (j){
                         case 0:
                             activity.setName(value);
@@ -304,10 +306,13 @@ public class ActivityController {
                             activity.setDescription(value);
                     }
                 }
+
+                System.out.println(activity);
+
                 activities.add(activity);//给集合中添加市场活动对象
             }
 
-            int count = activityService.saveActivitiesByList(activities);
+            int count = activitiesService.saveActivitiesByList(activities);
 
             returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
             returnInfo.setData(count);
@@ -328,8 +333,10 @@ public class ActivityController {
     @RequestMapping("workbench/activity/detailActivity.do")
     public String detailActivity(String id,HttpServletRequest request){
         //查询市场活动信息
-        Activity activity = activityService.queryActivityByIdForDetail(id);
+        Activity activity = activitiesService.queryActivityByIdForDetail(id);
+        List<ActivityRemark> activityRemark = activitiesRemarkService.queryActivityRemarkForDetailById(id);
         request.setAttribute("activity",activity);//向请求域中添加市场活动信息
+        request.setAttribute("activityRemarks",activityRemark);//想请求域添加市场活动备注信息
         return "workbench/activity/detail";
     }
 }
