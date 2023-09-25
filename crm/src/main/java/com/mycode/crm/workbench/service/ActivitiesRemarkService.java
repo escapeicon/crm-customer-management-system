@@ -5,6 +5,14 @@ import com.mycode.crm.workbench.domain.ActivityRemark;
 import java.util.List;
 
 public interface ActivitiesRemarkService {
+
+    /**
+     * 添加市场活动备注
+     * @param activityRemark
+     * @return 添加的条数
+     */
+    int saveActivityRemark(ActivityRemark activityRemark);
+
     /**
      * 通过市场活动id查询市场活动所有备注信息
      * @param id

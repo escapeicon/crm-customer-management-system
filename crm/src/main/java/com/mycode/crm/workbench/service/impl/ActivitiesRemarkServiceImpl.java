@@ -15,6 +15,16 @@ public class ActivitiesRemarkServiceImpl implements ActivitiesRemarkService {
     private ActivitiesRemarkMapper activitiesRemarkMapper;
 
     /**
+     * 添加市场活动备注
+     * @param activityRemark
+     * @return 添加的条数
+     */
+    @Override
+    public int saveActivityRemark(ActivityRemark activityRemark) {
+        return activitiesRemarkMapper.insertActivityRemark(activityRemark);
+    }
+
+    /**
      * 通过市场活动id查询市场活动所有备注信息
      * @param id
      * @return 市场活动备注集合

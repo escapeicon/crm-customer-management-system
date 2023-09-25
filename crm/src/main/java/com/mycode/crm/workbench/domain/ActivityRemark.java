@@ -1,5 +1,7 @@
 package com.mycode.crm.workbench.domain;
 
+import java.util.Objects;
+
 public class ActivityRemark {
     private String id;
     private String noteContent;
@@ -87,5 +89,32 @@ public class ActivityRemark {
 
     public void setActivityId(String activityId) {
         this.activityId = activityId == null ? null : activityId.trim();
+    }
+
+    @Override
+    public String toString() {
+        return "ActivityRemark{" +
+                "id='" + id + '\'' +
+                ", noteContent='" + noteContent + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", createBy='" + createBy + '\'' +
+                ", editTime='" + editTime + '\'' +
+                ", editBy='" + editBy + '\'' +
+                ", editFlag='" + editFlag + '\'' +
+                ", activityId='" + activityId + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        ActivityRemark that = (ActivityRemark) object;
+        return Objects.equals(id, that.id) && Objects.equals(noteContent, that.noteContent) && Objects.equals(createTime, that.createTime) && Objects.equals(createBy, that.createBy) && Objects.equals(editTime, that.editTime) && Objects.equals(editBy, that.editBy) && Objects.equals(editFlag, that.editFlag) && Objects.equals(activityId, that.activityId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, noteContent, createTime, createBy, editTime, editBy, editFlag, activityId);
     }
 }

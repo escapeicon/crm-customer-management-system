@@ -134,7 +134,7 @@
   </update>
 
   <!--根据市场活动id查询所有该市场活动的备注-->
-  <select id="selectActivityRemarkForDetailById" parameterType="string" resultType="activityRemark">
+  <select id="selectActivityRemarkForDetailById" parameterType="string" resultMap="BaseResultMap">
     select
         t.id,
         t.note_content,
@@ -149,4 +149,10 @@
     left join tbl_user as u2 on u2.id = t.edit_by
     where t.activity_id = #{id}
   </select>
+
+  <!--添加市场活动备注-->
+  <insert id="insertActivityRemark" parameterType="activityRemark">
+    insert into tbl_activity_remark(id,note_content,create_time,create_by,edit_flag,activity_id)
+    value(#{id},#{noteContent},#{createTime},#{createBy},#{editFlag},#{activityId})
+  </insert>
 </mapper>

@@ -15,6 +15,29 @@
 
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
+
+	/**
+	 * 刷新备注列表
+	 * @param remark
+	 */
+	function refreshRemark(remark){
+
+		//拼接字符串
+		let html = "";
+
+		html += "<div class=\"remarkDiv\" style=\"height: 60px;\">"
+		html += "<img title=\""+'${userInfo.name}'+"\" src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
+		html += "<div style=\"position: relative; top: -40px; left: 40px;\" >";
+		html += "<h5>"+remark.noteContent+"</h5>";
+		html += "<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font> <b>"+'${activity.name}'+"</b> <small style=\"color: gray;\">"+remark.createTime+"由"+'${userInfo.name}'+"创建</small>";
+		html += "<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+		html += "<a remarkId=\""+remark.id+"\" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+		html += "&nbsp;&nbsp;&nbsp;&nbsp;";
+		html += "<a remarkId=\""+remark.id+"\" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+		html += "</div></div></div>";
+
+		$("#remarkDiv").before(html);
+	}
 	
 	$(function(){
 		$("#remark").focus(function(){
@@ -50,6 +73,36 @@
 		$(".myHref").mouseout(function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
+
+		/**
+		 * 添加市场活动备注
+		 */
+		$("#saveBtn").click(function (){
+			let noteContent = $("#remark").val().trim();//获取市场活动备注信息
+			//let activityId = ;//获取市场活动id
+			if (noteContent) {
+				//发送ajax请求
+				$.ajax({
+					type:'post',
+					url:'workbench/activity/saveActivityRemark.do',
+					data:{
+						noteContent:noteContent,
+						activityId:'${activity.id}'
+					},
+					success(data){
+						const code = data.code;
+						if (code) {
+							$("#remark").val("");//清空输入框
+							refreshRemark(data.data);//调用刷新备注方法
+						}else{
+							alert(data.message);//提示错误信息
+						}
+					}
+				})
+			}else{
+				alert("备注栏不能为空!");
+			}
+		})
 	});
 	
 </script>
@@ -72,7 +125,7 @@
                 <div class="modal-body">
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="edit-describe" class="col-sm-2 control-label">内容</label>
+                            <label for="noteContent" class="col-sm-2 control-label">内容</label>
                             <div class="col-sm-10" style="width: 81%;">
                                 <textarea class="form-control" rows="3" id="noteContent"></textarea>
                             </div>
@@ -87,8 +140,6 @@
         </div>
     </div>
 
-    
-
 	<!-- 返回按钮 -->
 	<div style="position: relative; top: 35px; left: 10px;">
 		<a href="javascript:void(0);" onclick="window.history.back();"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
@@ -99,7 +150,6 @@
 		<div class="page-header">
 			<h3>市场活动-${activity.name} <small>${activity.startDate} ${activity.startDate == null ? '' : '~'} ${activity.endDate}</small></h3>
 		</div>
-		
 	</div>
 	
 	<br/>
@@ -112,7 +162,7 @@
 			<div style="width: 300px; color: gray;">所有者</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${activity.owner}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">名称</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${activity.name}</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b id="activity-name">${activity.name}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
@@ -157,45 +207,28 @@
 			<h4>备注</h4>
 		</div>
 
-		<c:if test="activityRemarks != null">
-			<c:forEach items="activityRemarks" var="activityRemark">
-				<!-- 备注1 -->
-				<div class="remarkDiv" style="height: 60px;">
-					<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
-					<div style="position: relative; top: -40px; left: 40px;" >
-						<h5>${activityRemark.noteContent}</h5>
-						<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;"> ${activityRemark.createTime} 由${activityRemark.createBy}</small>
-						<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-							<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
-						</div>
+		<c:forEach items="${activityRemarks}" var="activityRemark">
+			<!-- 备注1 -->
+			<div class="remarkDiv" style="height: 60px;">
+				<img title="${activityRemark.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
+				<div style="position: relative; top: -40px; left: 40px;" >
+					<h5>${activityRemark.noteContent}</h5>
+					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;"> ${activityRemark.editFlag == '1' ? activityRemark.editTime : activityRemark.createTime} 由${activityRemark.editFlag == '1' ? activityRemark.editBy : activityRemark.createBy}${activityRemark.editFlag == '1' ? '修改' : '创建'}</small>
+					<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
+						<a remarkId="${activityRemark.id}" class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						<a remarkId="${activityRemark.id}" class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
 					</div>
 				</div>
-			</c:forEach>
-		</c:if>
-
-
-		<!-- 备注2 -->
-		<%--<div class="remarkDiv" style="height: 60px;">
-			<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
-			<div style="position: relative; top: -40px; left: 40px;" >
-				<h5>呵呵！</h5>
-				<font color="gray">市场活动</font> <font color="gray">-</font> <b>发传单</b> <small style="color: gray;"> 2017-01-22 10:20:10 由zhangsan</small>
-				<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
-				</div>
 			</div>
-		</div>--%>
-		
+		</c:forEach>
+
 		<div id="remarkDiv" style="background-color: #E6E6E6; width: 870px; height: 90px;">
 			<form role="form" style="position: relative;top: 10px; left: 10px;">
 				<textarea id="remark" class="form-control" style="width: 850px; resize : none;" rows="2"  placeholder="添加备注..."></textarea>
 				<p id="cancelAndSaveBtn" style="position: relative;left: 737px; top: 10px; display: none;">
 					<button id="cancelBtn" type="button" class="btn btn-default">取消</button>
-					<button type="button" class="btn btn-primary">保存</button>
+					<button id="saveBtn" type="button" class="btn btn-primary">保存</button>
 				</p>
 			</form>
 		</div>

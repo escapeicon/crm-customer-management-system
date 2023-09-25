@@ -29,7 +29,7 @@ import java.io.*;
 import java.util.*;
 
 @Controller
-public class ActivityController {
+public class ActivitiesController {
 
     @Autowired
     private UserService userService;
