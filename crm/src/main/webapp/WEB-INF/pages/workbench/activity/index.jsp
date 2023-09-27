@@ -49,7 +49,7 @@
 	 * 条件查询方法
 	 * @param pageNo
 	 */
-	function queryForPage(pageNo = 1,pageSize = 10){
+	function queryForPage(pageNo,pageSize){
 		//重置判断条件
 		isSubmitMain = false;
 		isSubmitDate = true;
@@ -87,7 +87,7 @@
 					const statement = '' +
 							'<tr class="active">'+
 							'<td><input type="checkbox" value="'+item.id+'"/></td>'+
-							'<td><a style="text-decoration: none; cursor: pointer;" onClick="window.location.href='+ '\'workbench/activity/detailActivity.do' + "?id=" + item.id + '\';">'+item.name + '</a></td>'+
+							'<td><a activityId="'+item.id+'" style="text-decoration: none; cursor: pointer;">'+item.name + '</a></td>'+
 							'<td>' + item.owner + '</td>'+
 							'<td>' + item.startDate + '</td>'+
 							'<td>' + item.endDate + '</td>'+
@@ -131,7 +131,21 @@
 
 	//入口函数
 	$(function(){
-		queryForPage();//加载页面顺便加载市场活动列表
+		queryForPage('${pageNo == null ? 1 : pageNo}','${pageSize == null ? 10 : pageSize}');//加载页面顺便加载市场活动列表
+
+		//-------------------------------------------------------
+
+		/**
+		 * 查询市场活动备注点击事件
+		 */
+		$("#tBody").on("click",".active td a",function (){
+			const activityId = $(this).attr("activityId");//获取id
+			const pageNo = $("#demo_pag1").bs_pagination("getOption","currentPage");//获取当前页面的pageNo
+			const pageSize = $("#demo_pag1").bs_pagination("getOption","rowsPerPage");//获取当前页面的pageSize
+
+			window.location.href="workbench/activity/detailActivity.do?id=" + activityId + "&pageNo="+pageNo+"&pageSize="+pageSize;
+		})
+
 
 		//----------------------添加输入框规则判断-------------------
 

@@ -25,11 +25,6 @@
     where id = #{id,jdbcType=CHAR}
   </select>
 
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from tbl_activity_remark
-    where id = #{id,jdbcType=CHAR}
-  </delete>
-
   <insert id="insert" parameterType="com.mycode.crm.workbench.domain.ActivityRemark" >
     insert into tbl_activity_remark (id, note_content, create_time, 
       create_by, edit_time, edit_by, 
@@ -133,26 +128,42 @@
     where id = #{id,jdbcType=CHAR}
   </update>
 
-  <!--根据市场活动id查询所有该市场活动的备注-->
-  <select id="selectActivityRemarkForDetailById" parameterType="string" resultMap="BaseResultMap">
-    select
-        t.id,
-        t.note_content,
-        t.create_time,
-        u1.name as create_by,
-        t.edit_time,
-        u2.name as edit_by,
-        t.edit_flag,
-        t.activity_id
-    from tbl_activity_remark as t
-    join tbl_user as u1 on u1.id = t.create_by
-    left join tbl_user as u2 on u2.id = t.edit_by
-    where t.activity_id = #{id}
-  </select>
-
   <!--添加市场活动备注-->
   <insert id="insertActivityRemark" parameterType="activityRemark">
     insert into tbl_activity_remark(id,note_content,create_time,create_by,edit_flag,activity_id)
     value(#{id},#{noteContent},#{createTime},#{createBy},#{editFlag},#{activityId})
   </insert>
+
+  <!--删除市场活动备注 根据id-->
+  <delete id="deleteActivityRemarkById" parameterType="string" >
+    delete from tbl_activity_remark
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+
+  <update id="updateActivityRemarkById" parameterType="activityRemark">
+    update tbl_activity_remark set
+    note_content = #{noteContent},
+    edit_time = #{editTime},
+    edit_by = #{editBy},
+    edit_flag = #{editFlag}
+    where id = #{id}
+  </update>
+
+  <!--查询所有该市场活动的备注 根据市场活动id-->
+  <select id="selectActivityRemarkForDetailById" parameterType="string" resultMap="BaseResultMap">
+    select
+      t.id,
+      t.note_content,
+      t.create_time,
+      u1.name as create_by,
+      t.edit_time,
+      u2.name as edit_by,
+      t.edit_flag,
+      t.activity_id
+    from tbl_activity_remark as t
+           join tbl_user as u1 on u1.id = t.create_by
+           left join tbl_user as u2 on u2.id = t.edit_by
+    where t.activity_id = #{id}
+    order by t.create_time asc
+  </select>
 </mapper>

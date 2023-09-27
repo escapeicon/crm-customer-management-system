@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class ApachePoiTest {
 
@@ -57,4 +58,18 @@ public class ApachePoiTest {
         workbook.close();
     }
 
+    @Test
+    public void testTemp(){
+        double money = 0;
+        for(int day = 1;true;day++){
+            money += 2.5;
+            if(day % 5 == 0){
+                money -= 6;
+            }
+            if(money >= 100){
+                System.out.println(day);
+                break;
+            }
+        }
+    }
 }

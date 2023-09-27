@@ -16,28 +16,9 @@
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
 
-	/**
-	 * 刷新备注列表
-	 * @param remark
-	 */
-	function refreshRemark(remark){
-
-		//拼接字符串
-		let html = "";
-
-		html += "<div class=\"remarkDiv\" style=\"height: 60px;\">"
-		html += "<img title=\""+'${userInfo.name}'+"\" src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
-		html += "<div style=\"position: relative; top: -40px; left: 40px;\" >";
-		html += "<h5>"+remark.noteContent+"</h5>";
-		html += "<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font> <b>"+'${activity.name}'+"</b> <small style=\"color: gray;\">"+remark.createTime+"由"+'${userInfo.name}'+"创建</small>";
-		html += "<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
-		html += "<a remarkId=\""+remark.id+"\" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
-		html += "&nbsp;&nbsp;&nbsp;&nbsp;";
-		html += "<a remarkId=\""+remark.id+"\" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
-		html += "</div></div></div>";
-
-		$("#remarkDiv").before(html);
-	}
+	//保存市场活动页面的分页组件参数
+	let pageNo = '${pageNo}';
+	let pageSize = '${pageSize}';
 	
 	$(function(){
 		$("#remark").focus(function(){
@@ -49,7 +30,6 @@
 				cancelAndSaveBtnDefault = false;
 			}
 		});
-		
 		$("#cancelBtn").click(function(){
 			//显示
 			$("#cancelAndSaveBtn").hide();
@@ -57,26 +37,22 @@
 			$("#remarkDiv").css("height","90px");
 			cancelAndSaveBtnDefault = true;
 		});
-		
-		$(".remarkDiv").mouseover(function(){
+
+		$("#remarkDivList").on("mouseover",".remarkDiv",function(){
 			$(this).children("div").children("div").show();
-		});
-		
-		$(".remarkDiv").mouseout(function(){
+		})
+		$("#remarkDivList").on("mouseout",".remarkDiv",function(){
 			$(this).children("div").children("div").hide();
 		});
-		
-		$(".myHref").mouseover(function(){
+
+		$("#remarkDivList").on("mouseover",".myHref",function(){
 			$(this).children("span").css("color","red");
 		});
-		
-		$(".myHref").mouseout(function(){
+		$("#remarkDivList").on("mouseout",".myHref",function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
 
-		/**
-		 * 添加市场活动备注
-		 */
+		//---------------------------添加市场活动备注
 		$("#saveBtn").click(function (){
 			let noteContent = $("#remark").val().trim();//获取市场活动备注信息
 			//let activityId = ;//获取市场活动id
@@ -93,7 +69,23 @@
 						const code = data.code;
 						if (code) {
 							$("#remark").val("");//清空输入框
-							refreshRemark(data.data);//调用刷新备注方法
+							const remark = data.data;//获取市场活动备注信息
+
+							//拼接字符串
+							let html = "";
+
+							html += "<div id='div_"+remark.id+"' class=\"remarkDiv\" style=\"height: 60px;\">"
+							html += "<img title=\""+'${userInfo.name}'+"\" src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
+							html += "<div style=\"position: relative; top: -40px; left: 40px;\" >";
+							html += "<h5 id=\"h5_"+remark.id+"\">"+remark.noteContent+"</h5>";
+							html += "<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font> <b>"+'${activity.name}'+"</b> <small style=\"color: gray;\">"+remark.createTime+"由"+'${userInfo.name}'+"创建</small>";
+							html += "<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+							html += "<a remarkId=\""+remark.id+"\" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+							html += "&nbsp;&nbsp;&nbsp;&nbsp;";
+							html += "<a remarkId=\""+remark.id+"\" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+							html += "</div></div></div>";
+
+							$("#remarkDiv").before(html);
 						}else{
 							alert(data.message);//提示错误信息
 						}
@@ -103,13 +95,104 @@
 				alert("备注栏不能为空!");
 			}
 		})
+
+		//-----------------------------删除市场活动备注
+		$("#remarkDivList").on("click",".myHref:odd",function (){
+			let id = $(this).attr("remarkId");//获取id属性
+			//发送ajax请求
+			$.ajax({
+				type:'post',
+				url:'workbench/activity/deleteActivityRemark.do',
+				data:{
+					id:id
+				},
+				dataType:"json",
+				success(data){
+					if (data) {
+						$("#div_"+id).remove();//删除市场活动备注标签
+					}else{
+						alert(data.message);
+					}
+				}
+			})
+		})
+
+		//---------------------修改市场活动备注
+		/**
+		 * 弹出修改市场活动备注模态窗口
+		 */
+		$("#remarkDivList").on("click",".myHref:even",function(){
+			//弹出市场活动备注修改的模态窗口
+			$("#editRemarkModal").modal("show");
+			//获取市场活动备注的id
+			let remarkId = $(this).attr("remarkId");
+			//获取市场活动备注的内容
+			let noteContent = $("#h5_"+remarkId).text();
+			//给隐藏输入框添加市场活动备注id
+			$("#remarkId").val(remarkId);
+			//给模态窗口的内容区域填充备注
+			$("#noteContent").val(noteContent);
+		})
+		/**
+		 * 修改市场活动备注提交事件
+		 */
+		$("#updateRemarkBtn").click(function (){
+			//获取市场活动备注id
+			const remarkId = $("#remarkId").val();
+			//获取市场活动备注内容
+			let noteContent = $("#noteContent").val().trim();
+			//发送ajax请求
+			$.ajax({
+				type:'post',
+				url:'workbench/activity/updateActivityRemark.do',
+				dataType:'json',
+				data:{
+					id:remarkId,
+					noteContent:noteContent
+				},
+				success(data){
+					if (data.code) {
+						const remark = data.data;//获取返回的市场活动备注信息
+						$("#noteContent").val("");//清空模态窗口输入框内容
+						$("#editRemarkModal").modal("hide");//关闭模态窗口
+
+						//修改市场活动备注信息
+						//拼接字符串
+						let html = "";
+
+						html += "<img title=\""+'${userInfo.name}'+"\" src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
+						html += "<div style=\"position: relative; top: -40px; left: 40px;\" >";
+						html += "<h5 id=\"h5_"+remark.id+"\">"+remark.noteContent+"</h5>";
+						html += "<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font> <b>"+'${activity.name}'+"</b> <small style=\"color: gray;\">"+remark.editTime+"由"+'${userInfo.name}'+"修改</small>";
+						html += "<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+						html += "<a remarkId=\""+remark.id+"\" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "&nbsp;&nbsp;&nbsp;&nbsp;";
+						html += "<a remarkId=\""+remark.id+"\" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "</div></div>";
+
+						$("#div_"+remarkId).html(html);
+					}else{
+						alert(data.message);
+					}
+				}
+			})
+
+		})
+
+
+		/**
+		 * 跳转回市场活动展示页面方法
+		 */
+		$("#backToActivityIndex").click(function(){
+			window.location.href = "workbench/activity/index.do?pageNo="+pageNo+"&pageSize="+pageSize;
+		})
 	});
 	
 </script>
 
 </head>
 <body>
-	
+
 	<!-- 修改市场活动备注的模态窗口 -->
 	<div class="modal fade" id="editRemarkModal" role="dialog">
 		<%-- 备注的id --%>
@@ -142,7 +225,7 @@
 
 	<!-- 返回按钮 -->
 	<div style="position: relative; top: 35px; left: 10px;">
-		<a href="javascript:void(0);" onclick="window.history.back();"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
+		<a id="backToActivityIndex" href="javascript:void(0);"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
 	</div>
 	
 	<!-- 大标题 -->
@@ -202,17 +285,17 @@
 	</div>
 	
 	<!-- 备注 -->
-	<div style="position: relative; top: 30px; left: 40px;">
+	<div id="remarkDivList" style="position: relative; top: 30px; left: 40px;">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
 
 		<c:forEach items="${activityRemarks}" var="activityRemark">
 			<!-- 备注1 -->
-			<div class="remarkDiv" style="height: 60px;">
+			<div id="div_${activityRemark.id}" class="remarkDiv" style="height: 60px;">
 				<img title="${activityRemark.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 				<div style="position: relative; top: -40px; left: 40px;" >
-					<h5>${activityRemark.noteContent}</h5>
+					<h5 id="h5_${activityRemark.id}">${activityRemark.noteContent}</h5>
 					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;"> ${activityRemark.editFlag == '1' ? activityRemark.editTime : activityRemark.createTime} 由${activityRemark.editFlag == '1' ? activityRemark.editBy : activityRemark.createBy}${activityRemark.editFlag == '1' ? '修改' : '创建'}</small>
 					<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
 						<a remarkId="${activityRemark.id}" class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>

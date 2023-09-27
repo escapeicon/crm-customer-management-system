@@ -13,16 +13,30 @@ public interface ActivitiesRemarkMapper {
     int updateByPrimaryKey(ActivityRemark record);
 
     /**
-     * 通过市场活动id获取该市场活动所有备注
-     * @param id
-     * @return 市场活动备注
-     */
-    List<ActivityRemark> selectActivityRemarkForDetailById(String id);
-
-    /**
      * 添加市场活动备注
      * @param activityRemark
      * @return 添加条数
      */
     int insertActivityRemark(ActivityRemark activityRemark);
+
+    /**
+     * 删除市场活动备注 根据id
+     * @param id
+     * @return 数据库记录更新条数
+     */
+    int deleteActivityRemarkById(String id);
+
+    /**
+     * 修改市场活动 根据id
+     * @param activityRemark
+     * @return 数据库更新条数
+     */
+    int updateActivityRemarkById(ActivityRemark activityRemark);
+
+    /**
+     * 查询该市场活动所有备注 通过市场活动id
+     * @param id
+     * @return 市场活动备注
+     */
+    List<ActivityRemark> selectActivityRemarkForDetailById(String id);
 }

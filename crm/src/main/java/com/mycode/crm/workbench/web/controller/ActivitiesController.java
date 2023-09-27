@@ -40,14 +40,19 @@ public class ActivitiesController {
 
     /**
      * 跳转至市场活动页面控制器方法
+     * 其他页面跳转回市场活动页面需携带分页参数，否则将市场活动分页组件参数将以默认方式展现
      * @return
      */
     @RequestMapping("/workbench/activity/index.do")
-    public String index(HttpServletRequest request){
+    public String index(HttpServletRequest request, String pageNo, String pageSize){
         //调用service层方法获取所有用户信息
         List<User> users = userService.queryAllUsers();
         //向request作用域中添加查询到的所有用户信息
         request.setAttribute("users",users);
+        if(pageNo != null && pageSize != null){
+            request.setAttribute("pageNo",pageNo);
+            request.setAttribute("pageSize",pageSize);
+        }
         return "workbench/activity/index";
     }
 
@@ -331,12 +336,14 @@ public class ActivitiesController {
      * @return 市场活动信息和备注信息
      */
     @RequestMapping("workbench/activity/detailActivity.do")
-    public String detailActivity(String id,HttpServletRequest request){
+    public String detailActivity(String id,HttpServletRequest request,String pageNo,String pageSize){
         //查询市场活动信息
         Activity activity = activitiesService.queryActivityByIdForDetail(id);
         List<ActivityRemark> activityRemark = activitiesRemarkService.queryActivityRemarkForDetailById(id);
         request.setAttribute("activity",activity);//向请求域中添加市场活动信息
         request.setAttribute("activityRemarks",activityRemark);//想请求域添加市场活动备注信息
+        request.setAttribute("pageNo",pageNo);//设置页码参数
+        request.setAttribute("pageSize",pageSize);///设置页面展示行数参数
         return "workbench/activity/detail";
     }
 }
