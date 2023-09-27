@@ -16,6 +16,16 @@ public class ClueServiceImpl implements ClueService {
     private ClueMapper clueMapper;
 
     /**
+     * 创建线索
+     * @param clue
+     * @return 创建线索条数
+     */
+    @Override
+    public int saveClue(Clue clue) {
+        return clueMapper.insertClue(clue);
+    }
+
+    /**
      * 分页查询 条件查询
      * @param pageInfo
      * @return 查询线索结果
@@ -24,7 +34,6 @@ public class ClueServiceImpl implements ClueService {
     public List<Clue> queryCluesByConditionForPage(Map<String, Object> pageInfo) {
         return clueMapper.selectClueByConditionForPage(pageInfo);
     }
-
     /**
      * 分页查询结果总数
      * @param pageInfo
@@ -34,7 +43,6 @@ public class ClueServiceImpl implements ClueService {
     public int queryCountCluesByConditionForPage(Map<String, Object> pageInfo) {
         return clueMapper.selectCountClueByConditionForPage(pageInfo);
     }
-
     /**
      * 查询所有线索
      * @return 线索集合

@@ -2,43 +2,24 @@ package com.mycode.crm.workbench.domain;
 
 public class Clue {
     private String id;
-
     private String fullname;
-
     private String appellation;
-
     private String owner;
-
     private String company;
-
     private String job;
-
     private String email;
-
     private String phone;
-
     private String website;
-
     private String mphone;
-
     private String state;
-
     private String source;
-
     private String createBy;
-
     private String createTime;
-
     private String editBy;
-
     private String editTime;
-
     private String description;
-
     private String contactSummary;
-
     private String nextContactTime;
-
     private String address;
 
     public Clue(String id, String fullname, String appellation, String owner, String company, String job, String email, String phone, String website, String mphone, String state, String source, String createBy, String createTime, String editBy, String editTime, String description, String contactSummary, String nextContactTime, String address) {

@@ -2,6 +2,8 @@ package com.mycode.crm.workbench.web.controller;
 
 import com.mycode.crm.commons.constants.Constants;
 import com.mycode.crm.commons.domain.ReturnInfo;
+import com.mycode.crm.commons.utils.DateFormat;
+import com.mycode.crm.commons.utils.UUIDUtil;
 import com.mycode.crm.settings.domain.DicValue;
 import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.DicValueService;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,14 +61,27 @@ public class ClueController {
         return "workbench/clue/index";
     }
 
+    /**
+     * 分页查询 条件查询控制器方法
+     * @param fullname
+     * @param company
+     * @param phone
+     * @param source
+     * @param owner
+     * @param mphone
+     * @param state
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
     @RequestMapping("/workbench/clue/queryCluesForPageAndForCondition.do")
     public @ResponseBody Object queryCluesForPageAndForCondition(
             String fullname,
             String company,
-            String mphone,
+            String phone,
             String source,
             String owner,
-            String phone,
+            String mphone,
             String state,
             int pageNo,
             int pageSize
@@ -73,10 +90,10 @@ public class ClueController {
         HashMap<String, Object> pageInfo = new HashMap<>();
         pageInfo.put("fullname",fullname);
         pageInfo.put("company",company);
-        pageInfo.put("mphone",mphone);
+        pageInfo.put("phone",phone);
         pageInfo.put("source",source);
         pageInfo.put("owner",owner);
-        pageInfo.put("phone",phone);
+        pageInfo.put("mphone",mphone);
         pageInfo.put("state",state);
         pageInfo.put("beginNo",(pageNo - 1) * pageSize);
         pageInfo.put("pageSize",pageSize);
@@ -91,4 +108,31 @@ public class ClueController {
         return returnMap;
     }
 
+    /**
+     * 创建线索控制器方法
+     * @param clue
+     * @return 响应信息
+     */
+    @RequestMapping("/workbench/clue/createClue.do")
+    public @ResponseBody Object createClue(Clue clue, HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();//创建响应实体类
+        User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);//获取当前用户
+        try {
+            clue.setId(UUIDUtil.getUUID());//设置id
+            clue.setCreateBy(user.getId());//设置createBy
+            clue.setCreateTime(DateFormat.formatDate(new Date()));//设置创建日期
+            int count = clueService.saveClue(clue);//调用业务层保存线索方法
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else{
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试");
+            }
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
 }

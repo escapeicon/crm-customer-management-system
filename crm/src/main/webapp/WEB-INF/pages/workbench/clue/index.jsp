@@ -158,9 +158,9 @@
 
 		//对保存按钮是否禁用进行总体的验证
 		if(isFullnameAndCompany && isEmail && isPhone && isWebsite && isMphone){
-			$("#save-create").attr("disabled",false);
+			$("#save-create-clue").attr("disabled",false);
 		}else{
-			$("#save-create").attr("disabled",true);
+			$("#save-create-clue").attr("disabled",true);
 		}
 	}
 
@@ -176,8 +176,67 @@
 
 		//弹出创建线索窗口
 		$("#create-clue").click(function (){
-			$("#save-create").attr("disabled",true);//每次弹出创建线索窗口都禁用保存按钮
+			$("#save-create-clue").attr("disabled",true);//每次弹出创建线索窗口都禁用保存按钮
 			$("#createClueModal").modal("show");//让模态窗口显现
+			document.getElementById("createClurForm").reset();//重置创建线索模态窗口填入数据
+
+			//重置判断规则
+			let isFullnameAndCompany = false;//名称和公司是否通过验证
+			let isEmail = true;//邮箱是否正确
+			let isPhone = true;//座机号码是否正确
+			let isWebsite = true;//公司网站是否正确
+			let isMphone = true;//手机号是否正确
+		})
+		//创建线索事件
+		$("#save-create-clue").click(function (){
+			//获取所有需要填入的输入框
+			const owner = $("#create-clueOwner").val();//所有者
+			const company = $("#create-company").val();//公司
+			const fullname = $("#create-surname").val();//姓名
+			const appellation = $("#create-call").val();//称号
+			const job = $("#create-job").val();//职位
+			const email = $("#create-email").val();//邮箱
+			const phone = $("#create-phone").val();//公司座机
+			const website = $("#create-website").val();//公司网站
+			const mphone = $("#create-mphone").val();//手机
+			const state = $("#create-status").val();//线索状态
+			const source = $("#create-status").val();//线索来源
+			const description = $("#create-describe").val();//线索描述
+			const contactSummary = $("#create-contactSummary").val();//联系纪要
+			const nextContactTime = $("#create-nextContactTime").val();//下次联系时间
+			const address = $("#create-address").val();//详细地址
+
+			$.ajax({
+				type:'post',
+				url:'workbench/clue/createClue.do',
+				dataType:'json',
+				data:{
+					owner:owner,
+					company:company,
+					fullname:fullname,
+					appellation:appellation,
+					job:job,
+					email:email,
+					phone:phone,
+					website:website,
+					mphone:mphone,
+					state:state,
+					source:source,
+					description:description,
+					contactSummary:contactSummary,
+					nextContactTime:nextContactTime,
+					address:address,
+				},
+				success(data) {
+					if (data.code) {
+						$("#createClueModal").modal("hide");//让模态窗口消失
+						queryCluesForPage(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));//重新查询线索
+					}else{
+						alert(data.message);
+					}
+				}
+			})
+
 		})
 
 		//验证输入规则
@@ -215,7 +274,7 @@
 					<h4 class="modal-title" id="myModalLabel">创建线索</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal" role="form">
+					<form id="createClurForm" class="form-horizontal" role="form">
 
 						<%--所有者 公司--%>
 						<div class="form-group">
@@ -346,7 +405,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button id="save-create" type="button" class="btn btn-primary" disabled>保存</button>
+					<button id="save-create-clue" type="button" class="btn btn-primary" disabled>保存</button>
 				</div>
 			</div>
 		</div>

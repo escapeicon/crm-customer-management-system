@@ -19,13 +19,19 @@ public interface ClueMapper {
     int updateByPrimaryKey(Clue record);
 
     /**
+     * 创建线索
+     * @param clue
+     * @return 数据库更新条数
+     */
+    int insertClue(Clue clue);
+
+    /**
      * 分页查询 条件查询
      * @param pageInfo
      * @return 查询结果集
      */
     List<Clue> selectClueByConditionForPage(Map<String,Object> pageInfo);
     int selectCountClueByConditionForPage(Map<String,Object> pageInfo);//分页查询总条数
-
     /**
      * 查询所有线索
      * @return 线索集合

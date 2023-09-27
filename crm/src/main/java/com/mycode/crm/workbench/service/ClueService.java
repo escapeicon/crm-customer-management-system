@@ -7,6 +7,7 @@ import java.util.Map;
 
 public interface ClueService {
 
+    int saveClue(Clue clue);
 
     List<Clue> queryCluesByConditionForPage(Map<String,Object> pageInfo);
     int queryCountCluesByConditionForPage(Map<String,Object> pageInfo);

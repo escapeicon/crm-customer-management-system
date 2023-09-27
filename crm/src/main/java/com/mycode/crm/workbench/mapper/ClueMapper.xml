@@ -47,7 +47,106 @@
       #{description,jdbcType=VARCHAR}, #{contactSummary,jdbcType=VARCHAR}, #{nextContactTime,jdbcType=CHAR}, 
       #{address,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.mycode.crm.workbench.domain.Clue" >
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tbl_clue
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.Clue" >
+    update tbl_clue
+    <set >
+      <if test="fullname != null" >
+        fullname = #{fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="appellation != null" >
+        appellation = #{appellation,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null" >
+        owner = #{owner,jdbcType=CHAR},
+      </if>
+      <if test="company != null" >
+        company = #{company,jdbcType=VARCHAR},
+      </if>
+      <if test="job != null" >
+        job = #{job,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="website != null" >
+        website = #{website,jdbcType=VARCHAR},
+      </if>
+      <if test="mphone != null" >
+        mphone = #{mphone,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null" >
+        source = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null" >
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=CHAR},
+      </if>
+      <if test="editBy != null" >
+        edit_by = #{editBy,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null" >
+        edit_time = #{editTime,jdbcType=CHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="contactSummary != null" >
+        contact_summary = #{contactSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="nextContactTime != null" >
+        next_contact_time = #{nextContactTime,jdbcType=CHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mycode.crm.workbench.domain.Clue" >
+    update tbl_clue
+    set fullname = #{fullname,jdbcType=VARCHAR},
+      appellation = #{appellation,jdbcType=VARCHAR},
+      owner = #{owner,jdbcType=CHAR},
+      company = #{company,jdbcType=VARCHAR},
+      job = #{job,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      website = #{website,jdbcType=VARCHAR},
+      mphone = #{mphone,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      source = #{source,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=CHAR},
+      edit_by = #{editBy,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=CHAR},
+      description = #{description,jdbcType=VARCHAR},
+      contact_summary = #{contactSummary,jdbcType=VARCHAR},
+      next_contact_time = #{nextContactTime,jdbcType=CHAR},
+      address = #{address,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_clue
+    where id = #{id,jdbcType=CHAR}
+  </select>
+
+  <!--创建线索-->
+  <insert id="insertClue" parameterType="com.mycode.crm.workbench.domain.Clue" >
     insert into tbl_clue
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -174,102 +273,6 @@
       </if>
     </trim>
   </insert>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from tbl_clue
-    where id = #{id,jdbcType=CHAR}
-  </delete>
-  <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.Clue" >
-    update tbl_clue
-    <set >
-      <if test="fullname != null" >
-        fullname = #{fullname,jdbcType=VARCHAR},
-      </if>
-      <if test="appellation != null" >
-        appellation = #{appellation,jdbcType=VARCHAR},
-      </if>
-      <if test="owner != null" >
-        owner = #{owner,jdbcType=CHAR},
-      </if>
-      <if test="company != null" >
-        company = #{company,jdbcType=VARCHAR},
-      </if>
-      <if test="job != null" >
-        job = #{job,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null" >
-        email = #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="phone != null" >
-        phone = #{phone,jdbcType=VARCHAR},
-      </if>
-      <if test="website != null" >
-        website = #{website,jdbcType=VARCHAR},
-      </if>
-      <if test="mphone != null" >
-        mphone = #{mphone,jdbcType=VARCHAR},
-      </if>
-      <if test="state != null" >
-        state = #{state,jdbcType=VARCHAR},
-      </if>
-      <if test="source != null" >
-        source = #{source,jdbcType=VARCHAR},
-      </if>
-      <if test="createBy != null" >
-        create_by = #{createBy,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=CHAR},
-      </if>
-      <if test="editBy != null" >
-        edit_by = #{editBy,jdbcType=VARCHAR},
-      </if>
-      <if test="editTime != null" >
-        edit_time = #{editTime,jdbcType=CHAR},
-      </if>
-      <if test="description != null" >
-        description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="contactSummary != null" >
-        contact_summary = #{contactSummary,jdbcType=VARCHAR},
-      </if>
-      <if test="nextContactTime != null" >
-        next_contact_time = #{nextContactTime,jdbcType=CHAR},
-      </if>
-      <if test="address != null" >
-        address = #{address,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=CHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.mycode.crm.workbench.domain.Clue" >
-    update tbl_clue
-    set fullname = #{fullname,jdbcType=VARCHAR},
-      appellation = #{appellation,jdbcType=VARCHAR},
-      owner = #{owner,jdbcType=CHAR},
-      company = #{company,jdbcType=VARCHAR},
-      job = #{job,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      website = #{website,jdbcType=VARCHAR},
-      mphone = #{mphone,jdbcType=VARCHAR},
-      state = #{state,jdbcType=VARCHAR},
-      source = #{source,jdbcType=VARCHAR},
-      create_by = #{createBy,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=CHAR},
-      edit_by = #{editBy,jdbcType=VARCHAR},
-      edit_time = #{editTime,jdbcType=CHAR},
-      description = #{description,jdbcType=VARCHAR},
-      contact_summary = #{contactSummary,jdbcType=VARCHAR},
-      next_contact_time = #{nextContactTime,jdbcType=CHAR},
-      address = #{address,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=CHAR}
-  </update>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select
-    <include refid="Base_Column_List" />
-    from tbl_clue
-    where id = #{id,jdbcType=CHAR}
-  </select>
 
   <!--分页查询，条件查询-->
   <select id="selectClueByConditionForPage" parameterType="map" resultMap="BaseResultMap">
