@@ -43,7 +43,7 @@
             targetPackage     指定生成的model生成所在的包名
             targetProject     指定在该项目下所在的路径|指定生成到的工程名称
         -->
-        <javaModelGenerator targetPackage="com.mycode.crm.workbench.domain"
+        <javaModelGenerator targetPackage="com.mycode.crm.settings.domain"
                             targetProject="e:/86523/Documents/MyProgram/crm-project/crm/src/main/java">
 
             <!-- 是否允许子包，即targetPackage.schemaName.tableName -->
@@ -59,7 +59,7 @@
         </javaModelGenerator>
 
         <!--Mapper映射文件生成所在的目录 为每一个数据库的表生成对应的SqlMap文件 -->
-        <sqlMapGenerator targetPackage="com.mycode.crm.workbench.mapper"
+        <sqlMapGenerator targetPackage="com.mycode.crm.settings.mapper"
                          targetProject="e:/86523/Documents/MyProgram/crm-project/crm/src/main/java">
             <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
@@ -69,7 +69,7 @@
                 type="MIXEDMAPPER",生成基于注解的Java Model 和相应的Mapper对象
                 type="XMLMAPPER",生成SQLMap XML文件和独立的Mapper接口
         -->
-        <javaClientGenerator targetPackage="com.mycode.crm.workbench.mapper"
+        <javaClientGenerator targetPackage="com.mycode.crm.settings.mapper"
                              targetProject="e:/86523/Documents/MyProgram/crm-project/crm/src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
@@ -79,7 +79,7 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
-        </table>-->
+        </table>
 
 
                 <table tableName="tbl_clue" domainObjectName="Clue"
@@ -87,6 +87,7 @@
                        enableDeleteByExample="false" enableSelectByExample="false"
                        selectByExampleQueryId="false">
                 </table>
+                -->
         <!--
                         <table tableName="tbl_clue_activity_relation" domainObjectName="ClueActivityRelation"
                                enableCountByExample="false" enableUpdateByExample="false"
@@ -136,15 +137,13 @@
                        enableDeleteByExample="false" enableSelectByExample="false"
                        selectByExampleQueryId="false">
                 </table>
+-->
 
-
-                <table tableName="tbl_dictionary_value" domainObjectName="DictionaryValue"
+                <table tableName="tbl_dic_value" domainObjectName="DicValue"
                        enableCountByExample="false" enableUpdateByExample="false"
                        enableDeleteByExample="false" enableSelectByExample="false"
                        selectByExampleQueryId="false">
                 </table>
-
--->
                 <!--<table tableName="tbl_activity" domainObjectName="Activity"
                        enableCountByExample="false" enableUpdateByExample="false"
                        enableDeleteByExample="false" enableSelectByExample="false"
