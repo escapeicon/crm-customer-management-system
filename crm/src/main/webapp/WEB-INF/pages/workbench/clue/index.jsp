@@ -54,8 +54,9 @@
 				const totalRows = data.totalRows;//总条数
 				let clues = data.clues;//所有线索
 
+				let html = "";
+
 				clues.forEach(function (clue){
-					let html = "";
 					html += "<tr>"
 					html += "	<td><input type=\"checkbox\" value='"+clue.id+"' /></td>"
 					html += "	<td><a style=\"text-decoration: none; cursor: pointer;\" >"+clue.fullname+"</a></td>"
@@ -66,9 +67,8 @@
 					html += "	<td>"+clue.createBy+"</td>"
 					html += "	<td>"+clue.state+"</td>"
 					html += "</tr>"
-
-					$("#tBody").append(html);
 				})
+				$("#tBody").html(html);
 
 				//分页组件参数设置
 				$("#bs-pagination").bs_pagination({
@@ -91,9 +91,15 @@
 
 	}
 
+	//入口函数
 	$(function(){
 		//页面刷新完调用分页查询加载所有线索
 		queryCluesForPage('${pageNo == null ? 1 : pageNo}','${pageSize == null ? 10 : pageSize}');
+
+		//条件查询按钮
+		$("#queryCluesByConditionForPage").click(function (){
+			queryCluesForPage(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
+		})
 	});
 	
 </script>
@@ -413,9 +419,6 @@
 		</div>
 	</div>
 	
-	
-	
-	
 	<div>
 		<div style="position: relative; left: 10px; top: -10px;">
 			<div class="page-header">
@@ -510,7 +513,7 @@
 				    </div>
 				  </div>
 
-				  <button id="queryCluesForCondition" type="button" class="btn btn-default">查询</button>
+				  <button id="queryCluesByConditionForPage" type="button" class="btn btn-default">查询</button>
 				  
 				</form>
 			</div>
