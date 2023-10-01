@@ -9,7 +9,12 @@ public interface ClueService {
 
     int saveClue(Clue clue);
 
+    int deleteClueByIds(String[] ids);
+
+    int updateClue(Clue clue);
+
     List<Clue> queryCluesByConditionForPage(Map<String,Object> pageInfo);
     int queryCountCluesByConditionForPage(Map<String,Object> pageInfo);
     List<Clue> queryAllClue();
+    Clue queryClueById(String id);
 }

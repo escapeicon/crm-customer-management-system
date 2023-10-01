@@ -25,6 +25,7 @@
 	let isPhone = true;//座机号码是否正确
 	let isWebsite = true;//公司网站是否正确
 	let isMphone = true;//手机号是否正确
+	let isUpdateForClueJudge = true;//是否是修改线索的操作标志
 
 	/**
 	 * 分页查询方法
@@ -36,10 +37,10 @@
 		const fullname = $("#fullname").val().trim();
 		const company = $("#company").val().trim();
 		const phone = $("#phone").val().trim();
-		const source = $("#source option:selected").text();
+		const source = $("#source").val();
 		const owner = $("#owner").val().trim();
 		const mphone = $("#mphone").val().trim();
-		const state = $("#state option:selected").text();
+		const state = $("#state").val();
 
 		//发送ajax请求
 		$.ajax({
@@ -69,9 +70,9 @@
 					html += "	<td>"+clue.company+"</td>"
 					html += "	<td>"+clue.phone+"</td>"
 					html += "	<td>"+clue.mphone+"</td>"
-					html += "	<td>"+clue.source+"</td>"
-					html += "	<td>"+clue.createBy+"</td>"
-					html += "	<td>"+clue.state+"</td>"
+					html += "	<td>"+(clue.source == null ? '' : clue.source)+"</td>"
+					html += "	<td>"+clue.owner+"</td>"
+					html += "	<td>"+(clue.state == null ? '' : clue.state)+"</td>"
 					html += "</tr>"
 				})
 				$("#tBody").html(html);
@@ -89,7 +90,7 @@
 					onChangePage:function (event,data){
 						const currentPage = data.currentPage;//获取当前页面
 						const rowsPerPage = data.rowsPerPage;//获取每页显示条数
-						queryForPage(currentPage,rowsPerPage);//刷新页面
+						queryCluesForPage(currentPage,rowsPerPage);//刷新页面
 					}
 				})
 			}
@@ -100,14 +101,14 @@
 	/**
 	 * 规则判断
 	 */
-	function judgeCreate(){
+	function judgeCreateAndUpdate(type){
 		//获取所有需要填入的输入框
-		const companyValue = $("#create-company").val();
-		const fullnameValue = $("#create-surname").val();
-		const emailValue = $("#create-email").val();
-		const phoneValue = $("#create-phone").val();
-		const websiteValue = $("#create-website").val();
-		const mphoneValue = $("#create-mphone").val();
+		const companyValue = $("#"+type+"-company").val();
+		const fullnameValue = $("#"+type+"-surname").val();
+		const emailValue = $("#"+type+"-email").val();
+		const phoneValue = $("#"+type+"-phone").val();
+		const websiteValue = $("#"+type+"-website").val();
+		const mphoneValue = $("#"+type+"-mphone").val();
 
 		//必须输入名称和公司
 		if(companyValue != '' && fullnameValue != ''){
@@ -157,10 +158,37 @@
 		}
 
 		//对保存按钮是否禁用进行总体的验证
-		if(isFullnameAndCompany && isEmail && isPhone && isWebsite && isMphone){
-			$("#save-create-clue").attr("disabled",false);
+		if(isFullnameAndCompany && isEmail && isPhone && isWebsite && isMphone && isUpdateForClueJudge){
+			$("#save-"+type+"-clue").attr("disabled",false);
 		}else{
-			$("#save-create-clue").attr("disabled",true);
+			$("#save-"+type+"-clue").attr("disabled",true);
+		}
+	}
+
+	/**
+	 * 获取创建或修改时输入框参数的值
+	 * @param methodType
+	 * @returns {{owner: (*|jQuery), website: (*|jQuery), address: (*|jQuery), description: (*|jQuery), source: (*|jQuery), nextContactTime: (*|jQuery), phone: (*|jQuery), company: (*|jQuery), mphone: (*|jQuery), fullname: (*|jQuery), appellation: (*|jQuery), state: (*|jQuery), contactSummary: (*|jQuery), job: (*|jQuery), email: (*|jQuery)}}
+	 */
+	function getInputVal(methodType){
+		return {
+			//获取所有需要填入的输入框
+			id:$("#"+methodType+"-id").val(),//id
+			owner: $("#"+methodType+"-clueOwner").val(),//所有者
+			company: $("#"+methodType+"-company").val(),//公司
+			fullname: $("#"+methodType+"-surname").val(),//姓名
+			appellation: $("#"+methodType+"-appellation").val(),//称号
+			job: $("#"+methodType+"-job").val(),//职位
+			email: $("#"+methodType+"-email").val(),//邮箱
+			phone: $("#"+methodType+"-phone").val(),//公司座机
+			website: $("#"+methodType+"-website").val(),//公司网站
+			mphone: $("#"+methodType+"-mphone").val(),//手机
+			state: $("#"+methodType+"-status").val(),//线索状态
+			source: $("#"+methodType+"-source").val(),//线索来源
+			description: $("#"+methodType+"-describe").val(),//线索描述
+			contactSummary: $("#"+methodType+"-contactSummary").val(),//联系纪要
+			nextContactTime: $("#"+methodType+"-nextContactTime").val(),//下次联系时间
+			address: $("#"+methodType+"-address").val(),//详细地址
 		}
 	}
 
@@ -180,53 +208,15 @@
 			$("#createClueModal").modal("show");//让模态窗口显现
 			document.getElementById("createClurForm").reset();//重置创建线索模态窗口填入数据
 
-			//重置判断规则
-			let isFullnameAndCompany = false;//名称和公司是否通过验证
-			let isEmail = true;//邮箱是否正确
-			let isPhone = true;//座机号码是否正确
-			let isWebsite = true;//公司网站是否正确
-			let isMphone = true;//手机号是否正确
+			isUpdateForClueJudge = true;//对修改标志放行
 		})
 		//创建线索事件
 		$("#save-create-clue").click(function (){
-			//获取所有需要填入的输入框
-			const owner = $("#create-clueOwner").val();//所有者
-			const company = $("#create-company").val();//公司
-			const fullname = $("#create-surname").val();//姓名
-			const appellation = $("#create-call").val();//称号
-			const job = $("#create-job").val();//职位
-			const email = $("#create-email").val();//邮箱
-			const phone = $("#create-phone").val();//公司座机
-			const website = $("#create-website").val();//公司网站
-			const mphone = $("#create-mphone").val();//手机
-			const state = $("#create-status").val();//线索状态
-			const source = $("#create-status").val();//线索来源
-			const description = $("#create-describe").val();//线索描述
-			const contactSummary = $("#create-contactSummary").val();//联系纪要
-			const nextContactTime = $("#create-nextContactTime").val();//下次联系时间
-			const address = $("#create-address").val();//详细地址
-
 			$.ajax({
 				type:'post',
 				url:'workbench/clue/createClue.do',
 				dataType:'json',
-				data:{
-					owner:owner,
-					company:company,
-					fullname:fullname,
-					appellation:appellation,
-					job:job,
-					email:email,
-					phone:phone,
-					website:website,
-					mphone:mphone,
-					state:state,
-					source:source,
-					description:description,
-					contactSummary:contactSummary,
-					nextContactTime:nextContactTime,
-					address:address,
-				},
+				data:getInputVal("create"),
 				success(data) {
 					if (data.code) {
 						$("#createClueModal").modal("hide");//让模态窗口消失
@@ -239,16 +229,103 @@
 
 		})
 
+		//按钮全选与反选
+		$("#allCheckBox").change(function (){
+			//获取所有线索的check标签
+			$("#tBody input[type='checkbox']").prop("checked",$(this).prop("checked"))
+		})
+		//选中按钮达到每页显示条数时全选按钮状态改为选中
+		$("#tBody").on("click","input[type='checkbox']",function (){
+			$("#allCheckBox").prop("checked",$("#tBody input[type='checkbox']").size() == $("#tBody input[type='checkbox']:checked").size())
+		})
+
+		//删除线索
+		$("#delete-clue").click(function (){
+			let ids = [];
+			$("#tBody input[type='checkbox']:checked").each(function (){
+				ids.push($(this).val())
+			})
+
+			//发送ajax请求
+			$.ajax({
+				type:'post',
+				url:'workbench/clue/deleteClue.do',
+				contentType:'application/json',
+				data:JSON.stringify(ids),
+				success(data){
+					if (data.code) {
+						queryCluesForPage(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
+					}else{
+						alert(data.message)
+					}
+				}
+			})
+		})
+
+		//修改线索
+		$("#update-clue").click(function (){
+			//只允许选中一条线索进行修改
+			if ($("#tBody input[type='checkbox']:checked").size() == 1) {
+				isUpdateForClueJudge = false;//对修改标志进行拦截
+				$("#editClueModal").modal("show");//显示修改模态窗口
+				const id = $("#tBody input[type='checkbox']:checked").val();//获取该条线索的id
+				$.ajax({
+					type:'post',
+					url:'workbench/clue/toUpdateModal.do',
+					data:{
+						id:id
+					},
+					success(data){
+						//渲染页面
+						$("#edit-id").val(data.id);//id
+						$("#edit-clueOwner").val(data.owner);//所属
+						$("#edit-company").val(data.company);//公司
+						$("#edit-appellation").val(data.appellation);//称呼
+						$("#edit-surname").val(data.fullname);//姓名
+						$("#edit-job").val(data.job);//职位
+						$("#edit-email").val(data.email);//邮箱
+						$("#edit-phone").val(data.phone);//座机
+						$("#edit-website").val(data.website);//网站
+						$("#edit-mphone").val(data.mphone);//手机
+						$("#edit-status").val(data.state);//状态
+						$("#edit-source").val(data.source);//线索来源
+						$("#edit-describe").val(data.description);//描述
+						$("#edit-contactSummary").val(data.contactSummary);//联系纪要
+						$("#edit-nextContactTime").val(data.nextContactTime);//下次联系时间
+						$("#edit-address").val(data.address);//详细地址
+					}
+				})
+			}else{
+				alert("请选择一条线索进行修改!");
+			}
+		})
+		$("#save-edit-clue").click(function (){
+			$.ajax({
+				type:'post',
+				url:'workbench/clue/saveUpdateClue.do',
+				data:getInputVal("edit"),
+				success(data){
+					if (data.code) {
+						$("#editClueModal").modal("hide");//隐藏修改模态窗口
+						queryCluesForPage(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));//刷新线索列表
+					}else{
+						alert(data.message)
+					}
+				}
+			})
+		})
+
 		//验证输入规则
-		$("#create-company," +
-				"#create-surname," +
-				"#create-email," +
-				"#create-phone," +
-				"#create-website," +
-				"#create-mphone").blur(judgeCreate)
+		$("#create-company,#create-surname,#create-email,#create-phone,#create-website,#create-mphone").blur(function (){
+			judgeCreateAndUpdate("create");
+		})
+		$("#editClueModal select,#editClueModal input,#editClueModal textarea").blur(function (){
+			isUpdateForClueJudge = true;//对修改按钮进行放行
+			judgeCreateAndUpdate("edit");
+		})
 
 		//日历组件
-		$("#create-nextContactTime").datetimepicker({
+		$("#create-nextContactTime,#edit-nextContactTime").datetimepicker({
 			format:"yyyy-mm-dd",//日期格式
 			language:"zh-CN",//语言
 			minView:'month',
@@ -294,9 +371,9 @@
 
 						<%--称号 姓名--%>
 						<div class="form-group">
-							<label for="create-call" class="col-sm-2 control-label">称呼</label>
+							<label for="create-appellation" class="col-sm-2 control-label">称呼</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-call">
+								<select class="form-control" id="create-appellation">
 								  <option></option>
 									<c:forEach items="${appellations}" var="appellation">
 										<option value="${appellation.id}">${appellation.value}</option>
@@ -423,7 +500,9 @@
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
+						<input type="hidden" id="edit-id">
 
+						<%--clueOwner company--%>
 						<div class="form-group">
 							<label for="edit-clueOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -439,16 +518,15 @@
 							</div>
 						</div>
 
+						<%--appellation surname--%>
 						<div class="form-group">
-							<label for="edit-call" class="col-sm-2 control-label">称呼</label>
+							<label for="edit-appellation" class="col-sm-2 control-label">称呼</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="edit-call">
+								<select class="form-control" id="edit-appellation">
 								  <option></option>
-								  <option selected>先生</option>
-								  <option>夫人</option>
-								  <option>女士</option>
-								  <option>博士</option>
-								  <option>教授</option>
+									<c:forEach items="${appellations}" var="appellation">
+										<option value="${appellation.id}">${appellation.value}</option>
+									</c:forEach>
 								</select>
 							</div>
 							<label for="edit-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
@@ -457,6 +535,7 @@
 							</div>
 						</div>
 
+						<%--job email--%>
 						<div class="form-group">
 							<label for="edit-job" class="col-sm-2 control-label">职位</label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -468,6 +547,7 @@
 							</div>
 						</div>
 
+						<%--phone website--%>
 						<div class="form-group">
 							<label for="edit-phone" class="col-sm-2 control-label">公司座机</label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -479,6 +559,7 @@
 							</div>
 						</div>
 
+						<%--mphone status--%>
 						<div class="form-group">
 							<label for="edit-mphone" class="col-sm-2 control-label">手机</label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -488,23 +569,27 @@
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-status">
 								  <option></option>
-								  <option>试图联系</option>
+								  <%--<option>试图联系</option>
 								  <option>将来联系</option>
 								  <option selected>已联系</option>
 								  <option>虚假线索</option>
 								  <option>丢失线索</option>
 								  <option>未联系</option>
-								  <option>需要条件</option>
+								  <option>需要条件</option>--%>
+<c:forEach items="${clueStates}" var="status">
+<option value="${status.id}">${status.value}</option>
+</c:forEach>
 								</select>
 							</div>
 						</div>
 
+						<%--source--%>
 						<div class="form-group">
 							<label for="edit-source" class="col-sm-2 control-label">线索来源</label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-source">
 								  <option></option>
-								  <option selected>广告</option>
+								  <%--<option selected>广告</option>
 								  <option>推销电话</option>
 								  <option>员工介绍</option>
 								  <option>外部介绍</option>
@@ -517,11 +602,15 @@
 								  <option>交易会</option>
 								  <option>web下载</option>
 								  <option>web调研</option>
-								  <option>聊天</option>
+								  <option>聊天</option>--%>
+<c:forEach items="${sources}" var="source">
+<option value="${source.id}">${source.value}</option>
+</c:forEach>
 								</select>
 							</div>
 						</div>
 
+						<%--describe--%>
 						<div class="form-group">
 							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
@@ -531,6 +620,7 @@
 
 						<div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative;"></div>
 
+						<%--contactSummary nextContactTime--%>
 						<div style="position: relative;top: 15px;">
 							<div class="form-group">
 								<label for="edit-contactSummary" class="col-sm-2 control-label">联系纪要</label>
@@ -541,13 +631,14 @@
 							<div class="form-group">
 								<label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
 								<div class="col-sm-10" style="width: 300px;">
-									<input type="text" class="form-control" id="edit-nextContactTime" value="2017-05-01">
+									<input type="text" class="form-control" id="edit-nextContactTime" value="2017-05-01" readonly>
 								</div>
 							</div>
 						</div>
 
 						<div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative; top : 10px;"></div>
 
+						<%--address--%>
                         <div style="position: relative;top: 20px;">
                             <div class="form-group">
                                 <label for="edit-address" class="col-sm-2 control-label">详细地址</label>
@@ -561,7 +652,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button id="save-edit-clue" type="button" class="btn btn-primary" disabled>更新</button>
 				</div>
 			</div>
 		</div>
@@ -583,6 +674,7 @@
 			<div class="btn-toolbar" role="toolbar" style="height: 80px;">
 				<form class="form-inline" role="form" style="position: relative;top: 8%; left: 5px;">
 
+					<%--fullname--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">名称</div>
@@ -590,6 +682,7 @@
 				    </div>
 				  </div>
 
+						<%--company--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">公司</div>
@@ -597,6 +690,7 @@
 				    </div>
 				  </div>
 
+						<%--phone--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">公司座机</div>
@@ -604,12 +698,13 @@
 				    </div>
 				  </div>
 
+						<%--source--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">线索来源</div>
 					  <select id="source" class="form-control">
 					  	  <option></option>
-					  	  <option>广告</option>
+					  	  <%--<option>广告</option>
 						  <option>推销电话</option>
 						  <option>员工介绍</option>
 						  <option>外部介绍</option>
@@ -622,13 +717,17 @@
 						  <option>交易会</option>
 						  <option>web下载</option>
 						  <option>web调研</option>
-						  <option>聊天</option>
+						  <option>聊天</option>--%>
+					  <c:forEach items="${sources}" var="source">
+						<option value="${source.id}">${source.value}</option>
+						</c:forEach>
 					  </select>
 				    </div>
 				  </div>
 
 				  <br>
 
+						<%--owner--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">所有者</div>
@@ -636,8 +735,7 @@
 				    </div>
 				  </div>
 
-
-
+						<%--mphone--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">手机</div>
@@ -645,18 +743,15 @@
 				    </div>
 				  </div>
 
+						<%--state--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">线索状态</div>
 					  <select id="state" class="form-control">
 					  	<option></option>
-					  	<option>试图联系</option>
-					  	<option>将来联系</option>
-					  	<option>已联系</option>
-					  	<option>虚假线索</option>
-					  	<option>丢失线索</option>
-					  	<option>未联系</option>
-					  	<option>需要条件</option>
+						<c:forEach items="${clueStates}" var="state">
+						<option value="${state.id}">${state.value}</option>
+						</c:forEach>
 					  </select>
 				    </div>
 				  </div>
@@ -669,8 +764,8 @@
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 40px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button id="create-clue" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editClueModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button id="update-clue" type="button" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button id="delete-clue" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 
 
@@ -680,7 +775,7 @@
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" /></td>
+							<td><input id="allCheckBox" type="checkbox" /></td>
 							<td>名称</td>
 							<td>公司</td>
 							<td>公司座机</td>

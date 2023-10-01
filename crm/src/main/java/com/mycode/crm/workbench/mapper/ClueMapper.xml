@@ -138,12 +138,6 @@
       address = #{address,jdbcType=VARCHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select
-    <include refid="Base_Column_List" />
-    from tbl_clue
-    where id = #{id,jdbcType=CHAR}
-  </select>
 
   <!--创建线索-->
   <insert id="insertClue" parameterType="com.mycode.crm.workbench.domain.Clue" >
@@ -274,6 +268,71 @@
     </trim>
   </insert>
 
+  <!--删除线索 根据id数组-->
+  <delete id="deleteClueByIds" parameterType="string">
+    delete from tbl_clue
+    where id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <!--修改线索 根据id-->
+  <update id="updateClue" parameterType="clue">
+    update
+        tbl_clue
+    <set>
+      <if test="owner != null">
+        owner = #{owner},
+      </if>
+      <if test="company != null" >
+        company = #{company},
+      </if>
+      <if test="appellation != null">
+        appellation = #{appellation},
+      </if>
+      <if test="fullname != null">
+        fullname = #{fullname},
+      </if>
+      <if test="job != null">
+        job = #{job},
+      </if>
+      <if test="email != null">
+        email = #{email},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone},
+      </if>
+      <if test="website != null">
+        website = #{website},
+      </if>
+      <if test="mphone != null">
+        mphone = #{mphone},
+      </if>
+      <if test="state != null">
+        state = #{state},
+      </if>
+      <if test="source != null">
+        source = #{source},
+      </if>
+      <if test="description != null">
+        description = #{description},
+      </if>
+      <if test="contactSummary != null">
+        contact_summary = #{contactSummary},
+      </if>
+      <if test="nextContactTime != null">
+        next_contact_time = #{nextContactTime},
+      </if>
+      <if test="address != null">
+        address = #{address},
+      </if>
+        edit_by = #{editBy},
+        edit_time = #{editTime}
+    </set>
+    where id = #{id}
+  </update>
+
   <!--分页查询，条件查询-->
   <select id="selectClueByConditionForPage" parameterType="map" resultMap="BaseResultMap">
     select
@@ -315,7 +374,7 @@
         and c.mphone like '%${mphone}%'
       </if>
       <if test="source != null and source != ''">
-        and dv3.value like '%'#{source}'%'
+        and dv3.id = #{source}
       </if>
       <if test="owner != null and owner != ''">
         and u1.name like '%${owner}%'
@@ -324,7 +383,7 @@
         and c.phone like '%${phone}%'
       </if>
       <if test="state != null and state != ''">
-        and dv2.value = #{state}
+        and dv2.id = #{state}
       </if>
     </where>
     order by c.create_time desc
@@ -389,5 +448,12 @@
     join tbl_user u1 on c.owner = u1.id
     join tbl_user u2 on c.create_by = u2.id
     left join tbl_user u3 on c.edit_by = u3.id
+  </select>
+  <!--查询单条线索根据id-->
+  <select id="selectClueById" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_clue
+    where id = #{id,jdbcType=CHAR}
   </select>
 </mapper>

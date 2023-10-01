@@ -12,8 +12,6 @@ public interface ClueMapper {
 
     int insertSelective(Clue record);
 
-    Clue selectByPrimaryKey(String id);
-
     int updateByPrimaryKeySelective(Clue record);
 
     int updateByPrimaryKey(Clue record);
@@ -24,6 +22,20 @@ public interface ClueMapper {
      * @return 数据库更新条数
      */
     int insertClue(Clue clue);
+
+    /**
+     * 删除线索 根据id
+     * @param ids
+     * @return 数据库更新条数
+     */
+    int deleteClueByIds(String[] ids);
+
+    /**
+     * 修改线索 根据id
+     * @param clue
+     * @return 数据库记录更新条数
+     */
+    int updateClue(Clue clue);
 
     /**
      * 分页查询 条件查询
@@ -37,4 +49,10 @@ public interface ClueMapper {
      * @return 线索集合
      */
     List<Clue> selectAllClue();
+    /**
+     * 查询单条线索 根据id
+     * @param id
+     * @return 线索实体类
+     */
+    Clue selectClueById(String id);
 }

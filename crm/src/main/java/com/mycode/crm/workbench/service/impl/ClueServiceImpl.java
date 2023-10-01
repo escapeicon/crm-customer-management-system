@@ -26,6 +26,26 @@ public class ClueServiceImpl implements ClueService {
     }
 
     /**
+     * 删除线索 根据id数组
+     * @param ids
+     * @return 删除的条数
+     */
+    @Override
+    public int deleteClueByIds(String[] ids) {
+        return clueMapper.deleteClueByIds(ids);
+    }
+
+    /**
+     * 修改线索 根据id
+     * @param clue
+     * @return int
+     */
+    @Override
+    public int updateClue(Clue clue) {
+        return clueMapper.updateClue(clue);
+    }
+
+    /**
      * 分页查询 条件查询
      * @param pageInfo
      * @return 查询线索结果
@@ -50,5 +70,14 @@ public class ClueServiceImpl implements ClueService {
     @Override
     public List<Clue> queryAllClue() {
         return clueMapper.selectAllClue();
+    }
+    /**
+     * 查询单条线索 根据id
+     * @param id
+     * @return
+     */
+    @Override
+    public Clue queryClueById(String id) {
+        return clueMapper.selectClueById(id);
     }
 }

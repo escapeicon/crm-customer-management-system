@@ -12,15 +12,13 @@ import com.mycode.crm.workbench.domain.Clue;
 import com.mycode.crm.workbench.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class ClueController {
@@ -120,7 +118,7 @@ public class ClueController {
         try {
             clue.setId(UUIDUtil.getUUID());//设置id
             clue.setCreateBy(user.getId());//设置createBy
-            clue.setCreateTime(DateFormat.formatDate(new Date()));//设置创建日期
+            clue.setCreateTime(DateFormat.formatDateTime(new Date()));//设置创建日期
             int count = clueService.saveClue(clue);//调用业务层保存线索方法
             if (count > 0) {
                 returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
@@ -131,6 +129,69 @@ public class ClueController {
         }catch (Exception e){
             returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("系统繁忙，请稍后重试");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 删除线索 控制器方法
+     * @param ids
+     * @return 响应体实体类
+     */
+    @RequestMapping("/workbench/clue/deleteClue.do")
+    public @ResponseBody Object deleteClue(@RequestBody String[] ids){
+        ReturnInfo returnInfo = new ReturnInfo();//创建响应实体类
+        try {
+            int count = clueService.deleteClueByIds(ids);//调用业务层进而删除线索条数
+
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else{
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试...");
+            }
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 渲染更新线索模态窗口控制器方法
+     * @param id
+     * @return 需要修改的线索的所有信息
+     */
+    @RequestMapping("/workbench/clue/toUpdateModal.do")
+    public @ResponseBody Object toUpdateModal(String id){
+        return clueService.queryClueById(id);
+    }
+
+    /**
+     * 保存要更新的线索实体类
+     * @param clue
+     * @return returnInfo
+     */
+    @RequestMapping("/workbench/clue/saveUpdateClue.do")
+    public @ResponseBody Object saveUpdateClue(Clue clue,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);
+        try{
+            clue.setEditBy(user.getId());//设置修改线索的用户
+            clue.setEditTime(DateFormat.formatDateTime(new Date()));//设置修改的线索的时间
+            int count = clueService.updateClue(clue);
+
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试...");
+            }
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试...");
             e.printStackTrace();
         }
         return returnInfo;
