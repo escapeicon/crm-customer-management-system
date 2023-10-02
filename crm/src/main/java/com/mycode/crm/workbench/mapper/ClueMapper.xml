@@ -456,4 +456,37 @@
     from tbl_clue
     where id = #{id,jdbcType=CHAR}
   </select>
+  <!--查询单条线索 for detail 根据id-->
+  <select id="selectClueForRemarkById" parameterType="string" resultMap="BaseResultMap">
+    select
+        c.id,
+        c.fullname,
+        dv1.value as appellation,
+        u1.name as owner,
+        c.company,
+        c.job,
+        c.email,
+        c.phone,
+        c.website,
+        c.mphone,
+        dv2.value as state,
+        dv3.value as source,
+        u2.name as create_by,
+        c.create_time,
+        u3.name as edit_by,
+        c.edit_time,
+        c.description,
+        c.contact_summary,
+        c.next_contact_time,
+        c.address
+    from
+        tbl_clue c
+    left join tbl_dic_value as dv1 on c.appellation = dv1.id
+    join tbl_user as u1 on c.owner = u1.id
+    left join tbl_dic_value as dv2 on c.state = dv2.id
+    left join tbl_dic_value as dv3 on c.source = dv3.id
+    join tbl_user as u2 on c.create_by = u2.id
+    left join tbl_user as u3 on c.edit_by = u3.id
+    where c.id = #{id}
+  </select>
 </mapper>

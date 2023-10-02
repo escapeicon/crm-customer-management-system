@@ -320,4 +320,18 @@
     left join tbl_user as u3 on u3.id = a.edit_by
     where a.id = #{id}
   </select>
+  <!--查询多条市场活动 根据线索id for 线索备注页面-->
+  <select id="selectActivitiesByClueIdForClueRemarkPage" parameterType="string" resultMap="BaseResultMap">
+    select
+        a.id,
+        a.name,
+        a.start_date,
+        a.end_date,
+        u.name as owner
+    from
+        tbl_activity a
+    join tbl_user as u on a.owner = u.id
+    join tbl_clue_activity_relation as tcar on tcar.activity_id = a.id
+    where tcar.clue_id = #{clueId}
+  </select>
 </mapper>

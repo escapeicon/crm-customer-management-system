@@ -15,10 +15,6 @@
 
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
-
-	//保存市场活动页面的分页组件参数
-	let pageNo = '${pageNo}';
-	let pageSize = '${pageSize}';
 	
 	$(function(){
 		$("#remark").focus(function(){
@@ -184,7 +180,7 @@
 		 * 跳转回市场活动展示页面方法
 		 */
 		$("#backToActivityIndex").click(function(){
-			window.location.href = "workbench/activity/index.do?pageNo="+pageNo+"&pageSize="+pageSize;
+			window.location.href = "workbench/activity/index.do";
 		})
 	});
 	

@@ -8,7 +8,11 @@ import com.mycode.crm.settings.domain.DicValue;
 import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.DicValueService;
 import com.mycode.crm.settings.service.UserService;
+import com.mycode.crm.workbench.domain.Activity;
 import com.mycode.crm.workbench.domain.Clue;
+import com.mycode.crm.workbench.domain.ClueRemark;
+import com.mycode.crm.workbench.service.ActivitiesService;
+import com.mycode.crm.workbench.service.ClueRemarkService;
 import com.mycode.crm.workbench.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,13 +33,17 @@ public class ClueController {
     private ClueService clueService;
     @Autowired
     private DicValueService dicValueService;
+    @Autowired
+    private ClueRemarkService clueRemarkService;
+    @Autowired
+    private ActivitiesService activitiesService;
 
     /**
      * 跳转线索首页
      * @return
      */
     @RequestMapping("/workbench/clue/index.do")
-    public String index(HttpServletRequest request,String pageNo,String pageSize){
+    public String index(HttpServletRequest request){
         try {
             List<User> users = userService.queryAllUsers();//查询所有用户
             List<DicValue> appellation = dicValueService.queryDicValueByTypeCode("appellation");//查询所有称呼
@@ -47,11 +55,6 @@ public class ClueController {
             request.setAttribute("appellations",appellation);
             request.setAttribute("clueStates",clueState);
             request.setAttribute("sources",source);
-
-            if (pageNo != null && pageSize != null) {
-                request.setAttribute("pageNo",pageNo);
-                request.setAttribute("pageSize",pageSize);
-            }
 
         }catch (Exception e){
             e.printStackTrace();
@@ -82,7 +85,8 @@ public class ClueController {
             String mphone,
             String state,
             int pageNo,
-            int pageSize
+            int pageSize,
+            HttpSession session
     ){
         //封装参数
         HashMap<String, Object> pageInfo = new HashMap<>();
@@ -102,6 +106,9 @@ public class ClueController {
         HashMap<String, Object> returnMap = new HashMap<>();//创建返回map集合
         returnMap.put("clues",clues);
         returnMap.put("totalRows",count);
+
+        session.setAttribute(Constants.CLUE_PAGE_NO,pageNo);
+        session.setAttribute(Constants.CLUE_PAGE_SIZE,pageSize);
 
         return returnMap;
     }
@@ -195,5 +202,27 @@ public class ClueController {
             e.printStackTrace();
         }
         return returnInfo;
+    }
+
+    /**
+     * 跳转到线索明细页面控制器方法
+     * @param clueId
+     * @return 线索明细页面路径
+     */
+    @RequestMapping("/workbench/clue/toClueRemark.do")
+    public String toClueRemark(String clueId,HttpServletRequest request){
+        //查询数据
+        try {
+            Clue clue = clueService.queryClueForRemarkById(clueId);
+            List<ClueRemark> clueRemarks = clueRemarkService.queryClueRemarkById(clueId);
+            List<Activity> activities = activitiesService.queryActivitiesByClueIdForClueRemarkPage(clueId);
+            //向域中存储数据
+            request.setAttribute("clue",clue);
+            request.setAttribute("clueRemarks",clueRemarks);
+            request.setAttribute("activities",activities);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return "/workbench/clue/detail";
     }
 }

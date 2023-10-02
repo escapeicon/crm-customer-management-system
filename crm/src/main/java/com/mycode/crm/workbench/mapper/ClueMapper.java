@@ -55,4 +55,10 @@ public interface ClueMapper {
      * @return 线索实体类
      */
     Clue selectClueById(String id);
+    /**
+     * 查询单条线索 for detail 根据id
+     * @param id
+     * @return 线索实体类
+     */
+    Clue selectClueForRemarkById(String id);
 }

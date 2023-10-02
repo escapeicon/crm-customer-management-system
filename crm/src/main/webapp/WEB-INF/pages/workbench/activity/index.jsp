@@ -131,7 +131,7 @@
 
 	//入口函数
 	$(function(){
-		queryForPage('${pageNo == null ? 1 : pageNo}','${pageSize == null ? 10 : pageSize}');//加载页面顺便加载市场活动列表
+		queryForPage('${activityPageNo == null ? 1 : activityPageNo}','${activityPageSize == null ? 10 : activityPageSize}');//加载页面顺便加载市场活动列表
 
 		//-------------------------------------------------------
 
@@ -140,10 +140,8 @@
 		 */
 		$("#tBody").on("click",".active td a",function (){
 			const activityId = $(this).attr("activityId");//获取id
-			const pageNo = $("#demo_pag1").bs_pagination("getOption","currentPage");//获取当前页面的pageNo
-			const pageSize = $("#demo_pag1").bs_pagination("getOption","rowsPerPage");//获取当前页面的pageSize
 
-			window.location.href="workbench/activity/detailActivity.do?id=" + activityId + "&pageNo="+pageNo+"&pageSize="+pageSize;
+			window.location.href="workbench/activity/detailActivity.do?id=" + activityId;
 		})
 
 

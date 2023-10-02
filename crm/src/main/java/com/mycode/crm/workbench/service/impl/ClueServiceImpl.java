@@ -80,4 +80,14 @@ public class ClueServiceImpl implements ClueService {
     public Clue queryClueById(String id) {
         return clueMapper.selectClueById(id);
     }
+
+    /**
+     * 查询单条线索 for detail 根据id
+     * @param id
+     * @return
+     */
+    @Override
+    public Clue queryClueForRemarkById(String id) {
+        return clueMapper.selectClueForRemarkById(id);
+    }
 }

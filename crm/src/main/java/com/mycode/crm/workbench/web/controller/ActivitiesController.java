@@ -44,15 +44,11 @@ public class ActivitiesController {
      * @return
      */
     @RequestMapping("/workbench/activity/index.do")
-    public String index(HttpServletRequest request, String pageNo, String pageSize){
+    public String index(HttpServletRequest request){
         //调用service层方法获取所有用户信息
         List<User> users = userService.queryAllUsers();
         //向request作用域中添加查询到的所有用户信息
         request.setAttribute("users",users);
-        if(pageNo != null && pageSize != null){
-            request.setAttribute("pageNo",pageNo);
-            request.setAttribute("pageSize",pageSize);
-        }
         return "workbench/activity/index";
     }
 
@@ -96,7 +92,7 @@ public class ActivitiesController {
      * @return json数据
      */
     @RequestMapping("/workbench/activity/queryActivityForPage.do")
-    public @ResponseBody Object queryActivityForPage(String name,String owner,String startDate,String endDate,int pageNo,int pageSize){
+    public @ResponseBody Object queryActivityForPage(String name,String owner,String startDate,String endDate,int pageNo,int pageSize,HttpSession session){
         HashMap<String, Object> pageInfo = new HashMap<>();
         pageInfo.put("name",name);
         pageInfo.put("owner",owner);
@@ -114,6 +110,9 @@ public class ActivitiesController {
         HashMap<String, Object> retObj = new HashMap<>();
         retObj.put("activityList",activityList);
         retObj.put("totalRows",count);
+
+        session.setAttribute(Constants.ACTIVITY_PAGE_NO,pageNo);
+        session.setAttribute(Constants.ACTIVITY_PAGE_SIZE,pageSize);
 
         //返回结果集对象
         return retObj;
@@ -336,14 +335,12 @@ public class ActivitiesController {
      * @return 市场活动信息和备注信息
      */
     @RequestMapping("workbench/activity/detailActivity.do")
-    public String detailActivity(String id,HttpServletRequest request,String pageNo,String pageSize){
+    public String detailActivity(String id,HttpServletRequest request){
         //查询市场活动信息
         Activity activity = activitiesService.queryActivityByIdForDetail(id);
         List<ActivityRemark> activityRemark = activitiesRemarkService.queryActivityRemarkForDetailById(id);
         request.setAttribute("activity",activity);//向请求域中添加市场活动信息
         request.setAttribute("activityRemarks",activityRemark);//想请求域添加市场活动备注信息
-        request.setAttribute("pageNo",pageNo);//设置页码参数
-        request.setAttribute("pageSize",pageSize);///设置页面展示行数参数
         return "workbench/activity/detail";
     }
 }

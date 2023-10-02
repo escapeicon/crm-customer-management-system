@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ActivitiesMapper {
+
     /**
      * 添加单条市场活动
      * @param record
@@ -26,6 +27,7 @@ public interface ActivitiesMapper {
      */
     int insertActivitiesByList(List<Activity> activities);
 
+
     /**
      * 根据id删除指定市场活动
      * @param id
@@ -39,6 +41,7 @@ public interface ActivitiesMapper {
      */
     int deleteActivityByIds(@Param("ids") String[] ids);
 
+
     /**
      * 根据id修改市场活动信息
      * @param activity 市场活动信息
@@ -51,6 +54,7 @@ public interface ActivitiesMapper {
      * @return 数据库更新条数
      */
     int updateByPrimaryKey(Activity record);
+
 
     /**
      * 查询分页查询所查到的记录总数
@@ -75,14 +79,12 @@ public interface ActivitiesMapper {
      * @return 所查询到的所有记录
      */
     List<Activity> selectActivityByConditionForPage(Map<String,Object> pageInfo);
-
     /**
      * 通过id集合查询市场活动
      * @param ids
      * @return 查询到的市场活动集合
      */
     List<Activity> selectActivitiesByIds(String[] ids);
-
     /**
      * 通过id获取市场活动明细信息，用于查看市场活动明细
      * @param id
@@ -90,4 +92,10 @@ public interface ActivitiesMapper {
      */
     Activity selectActivitiyByIdForDetais(String id);
 
+    /**
+     * 查询多条市场活动 根据线索id for 线索备注页面
+     * @param id
+     * @return 市场活动集合
+     */
+    List<Activity> selectActivitiesByClueIdForClueRemarkPage(String id);
 }

@@ -66,7 +66,7 @@
 				clues.forEach(function (clue){
 					html += "<tr>"
 					html += "	<td><input type=\"checkbox\" value='"+clue.id+"' /></td>"
-					html += "	<td><a style=\"text-decoration: none; cursor: pointer;\" >"+clue.fullname+"</a></td>"
+					html += "	<td><a clueId='"+clue.id+"' style=\"text-decoration: none; cursor: pointer;\" >"+clue.fullname+(clue.appellation == null ? '' : clue.appellation)+"</a></td>"
 					html += "	<td>"+clue.company+"</td>"
 					html += "	<td>"+clue.phone+"</td>"
 					html += "	<td>"+clue.mphone+"</td>"
@@ -195,7 +195,7 @@
 	//入口函数
 	$(function(){
 		//页面刷新完调用分页查询加载所有线索
-		queryCluesForPage('${pageNo == null ? 1 : pageNo}','${pageSize == null ? 10 : pageSize}');
+		queryCluesForPage('${cluePageNo == null ? 1 : cluePageNo}','${cluePageSize == null ? 10 : cluePageSize}');
 
 		//条件查询按钮
 		$("#queryCluesByConditionForPage").click(function (){
@@ -322,6 +322,11 @@
 		$("#editClueModal select,#editClueModal input,#editClueModal textarea").blur(function (){
 			isUpdateForClueJudge = true;//对修改按钮进行放行
 			judgeCreateAndUpdate("edit");
+		})
+
+		//查看线索明细
+		$("#tBody").on("click","a",function (){
+			window.location.href = "workbench/clue/toClueRemark.do?clueId="+$(this).attr("clueId");
 		})
 
 		//日历组件
@@ -789,7 +794,7 @@
 					<%--<c:forEach items="${clues}" var="clue">
 						<tr>
 							<td><input type="checkbox" value="${clue.id}"/></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">${clue.fullname}</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">${clue.fullname}</a></td>
 							<td>${clue.company}</td>
 							<td>${clue.mphone}</td>
 							<td>${clue.phone}</td>
@@ -800,7 +805,7 @@
 					</c:forEach>--%>
 						<%--<tr>
 							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">李四先生</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">李四先生</a></td>
 							<td>动力节点</td>
 							<td>010-84846003</td>
 							<td>12345678901</td>
@@ -810,7 +815,7 @@
 						</tr>
                         <tr class="active">
                             <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">李四先生</a></td>
+                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">李四先生</a></td>
                             <td>动力节点</td>
                             <td>010-84846003</td>
                             <td>12345678901</td>

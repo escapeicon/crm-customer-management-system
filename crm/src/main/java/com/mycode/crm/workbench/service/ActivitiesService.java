@@ -72,4 +72,6 @@ public interface ActivitiesService {
      * @return 市场活动
      */
     Activity queryActivityByIdForDetail(String id);
+
+    List<Activity> queryActivitiesByClueIdForClueRemarkPage(String clueId);
 }
