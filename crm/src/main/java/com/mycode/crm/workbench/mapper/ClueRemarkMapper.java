@@ -8,11 +8,27 @@ public interface ClueRemarkMapper {
 
     int insert(ClueRemark record);
     int insertSelective(ClueRemark record);
+    /**
+     * 保存单条线索
+     * @param clueRemark
+     * @return 数据库更新条数
+     */
+    int insertClueRemark(ClueRemark clueRemark);
 
-    int deleteByPrimaryKey(String id);
+    /**
+     * 删除单条线索 根据id
+     * @param id
+     * @return 数据库更新条数
+     */
+    int deleteClueRemarkById(String id);
 
     int updateByPrimaryKeySelective(ClueRemark record);
-    int updateByPrimaryKey(ClueRemark record);
+    /**
+     * 修改线索备注 根据id
+     * @param clueRemark
+     * @return 修改记录条数
+     */
+    int updateClueRemarkById(ClueRemark clueRemark);
 
     ClueRemark selectByPrimaryKey(String id);
 

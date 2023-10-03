@@ -48,6 +48,118 @@
 			$(this).children("span").css("color","#E6E6E6");
 		});
 
+		//保存线索备注按钮
+		$("#save-clue-remark-btn").click(function (){
+			let remark = $("#remark").val().trim();//获取用户输入的备注信息
+			if (remark != "" && remark != null) {
+				$.ajax({
+					type:'post',
+					url:'workbench/clue/saveClueRemark.do',
+					data:{
+						noteContent:remark,
+						clueId:'${clue.id}'
+					},
+					success(data){
+						if (data.code) {
+							const clueRemark = data.data;//获取线索备注实体类
+							$("#remark").val("");//清空备注栏
+							//拼接html标签
+							let html = "";
+
+							html += "<div id=\"div_"+clueRemark.id+"\" class=\"remarkDiv\" style=\"height: 60px;\">";
+							html += "	<img title=\"${userInfo.name}\" src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">"
+							html += "	<div style=\"position: relative; top: -40px; left: 40px;\" >";
+							html += "		<h5>"+clueRemark.noteContent+"</h5>";
+							html += "		<font color=\"gray\">线索</font> <font color=\"gray\">-</font> <b>${clue.fullname}${clue.appellation}-${clue.company}</b> <small style=\"color: gray;\"> "+ clueRemark.createTime +"由 ${userInfo.name} 创建</small>";
+							html += "		<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+							html += "			<a clueRemarkId=\""+clueRemark.id+"\" class=\"myHref\"  href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+							html += "			&nbsp;&nbsp;&nbsp;&nbsp;";
+							html += "			<a clueRemarkId=\""+clueRemark.id+"\" class=\"myHref\"  href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+							html += "</div></div></div>";
+
+							$("#remarkDiv").before(html);
+
+						}
+					}
+				})
+			}else{
+				alert("请输入线索备注信息!")
+			}
+		})
+
+		//删除线索备注按钮
+		$("#remark-div-list").on("click",'a:odd',function (){
+			const remarkId = $(this).attr("clueRemarkId");
+			$.ajax({
+				url:"workbench/clue/deleteClueRemarkById.do",
+				type:'post',
+				data:{
+					id:remarkId
+				},
+				success(data) {
+					if (data.code) {
+						$("#div_"+remarkId).remove();
+					}else{
+						alert(data.message);
+					}
+				}
+			})
+		})
+
+		//修改线索备注按钮
+		$("#remark-div-list").on("click","a:even",function (){
+			const remarkId = $(this).attr("clueRemarkId");//获取线索备注id
+			let noteContent = $("#div_" + remarkId + " h5").text();//获取线索备注的noteContent
+			$("#noteContent").val(noteContent);//设置修改模态窗口内容框显示内容
+			$("#remarkId").val(remarkId);//设置模态窗口隐藏框的id值
+			$("#editRemarkModal").modal("show");
+		})
+		//保存修改线索备注按钮
+		$("#updateRemarkBtn").click(function (){
+
+			const noteContent = $("#noteContent").val().trim();//获取用户输入的noteContent内容
+			const remarkId = $("#remarkId");//获取要修改的线索备注的id值
+
+			$.ajax({
+				type:'post',
+				url:'workbench/clue/updateClueRemarkById.do',
+				data:{
+					id:remarkId,
+					noteContent:noteContent
+				},
+				success(data){
+					if (data.code) {
+						const clueRemark = data.data;
+
+						//拼接html标签
+						let html = "";
+
+						html += "	<img title=\"${userInfo.name}\" src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">"
+						html += "	<div style=\"position: relative; top: -40px; left: 40px;\" >";
+						html += "		<h5>"+clueRemark.noteContent+"</h5>";
+						html += "		<font color=\"gray\">线索</font> <font color=\"gray\">-</font> <b>${clue.fullname}${clue.appellation}-${clue.company}</b> <small style=\"color: gray;\"> "+ clueRemark.createTime +"由 ${userInfo.name} 修改</small>";
+						html += "		<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+						html += "			<a clueRemarkId=\""+clueRemark.id+"\" class=\"myHref\"  href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "			&nbsp;&nbsp;&nbsp;&nbsp;";
+						html += "			<a clueRemarkId=\""+clueRemark.id+"\" class=\"myHref\"  href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "</div></div>";
+
+						$("#div_"+remarkId).html(html);
+
+						$("#editRemarkModal").modal("hide");
+
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		})
+
+		//关联市场活动按钮
+		$("#bund-activity-btn").click(function (){
+			$("#bundModal").modal("show")
+		})
+
 		//回退按钮
 		$("#backToClue").click(function (){
 			window.location.href = "workbench/clue/index.do";
@@ -58,6 +170,38 @@
 
 </head>
 <body>
+
+	<!-- 修改市场活动备注的模态窗口 -->
+	<div class="modal fade" id="editRemarkModal" role="dialog">
+		<%-- 备注的id --%>
+		<input type="hidden" id="remarkId">
+		<div class="modal-dialog" role="document" style="width: 40%;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">修改备注</h4>
+				</div>
+				<%--modal-body--%>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="noteContent" class="col-sm-2 control-label">内容</label>
+							<div class="col-sm-10" style="width: 81%;">
+								<textarea class="form-control" rows="3" id="noteContent"></textarea>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" id="updateRemarkBtn">更新</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- 关联市场活动的模态窗口 -->
 	<div class="modal fade" id="bundModal" role="dialog">
@@ -232,79 +376,79 @@
 	</div>
 	
 	<!-- 备注 -->
-	<div style="position: relative; top: 40px; left: 40px;">
+	<div id="remark-div-list" style="position: relative; top: 40px; left: 40px;">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
+		<c:if test="${clueRemarks.size() > 0}">
 		<c:forEach items="${clueRemarks}" var="clueRemark">
-			<div class="remarkDiv" style="height: 60px;">
-				<img title="${clue.name}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
+			<div id="div_${clueRemark.id}" class="remarkDiv" style="height: 60px;">
+				<img title="${clueRemark.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 				<div style="position: relative; top: -40px; left: 40px;" >
 					<h5>${clueRemark.noteContent}</h5>
-					<font color="gray">线索</font> <font color="gray">-</font> <b>${clue.fullname}${clue.appellation}-${clue.company}</b> <small style="color: gray;"> ${clueRemark.editFlag == 0 ? clueRemark.createTime : clueRemark.editTime} 由${clueRemark.editFlag == 0 ? clueRemark.createBy : clueRemark.editBy}</small>
+					<font color="gray">线索</font> <font color="gray">-</font> <b>${clue.fullname}${clue.appellation}-${clue.company}</b> <small style="color: gray;"> ${clueRemark.editFlag == '0' ? clueRemark.createTime : clueRemark.editTime} 由${clueRemark.editFlag == '0' ? clueRemark.createBy : clueRemark.editBy}${clueRemark.editFlag == '0' ? "创建" : "修改"}</small>
 					<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-						<a class="myHref" clueRemark="${clueRemark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
+						<a clueRemarkId="${clueRemark.id}" class="myHref"  href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
 						&nbsp;&nbsp;&nbsp;&nbsp;
-						<a class="myHref" clueRemark="${clueRemark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
+						<a clueRemarkId="${clueRemark.id}" class="myHref"  href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
 					</div>
 				</div>
 			</div>
+
 		</c:forEach>
-		
+		</c:if>
+
 		<div id="remarkDiv" style="background-color: #E6E6E6; width: 870px; height: 90px;">
 			<form role="form" style="position: relative;top: 10px; left: 10px;">
 				<textarea id="remark" class="form-control" style="width: 850px; resize : none;" rows="2"  placeholder="添加备注..."></textarea>
 				<p id="cancelAndSaveBtn" style="position: relative;left: 737px; top: 10px; display: none;">
 					<button id="cancelBtn" type="button" class="btn btn-default">取消</button>
-					<button type="button" class="btn btn-primary">保存</button>
+					<button id="save-clue-remark-btn" type="button" class="btn btn-primary">保存</button>
 				</p>
 			</form>
 		</div>
 	</div>
-	
+
+
 	<!-- 市场活动 -->
 	<div>
 		<div style="position: relative; top: 60px; left: 40px;">
 			<div class="page-header">
 				<h4>市场活动</h4>
 			</div>
+
+			<c:if test="${activities.size() > 0}">
 			<div style="position: relative;top: 0px;">
 				<table class="table table-hover" style="width: 900px;">
 					<thead>
-						<tr style="color: #B3B3B3;">
-							<td>名称</td>
-							<td>开始日期</td>
-							<td>结束日期</td>
-							<td>所有者</td>
-							<td></td>
-						</tr>
+					<tr style="color: #B3B3B3;">
+						<td>名称</td>
+						<td>开始日期</td>
+						<td>结束日期</td>
+						<td>所有者</td>
+						<td></td>
+					</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>发传单</td>
-							<td>2020-10-10</td>
-							<td>2020-10-20</td>
-							<td>zhangsan</td>
-							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
+					<c:forEach items="${activities}" var="activity">
+						<tr id="tr_${activity.id}">
+							<td>${activity.name}</td>
+							<td>${activity.startDate}</td>
+							<td>${activity.endDate}</td>
+							<td>${activity.owner}</td>
+							<td><a activityId="${activity.id}" href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
 						</tr>
-						<tr>
-							<td>发传单</td>
-							<td>2020-10-10</td>
-							<td>2020-10-20</td>
-							<td>zhangsan</td>
-							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
-						</tr>
+					</c:forEach>
 					</tbody>
 				</table>
 			</div>
-			
+			</c:if>
 			<div>
-				<a href="javascript:void(0);" data-toggle="modal" data-target="#bundModal" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>关联市场活动</a>
+				<a id="bund-activity-btn" href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>关联市场活动</a>
 			</div>
 		</div>
 	</div>
-	
-	
+
 	<div style="height: 200px;"></div>
 </body>
 </html>

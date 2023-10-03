@@ -211,8 +211,8 @@ public class ClueController {
      */
     @RequestMapping("/workbench/clue/toClueRemark.do")
     public String toClueRemark(String clueId,HttpServletRequest request){
-        //查询数据
         try {
+            //查询数据
             Clue clue = clueService.queryClueForRemarkById(clueId);
             List<ClueRemark> clueRemarks = clueRemarkService.queryClueRemarkById(clueId);
             List<Activity> activities = activitiesService.queryActivitiesByClueIdForClueRemarkPage(clueId);
@@ -224,5 +224,94 @@ public class ClueController {
             e.printStackTrace();
         }
         return "/workbench/clue/detail";
+    }
+
+    /**
+     * 新建线索备注 控制器方法
+     * @param clueRemark
+     * @return 新建的线索备注实体类
+     */
+    @RequestMapping("/workbench/clue/saveClueRemark.do")
+    public @ResponseBody Object saveClueRemark(ClueRemark clueRemark,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);
+            //设置线索备注的其余参数
+            clueRemark.setId(UUIDUtil.getUUID());
+            clueRemark.setCreateBy(user.getId());
+            clueRemark.setCreateTime(DateFormat.formatDateTime(new Date()));
+            clueRemark.setEditFlag(Constants.REMARK_EDIT_FLAG_NOEDIT);
+
+            int count = clueRemarkService.saveClueRemark(clueRemark);
+
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+                returnInfo.setData(clueRemark);
+            }else {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试...");
+            }
+        }catch(Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 删除线索备注 控制器方法
+     * @param id
+     * @return 响应实体类
+     */
+    @RequestMapping("/workbench/clue/deleteClueRemarkById.do")
+    public @ResponseBody Object deleteClueRemarkById(String id){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            int count = clueRemarkService.deleteClueRemarkById(id);
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else{
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试...");
+            }
+        }catch(Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 修改线索备注 控制器方法
+     * @param clueRemark
+     * @return 响应实体类
+     */
+    @RequestMapping("/workbench/clue/updateClueRemarkById.do")
+    public @ResponseBody Object updateClueRemarkById(ClueRemark clueRemark,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);//获取当前登录对象实体类
+            //设置线索备注属性
+            clueRemark.setEditBy(user.getId());
+            clueRemark.setEditTime(DateFormat.formatDateTime(new Date()));
+            clueRemark.setEditFlag(Constants.REMARK_EDIT_FLAG_EDITED);
+
+            int count = clueRemarkService.modifyClueRemarkById(clueRemark);
+
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+                returnInfo.setData(clueRemark);
+            }else {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试...");
+            }
+        }catch(Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
     }
 }

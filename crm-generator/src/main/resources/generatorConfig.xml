@@ -94,12 +94,13 @@
                                enableDeleteByExample="false" enableSelectByExample="false"
                                selectByExampleQueryId="false">
                         </table>
--->
-                        <table tableName="tbl_clue_remark" domainObjectName="ClueRemark"
+
+                        <table tableName="tbl_clue_remark" domainObjectName="ClueRemarkTemp"
                                enableCountByExample="false" enableUpdateByExample="false"
                                enableDeleteByExample="false" enableSelectByExample="false"
                                selectByExampleQueryId="false">
                         </table>
+                        -->
 
         <!--
         <table tableName="tbl_contacts" domainObjectName="Contacts"
