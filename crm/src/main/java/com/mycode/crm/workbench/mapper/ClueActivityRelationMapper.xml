@@ -9,16 +9,7 @@
   <sql id="Base_Column_List" >
     id, clue_id, activity_id
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_clue_activity_relation
-    where id = #{id,jdbcType=CHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from tbl_clue_activity_relation
-    where id = #{id,jdbcType=CHAR}
-  </delete>
+
   <insert id="insert" parameterType="com.mycode.crm.workbench.domain.ClueActivityRelation" >
     insert into tbl_clue_activity_relation (id, clue_id, activity_id
       )
@@ -50,6 +41,20 @@
       </if>
     </trim>
   </insert>
+  <!--新增线索市场活动关系 通过list集合-->
+  <insert id="insertClueActivityRelationByList" parameterType="clueActivityRelation">
+    insert into tbl_clue_activity_relation (id,clue_id,activity_id)
+    values
+    <foreach collection="list" item="clueActivityRelation" separator=",">
+      (#{clueActivityRelation.id},#{clueActivityRelation.clueId},#{clueActivityRelation.activityId})
+    </foreach>
+  </insert>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tbl_clue_activity_relation
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.ClueActivityRelation" >
     update tbl_clue_activity_relation
     <set >
@@ -65,7 +70,14 @@
   <update id="updateByPrimaryKey" parameterType="com.mycode.crm.workbench.domain.ClueActivityRelation" >
     update tbl_clue_activity_relation
     set clue_id = #{clueId,jdbcType=CHAR},
-      activity_id = #{activityId,jdbcType=CHAR}
+        activity_id = #{activityId,jdbcType=CHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_clue_activity_relation
+    where id = #{id,jdbcType=CHAR}
+  </select>
 </mapper>

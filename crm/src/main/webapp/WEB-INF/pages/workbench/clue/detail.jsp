@@ -226,7 +226,40 @@
 				activityIds.push($(this).val());//添加用户选中的市场活动id
 			})
 
+			//发送ajax请求
+			$.ajax({
+				type:'post',
+				url:'workbench/clue/saveClueActivityRelations.do',
+				contentType:'application/json',
+				data:JSON.stringify({
+					clueId:clueId,
+					activityIds:activityIds
+				}),
+				success(data){
+					if (data.code) {
+						const bundledActivities = data.data;
 
+						let html = "";
+
+						bundledActivities.forEach(function (item){
+							html += "<tr>"
+							html += "	<td>"+item.name+"</td>"
+							html += "	<td>"+item.startDate+"</td>"
+							html += "	<td>"+item.endDate+"</td>"
+							html += "	<td>"+item.owner+"</td>"
+							html += "	<td><a activityId=\""+item.id+"\" href=\"javascript:void(0);\" style=\"text-decoration: none;\"><span className=\"glyphicon glyphicon-remove\"></span>解除关联</a></td>"
+							html += "</tr>"
+						})
+
+						//动态添加市场活动
+						$("#tbody-activities").append(html);
+
+						$("#bundModal").modal("hide")//关闭绑定页面
+					}else{
+						alert(data.message);
+					}
+				}
+			})
 
 		})
 
@@ -486,7 +519,7 @@
 						<td></td>
 					</tr>
 					</thead>
-					<tbody>
+					<tbody id="tbody-activities">
 					<c:forEach items="${activities}" var="activity">
 						<tr id="tr_${activity.id}">
 							<td>${activity.name}</td>

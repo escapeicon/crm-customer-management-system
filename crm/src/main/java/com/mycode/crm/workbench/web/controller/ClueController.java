@@ -10,14 +10,17 @@ import com.mycode.crm.settings.service.DicValueService;
 import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Activity;
 import com.mycode.crm.workbench.domain.Clue;
+import com.mycode.crm.workbench.domain.ClueActivityRelation;
 import com.mycode.crm.workbench.domain.ClueRemark;
 import com.mycode.crm.workbench.service.ActivitiesService;
+import com.mycode.crm.workbench.service.ClueActivityRelationService;
 import com.mycode.crm.workbench.service.ClueRemarkService;
 import com.mycode.crm.workbench.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +40,8 @@ public class ClueController {
     private ClueRemarkService clueRemarkService;
     @Autowired
     private ActivitiesService activitiesService;
+    @Autowired
+    private ClueActivityRelationService clueActivityRelationService;
 
     /**
      * 跳转线索首页
@@ -325,6 +330,47 @@ public class ClueController {
         List<Activity> activities = activitiesService.queryAllActivitiesForClueRemarkPageByClueIdExcludeBundled(clueId);
         returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
         returnInfo.setData(activities);
+        return returnInfo;
+    }
+
+    /**
+     * 保存线索市场活动关系 控制器方法
+     * @param requestData
+     * @return 保存的市场活动实体类
+     */
+    @RequestMapping("/workbench/clue/saveClueActivityRelations.do")
+    public @ResponseBody Object saveClueActivityRelations(@RequestBody Map<String,Object> requestData){
+        ReturnInfo returnInfo = new ReturnInfo();
+        String clueId = (String) requestData.get("clueId");//获取clueId
+        List<String> activityIds = (List<String>) requestData.get("activityIds");//获取市场活动集合
+
+        try {
+            List<ClueActivityRelation> clueActivityRelations = new ArrayList<>();//创建线索市场活动关系集合
+            activityIds.forEach(activityId -> {
+                ClueActivityRelation clueActivityRelation = new ClueActivityRelation();
+                clueActivityRelation.setId(UUIDUtil.getUUID());//设置id
+                clueActivityRelation.setClueId(clueId);//设置线索id
+                clueActivityRelation.setActivityId(activityId);//设置市场活动id
+                clueActivityRelations.add(clueActivityRelation);//向list集合中添加线索市场活动关系实体类
+            });
+
+            int count = clueActivityRelationService.saveClueActivityRelationByList(clueActivityRelations);//调用service层方法进而保存
+
+            if (count > 0) {
+                String[] activityIdsArray = activityIds.toArray(new String[0]);//将市场互动集合转换为数组
+                List<Activity> activities = activitiesService.queryActivitiesByIds(activityIdsArray);//根据id获取市场活动集合
+
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+                returnInfo.setData(activities);
+            }else {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试...");
+            }
+        }catch(Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试...");
+            e.printStackTrace();
+        }
         return returnInfo;
     }
 }
