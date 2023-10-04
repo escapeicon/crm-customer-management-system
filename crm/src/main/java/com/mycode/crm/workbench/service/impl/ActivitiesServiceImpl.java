@@ -116,8 +116,23 @@ public class ActivitiesServiceImpl implements ActivitiesService {
         return activitiesMapper.selectActivitiyByIdForDetais(id);
     }
 
+    /**
+     * 查询市场活动集合 for 线索页面 根据 线索id
+     * @param clueId
+     * @return 市场活动集合
+     */
     @Override
     public List<Activity> queryActivitiesByClueIdForClueRemarkPage(String clueId) {
         return activitiesMapper.selectActivitiesByClueIdForClueRemarkPage(clueId);
+    }
+
+    /**
+     * 查询所有市场活动 for 线索页面 by 线索id exclude 已绑定的线索
+     * @param clueId
+     * @return 市场活动集合
+     */
+    @Override
+    public List<Activity> queryAllActivitiesForClueRemarkPageByClueIdExcludeBundled(String clueId) {
+        return activitiesMapper.selectAllActivitiesForClueRemarkExcludeBundledByClueId(clueId);
     }
 }

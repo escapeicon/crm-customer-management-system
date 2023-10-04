@@ -15,6 +15,32 @@
 
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
+
+	//每次加载线索明细页面都会将该线索的id绑定给该常量
+	const clueId = '${clue.id}';
+	//该线索未绑定的市场活动数组 用于渲染绑定市场活动数组功能
+	let activities = null;
+
+	/**
+	 * 渲染绑定市场活动页面的方法
+	 * @param activities
+	 */
+	function renderActivities(activities){
+
+		let html = "";
+
+		activities.forEach(item => {
+			html += "<tr>";
+			html += "	<td><input id=\""+item.id+"\" type=\"checkbox\"/></td>";
+			html += "	<td>"+item.name+"</td>";
+			html += "	<td>"+item.startDate+"</td>";
+			html += "	<td>"+item.endDate+"</td>";
+			html += "	<td>"+item.owner+"</td>";
+			html += "</tr>";
+		})
+
+		$("#bund-activity-tbody").html(html);//渲染页面
+	}
 	
 	$(function(){
 		$("#remark").focus(function(){
@@ -157,7 +183,37 @@
 
 		//关联市场活动按钮
 		$("#bund-activity-btn").click(function (){
-			$("#bundModal").modal("show")
+			//发送ajax请求
+			$.ajax({
+				type:'post',
+				url:'workbench/clue/uploadBundleList.do',
+				data:{
+					clueId:clueId
+				},
+				success(data){
+					if (data.code) {
+						activities = data.data;//获取市场活动信息
+						renderActivities(activities);//渲染市场活动列表
+						$("#bundModal").modal("show")//显示绑定页面
+					}else {
+						alert("系统繁忙，请稍后重试...")
+					}
+				}
+			})
+		})
+		//模糊查询市场活动名称
+		$("#input-activity-fuzzy-query").keyup(function (){
+			let inputName = $("#input-activity-fuzzy-query").val().trim();//用户输入的市场活动名称
+			let newActivities = activities.filter(item => item.name.includes(inputName))//获取市场活动数组中name包含用户输入字段的项
+			renderActivities(newActivities);//重新渲染待绑定的市场活动列表
+		})
+		//市场活动全选反选
+		$("#check-all-activities").change(function (){
+			$("#bund-activity-tbody input[type='checkbox']").prop("checked",$("#check-all-activities").prop("checked"));
+		})
+		//市场列表全选 -> 全选按钮checked
+		$("#bund-activity-tbody").on("change","input[type='checkbox']",function (){
+			$("#check-all-activities").prop("checked",$("#bund-activity-tbody input[type='checkbox']").size() == $("#bund-activity-tbody input[type='checkbox']:checked").size())
 		})
 
 		//回退按钮
@@ -217,15 +273,16 @@
 					<div class="btn-group" style="position: relative; top: 18%; left: 8px;">
 						<form class="form-inline" role="form">
 						  <div class="form-group has-feedback">
-						    <input type="text" class="form-control" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
+						    <input id="input-activity-fuzzy-query" type="text" class="form-control" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
 						    <span class="glyphicon glyphicon-search form-control-feedback"></span>
 						  </div>
 						</form>
 					</div>
+					<%--市场活动列表--%>
 					<table id="activityTable" class="table table-hover" style="width: 900px; position: relative;top: 10px;">
 						<thead>
 							<tr style="color: #B3B3B3;">
-								<td><input type="checkbox"/></td>
+								<td><input id="check-all-activities" type="checkbox"/></td>
 								<td>名称</td>
 								<td>开始日期</td>
 								<td>结束日期</td>
@@ -233,21 +290,7 @@
 								<td></td>
 							</tr>
 						</thead>
-						<tbody>
-							<tr>
-								<td><input type="checkbox"/></td>
-								<td>发传单</td>
-								<td>2020-10-10</td>
-								<td>2020-10-20</td>
-								<td>zhangsan</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox"/></td>
-								<td>发传单</td>
-								<td>2020-10-10</td>
-								<td>2020-10-20</td>
-								<td>zhangsan</td>
-							</tr>
+						<tbody id="bund-activity-tbody">
 						</tbody>
 					</table>
 				</div>

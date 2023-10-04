@@ -314,4 +314,17 @@ public class ClueController {
         }
         return returnInfo;
     }
+
+    /**
+     * 加载绑定市场活动列表 控制器方法
+     * @return
+     */
+    @RequestMapping("/workbench/clue/uploadBundleList.do")
+    public @ResponseBody Object uploadBundList(String clueId){
+        ReturnInfo returnInfo = new ReturnInfo();
+        List<Activity> activities = activitiesService.queryAllActivitiesForClueRemarkPageByClueIdExcludeBundled(clueId);
+        returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+        returnInfo.setData(activities);
+        return returnInfo;
+    }
 }
