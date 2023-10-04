@@ -16,8 +16,6 @@
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
 
-	//每次加载线索明细页面都会将该线索的id绑定给该常量
-	const clueId = '${clue.id}';
 	//该线索未绑定的市场活动数组 用于渲染绑定市场活动数组功能
 	let activities = null;
 
@@ -31,7 +29,7 @@
 
 		activities.forEach(item => {
 			html += "<tr>";
-			html += "	<td><input id=\""+item.id+"\" type=\"checkbox\"/></td>";
+			html += "	<td><input value=\""+item.id+"\" type=\"checkbox\"/></td>";
 			html += "	<td>"+item.name+"</td>";
 			html += "	<td>"+item.startDate+"</td>";
 			html += "	<td>"+item.endDate+"</td>";
@@ -183,12 +181,16 @@
 
 		//关联市场活动按钮
 		$("#bund-activity-btn").click(function (){
+
+			//清空输入框信息
+			$("#input-activity-fuzzy-query").val("");
+
 			//发送ajax请求
 			$.ajax({
 				type:'post',
 				url:'workbench/clue/uploadBundleList.do',
 				data:{
-					clueId:clueId
+					clueId:'${clue.id}'
 				},
 				success(data){
 					if (data.code) {
@@ -214,6 +216,18 @@
 		//市场列表全选 -> 全选按钮checked
 		$("#bund-activity-tbody").on("change","input[type='checkbox']",function (){
 			$("#check-all-activities").prop("checked",$("#bund-activity-tbody input[type='checkbox']").size() == $("#bund-activity-tbody input[type='checkbox']:checked").size())
+		})
+
+		//关联市场活动
+		$("#bundle-activity-btn").click(function (){
+			let activityIds = [];//创建市场活动id数组
+			const clueId = '${clue.id}';//获取线索id
+			$("#bund-activity-tbody input[type='checkbox']:checked").each(function (){
+				activityIds.push($(this).val());//添加用户选中的市场活动id
+			})
+
+
+
 		})
 
 		//回退按钮
@@ -296,7 +310,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">关联</button>
+					<button id="bundle-activity-btn" type="button" class="btn btn-primary">关联</button>
 				</div>
 			</div>
 		</div>
