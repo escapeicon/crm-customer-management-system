@@ -398,4 +398,24 @@ public class ClueController {
         }
         return returnInfo;
     }
+
+    /**
+     * 跳转线索转换页面 控制器方法
+     * @param clueId
+     * @param request
+     * @return
+     */
+    @RequestMapping("/workbench/clue/toClueConvert.do")
+    public String toClueConvert(String clueId,HttpServletRequest request){
+
+        Clue clue = clueService.queryClueForRemarkById(clueId);//获取线索实体类
+        List<DicValue> stage = dicValueService.queryDicValueByTypeCode("stage");//获取阶段集合
+
+        request.setAttribute("clue",clue);
+        request.setAttribute("stages",stage);
+
+        return "workbench/clue/convert";
+    }
+
+
 }

@@ -246,7 +246,7 @@
 						let html = "";
 
 						bundledActivities.forEach(function (item){
-							html += "<tr>"
+							html += "<tr id=\"tr_"+item.id+"\">"
 							html += "	<td>"+item.name+"</td>"
 							html += "	<td>"+item.startDate+"</td>"
 							html += "	<td>"+item.endDate+"</td>"
@@ -290,6 +290,11 @@
 					}
 				})
 			}
+		})
+
+		//线索转换按钮
+		$("#clue-convert-btn").click(function (){
+			window.location.href = "workbench/clue/toClueConvert.do?clueId="+'${clue.id}';
 		})
 
 		//回退按钮
@@ -389,7 +394,7 @@
 			<h3>${clue.fullname}${clue.appellation} <small>${clue.company}</small></h3>
 		</div>
 		<div style="position: relative; height: 50px; width: 500px;  top: -72px; left: 700px;">
-			<button type="button" class="btn btn-default" onclick="window.location.href='convert.html';"><span class="glyphicon glyphicon-retweet"></span> 转换</button>
+			<button id="clue-convert-btn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-retweet"></span> 转换</button>
 		</div>
 	</div>
 	
@@ -525,7 +530,6 @@
 			</form>
 		</div>
 	</div>
-
 
 	<!-- 市场活动 -->
 	<div>
