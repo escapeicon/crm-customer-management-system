@@ -23,4 +23,14 @@ public class ClueActivityRelationServiceImpl implements ClueActivityRelationServ
     public int saveClueActivityRelationByList(List<ClueActivityRelation> clueActivityRelationList) {
         return clueActivityRelationMapper.insertClueActivityRelationByList(clueActivityRelationList);
     }
+
+    /**
+     * 删除线索市场活动关系 根据实体类对象
+     * @param clueActivityRelation
+     * @return 删除的条数
+     */
+    @Override
+    public int deleteClueActivityRelationByObject(ClueActivityRelation clueActivityRelation) {
+        return clueActivityRelationMapper.deleteClueActivityRelationByObject(clueActivityRelation);
+    }
 }

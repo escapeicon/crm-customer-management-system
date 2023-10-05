@@ -373,4 +373,29 @@ public class ClueController {
         }
         return returnInfo;
     }
+
+    /**
+     * 删除线索市场活动关系 控制器方法
+     * @param clueActivityRelation
+     * @return 相应实体类
+     */
+    @RequestMapping("/workbench/clue/deleteClueActivityRelation.do")
+    public @ResponseBody Object deleteClueActivityRelation(ClueActivityRelation clueActivityRelation){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try{
+            int count = clueActivityRelationService.deleteClueActivityRelationByObject(clueActivityRelation);//调用service层进而删除
+
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else{
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙，请稍后重试...");
+            }
+        }catch(Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
 }

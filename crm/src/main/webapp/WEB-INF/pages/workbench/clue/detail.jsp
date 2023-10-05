@@ -212,10 +212,14 @@
 		//市场活动全选反选
 		$("#check-all-activities").change(function (){
 			$("#bund-activity-tbody input[type='checkbox']").prop("checked",$("#check-all-activities").prop("checked"));
+			//根据用户点击市场活动判断是否禁用绑定按钮 用于用户提交时至少选择一个市场活动进行绑定
+			$("#bundle-activity-btn").prop("disabled",!$("#check-all-activities").prop("checked"));
 		})
 		//市场列表全选 -> 全选按钮checked
 		$("#bund-activity-tbody").on("change","input[type='checkbox']",function (){
 			$("#check-all-activities").prop("checked",$("#bund-activity-tbody input[type='checkbox']").size() == $("#bund-activity-tbody input[type='checkbox']:checked").size())
+			//根据用户点击市场活动判断是否禁用绑定按钮 用于用户提交时至少选择一个市场活动进行绑定
+			$("#bundle-activity-btn").prop("disabled",!$("#bund-activity-tbody input[type='checkbox']:checked").size() > 0);
 		})
 
 		//关联市场活动
@@ -247,7 +251,7 @@
 							html += "	<td>"+item.startDate+"</td>"
 							html += "	<td>"+item.endDate+"</td>"
 							html += "	<td>"+item.owner+"</td>"
-							html += "	<td><a activityId=\""+item.id+"\" href=\"javascript:void(0);\" style=\"text-decoration: none;\"><span className=\"glyphicon glyphicon-remove\"></span>解除关联</a></td>"
+							html += "	<td><a activityId=\""+item.id+"\" href=\"javascript:void(0);\" style=\"text-decoration: none;\"><span class=\"glyphicon glyphicon-remove\"></span>解除关联</a></td>"
 							html += "</tr>"
 						})
 
@@ -261,6 +265,31 @@
 				}
 			})
 
+		})
+		//解除关联市场活动
+		$("#tbody-activities").on("click","tr>td>a",function (){
+			if (window.confirm("您确认删除该条关联的市场活动吗？")) {
+
+				const activityId = $(this).attr("activityId");//获取市场活动id
+				const clueId = '${clue.id}';//获取线索id
+
+				//发送ajax请求
+				$.ajax({
+					type:'post',
+					url:'workbench/clue/deleteClueActivityRelation.do',
+					data:{
+						activityId:activityId,
+						clueId:clueId
+					},
+					success(data){
+						if (data.code) {
+							$("#tr_"+activityId).remove();
+						}else {
+							alert(data.message);
+						}
+					}
+				})
+			}
 		})
 
 		//回退按钮
@@ -343,7 +372,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button id="bundle-activity-btn" type="button" class="btn btn-primary">关联</button>
+					<button id="bundle-activity-btn" type="button" class="btn btn-primary" disabled>关联</button>
 				</div>
 			</div>
 		</div>
@@ -470,7 +499,6 @@
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
-		<c:if test="${clueRemarks.size() > 0}">
 		<c:forEach items="${clueRemarks}" var="clueRemark">
 			<div id="div_${clueRemark.id}" class="remarkDiv" style="height: 60px;">
 				<img title="${clueRemark.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
@@ -486,7 +514,6 @@
 			</div>
 
 		</c:forEach>
-		</c:if>
 
 		<div id="remarkDiv" style="background-color: #E6E6E6; width: 870px; height: 90px;">
 			<form role="form" style="position: relative;top: 10px; left: 10px;">
@@ -507,7 +534,6 @@
 				<h4>市场活动</h4>
 			</div>
 
-			<c:if test="${activities.size() > 0}">
 			<div style="position: relative;top: 0px;">
 				<table class="table table-hover" style="width: 900px;">
 					<thead>
@@ -532,7 +558,6 @@
 					</tbody>
 				</table>
 			</div>
-			</c:if>
 			<div>
 				<a id="bund-activity-btn" href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>关联市场活动</a>
 			</div>

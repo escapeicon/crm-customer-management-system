@@ -54,6 +54,11 @@
     delete from tbl_clue_activity_relation
     where id = #{id,jdbcType=CHAR}
   </delete>
+  <!--删除线索市场活动关系 根据实体类对象-->
+  <delete id="deleteClueActivityRelationByObject" parameterType="clueActivityRelation">
+    delete from tbl_clue_activity_relation
+    where clue_id = #{clueId} and activity_id = #{activityId}
+  </delete>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.ClueActivityRelation" >
     update tbl_clue_activity_relation
