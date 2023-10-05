@@ -135,4 +135,14 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     public List<Activity> queryAllActivitiesForClueRemarkPageByClueIdExcludeBundled(String clueId) {
         return activitiesMapper.selectAllActivitiesForClueRemarkExcludeBundledByClueId(clueId);
     }
+
+    /**
+     * 查询 已经同线索关联的市场活动
+     * @param clueId
+     * @return 市场活动集合
+     */
+    @Override
+    public List<Activity> queryActivitiesForClueConvertByClueId(String clueId) {
+        return activitiesMapper.selectActivitiesForClueConvertBundledByClueId(clueId);
+    }
 }

@@ -97,11 +97,12 @@ public interface ActivitiesMapper {
      * @return 市场活动集合
      */
     List<Activity> selectActivitiesByClueIdForClueRemarkPage(String id);
-
     /**
      * 查询多条市场活动 for 线索备注 排除线索备注已绑定的市场活动
      * @param clueId
      * @return 市场活动集合
      */
     List<Activity> selectAllActivitiesForClueRemarkExcludeBundledByClueId(String clueId);
+    //查询多条市场活动 for 线索转换 查询该线索已绑定的市场活动
+    List<Activity> selectActivitiesForClueConvertBundledByClueId(String Clueid);
 }

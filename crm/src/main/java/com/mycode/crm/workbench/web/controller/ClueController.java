@@ -417,5 +417,57 @@ public class ClueController {
         return "workbench/clue/convert";
     }
 
+    /**
+     * 线索转换 查询市场活动源
+     * @return 市场活动源
+     */
+    @RequestMapping("/workbench/clue/convertQueryActivity.do")
+    public @ResponseBody Object convertQueryActivity(String clueId){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            List<Activity> activities = activitiesService.queryActivitiesForClueConvertByClueId(clueId);//查询所有市场活动
+            if (activities != null) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+                returnInfo.setData(activities);
+            }else {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("无任何市场活动...");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
 
+    /**
+     * 转换线索 控制器方法
+     * @param data
+     * @return
+     */
+    @RequestMapping("/workbench/clue/convertClue.do")
+    public @ResponseBody Object convertClue(String clueId,String money,String name,String expectedDate, String stage,String source,String isCreateTran,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("clueId",clueId);
+        data.put("money",money);
+        data.put("name",name);
+        data.put("expectedDate",expectedDate);
+        data.put("stage",stage);
+        data.put("source",source);
+        data.put("isCreateTran",isCreateTran);
+        //封装当前登录用户
+        User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);
+        data.put(Constants.SESSION_USER_KEY,user);
+        try {
+
+            clueService.saveClueConvert(data);
+
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+        } catch (Exception e) {
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试...");
+            throw new RuntimeException(e);
+        }
+        return returnInfo;
+    }
 }

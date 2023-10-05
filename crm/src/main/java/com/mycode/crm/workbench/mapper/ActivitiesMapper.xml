@@ -350,4 +350,18 @@
         where clue_id = #{clueId}
       )
   </select>
+  <!--查询多条市场活动 for 线索转换 查询该线索已绑定的市场活动-->
+  <select id="selectActivitiesForClueConvertBundledByClueId" parameterType="string" resultMap="BaseResultMap">
+    select
+        a.id,
+        a.name,
+        a.start_date,
+        a.end_date,
+        u.name as owner
+    from tbl_activity as a
+    join tbl_user as u on a.owner = u.id
+    where a.id in (
+        select activity_id from tbl_clue_activity_relation where clue_id = #{clueId}
+      )
+  </select>
 </mapper>

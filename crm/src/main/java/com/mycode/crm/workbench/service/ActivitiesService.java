@@ -86,4 +86,6 @@ public interface ActivitiesService {
      * @return 市场活动集合
      */
     List<Activity> queryAllActivitiesForClueRemarkPageByClueIdExcludeBundled(String clueId);
+
+    List<Activity> queryActivitiesForClueConvertByClueId(String clueId);
 }

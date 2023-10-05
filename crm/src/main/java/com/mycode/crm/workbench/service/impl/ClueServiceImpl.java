@@ -1,11 +1,18 @@
 package com.mycode.crm.workbench.service.impl;
 
+import com.mycode.crm.commons.constants.Constants;
+import com.mycode.crm.commons.utils.DateFormat;
+import com.mycode.crm.commons.utils.UUIDUtil;
+import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.workbench.domain.Clue;
+import com.mycode.crm.workbench.domain.Customer;
 import com.mycode.crm.workbench.mapper.ClueMapper;
+import com.mycode.crm.workbench.mapper.CustomerMapper;
 import com.mycode.crm.workbench.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +21,8 @@ public class ClueServiceImpl implements ClueService {
 
     @Autowired
     private ClueMapper clueMapper;
+    @Autowired
+    private CustomerMapper customerMapper;
 
     /**
      * 创建线索
@@ -23,6 +32,35 @@ public class ClueServiceImpl implements ClueService {
     @Override
     public int saveClue(Clue clue) {
         return clueMapper.insertClue(clue);
+    }
+
+    /**
+     * 保存线索转换 方法
+     * @param data
+     * @return
+     */
+    @Override
+    public void saveClueConvert(Map<String,Object> data) {
+        String clueId = (String) data.get("clueId");//获取线索id
+        User user = (User) data.get(Constants.SESSION_USER_KEY);//获取当前登录用户
+
+        Clue clue = clueMapper.selectClueById(clueId);//查询该条线索
+
+        //封装客户实体类
+        Customer customer = new Customer();
+        customer.setId(UUIDUtil.getUUID());
+        customer.setOwner(user.getId());
+        customer.setName(clue.getCompany());
+        customer.setWebsite(clue.getWebsite());
+        customer.setPhone(clue.getPhone());
+        customer.setCreateBy(clue.getCreateBy());
+        customer.setCreateTime(DateFormat.formatDateTime(new Date()));
+        customer.setContactSummary(clue.getContactSummary());
+        customer.setNextContactTime(clue.getNextContactTime());
+        customer.setDescription(clue.getDescription());
+        customer.setAddress(clue.getAddress());
+
+        customerMapper.insertCustomer(customer);//保存客户实体类
     }
 
     /**

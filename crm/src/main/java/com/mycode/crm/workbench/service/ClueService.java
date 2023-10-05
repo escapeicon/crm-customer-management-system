@@ -8,6 +8,7 @@ import java.util.Map;
 public interface ClueService {
 
     int saveClue(Clue clue);
+    void saveClueConvert(Map<String,Object> data);
 
     int deleteClueByIds(String[] ids);
 
