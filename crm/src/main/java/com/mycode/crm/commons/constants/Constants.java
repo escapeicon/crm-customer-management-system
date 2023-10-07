@@ -14,4 +14,8 @@ public class Constants {
     //线索page-no and page-size
     public static final String CLUE_PAGE_NO="cluePageNo";
     public static final String CLUE_PAGE_SIZE="cluePageSize";
+
+    //客户 page-no and page-size
+    public static final String CUSTOMER_PAGE_NO="customerPageNo";
+    public static final String CUSTOMER_PAGE_SIZE="customerPageSize";
 }

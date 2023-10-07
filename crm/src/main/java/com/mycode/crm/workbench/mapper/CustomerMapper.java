@@ -2,16 +2,25 @@ package com.mycode.crm.workbench.mapper;
 
 import com.mycode.crm.workbench.domain.Customer;
 
+import java.util.List;
+import java.util.Map;
+
 public interface CustomerMapper {
 
-    int insert(Customer record);
-    int insertSelective(Customer record);
+    /**
+     * 增添客户
+     * @param customer
+     * @return
+     */
     int insertCustomer(Customer customer);
 
-    int deleteByPrimaryKey(String id);
+    /**
+     * 查询客户 分页查询 通过条件
+     * @param pageInfo
+     * @return 客户集合
+     */
+    List<Customer> selectCustomerForPageByCondition(Map<String,Object> pageInfo);
+    //查询上面查询结果的总条数
+    int selectCountCustomerForPageByCondition(Map<String,Object> pageInfo);
 
-    int updateByPrimaryKeySelective(Customer record);
-    int updateByPrimaryKey(Customer record);
-
-    Customer selectByPrimaryKey(String id);
 }

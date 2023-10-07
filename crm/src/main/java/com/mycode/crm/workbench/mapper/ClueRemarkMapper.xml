@@ -90,6 +90,11 @@
     delete from tbl_clue_remark
     where id = #{id,jdbcType=CHAR}
   </delete>
+  <!--删除单条线索 根据线索id-->
+  <delete id="deleteClueRemarkByClueId" parameterType="string">
+    delete from tbl_clue_remark
+    where clue_id = #{clueId}
+  </delete>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.ClueRemark" >
     update tbl_clue_remark

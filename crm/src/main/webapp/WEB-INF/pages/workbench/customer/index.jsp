@@ -1,28 +1,92 @@
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+	String base = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/";
+%>
 <html>
 <head>
-<meta charset="UTF-8">
+<base href="<%= base%>" />
+<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bs_pagination-master/css/jquery.bs_pagination.min.css">
 
-<link href="../../jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-<link href="../../jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
-
-<script type="text/javascript" src="../../jquery/jquery-1.11.1-min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
+<script type="text/javascript" src="jquery/bs_pagination-master/js/jquery.bs_pagination.min.js"></script>
+<script type="text/javascript" src="jquery/bs_pagination-master/localization/en.js"></script>
+<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
 
+	function renderCustomerList(pageNo,pageSize){
+		//获取用户查询栏的输入
+		let name = $("#search-name").val();
+		let owner = $("#search-owner").val();
+		let phone = $("#search-phone").val();
+		let website = $("#search-website").val();
+
+		$.ajax({
+			type:'post',
+			url:"workbench/customer/queryForPageByCondition.do",
+			data:{
+				name:name,
+				owner:owner,
+				phone:phone,
+				website:website,
+				pageNo:pageNo,
+				pageSize:pageSize
+			},
+			success(data){
+				console.log(data);
+				const customers = data.customers;
+				let totalRows = data.totalRows;
+
+				//渲染 customers列表
+				let html = "";
+
+				customers.forEach(customer => {
+					html += "<tr>";
+					html += "	<td><input type=\"checkbox\" value='"+customer.id+"'/></td>";
+					html += "	<td><a style=\"text-decoration: none; cursor: pointer;\" >"+customer.name+"</a></td>";
+					html += "	<td>"+customer.owner+"</td>";
+					html += "	<td>"+(customer.phone == null ? "" : customer.phone)+"</td>";
+					html += "	<td>"+(customer.website == null ? "" : customer.website)+"</td>";
+					html += "</tr>";
+				})
+
+				$("#tbody-customer").html(html);
+
+				//分页组件
+				$("#bs-pagination").bs_pagination({
+					currentPage:pageNo,//页码
+					rowsPerPage:pageSize,//每页显示条数
+					totalRows:totalRows,//总条数
+					totalPages:totalRows % pageSize == 0 ? totalRows / pageSize : parseInt(totalRows / pageSize + 1),//总页面
+					showGoToPage:true,
+					showRowsPerPage:true,
+					showRowsInfo:true,
+					visiblePageLinks:10,
+					onChangePage:function (event,data){
+						const currentPage = data.currentPage;//获取当前页面
+						const rowsPerPage = data.rowsPerPage;//获取每页显示条数
+						renderCustomerList(currentPage,rowsPerPage);//刷新页面
+					}
+				})
+			}
+		})
+	}
+
 	$(function(){
+		renderCustomerList(${customerPageNo == null ? 1 : customerPageNo},${customerPageSize == null ? 10 : customerPageSize});
 		
 		//定制字段
 		$("#definedColumns > li").click(function(e) {
 			//防止下拉菜单消失
 	        e.stopPropagation();
 	    });
-		
 	});
-	
+
 </script>
 </head>
 <body>
@@ -39,22 +103,25 @@
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
-					
+
+						<%--create-customerOwner create-customerName--%>
 						<div class="form-group">
 							<label for="create-customerOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-customerOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+									<c:forEach items="${users}" var="user">
+										<option value="${user.id}">${user.name}</option>
+									</c:forEach>
 								</select>
 							</div>
 							<label for="create-customerName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
+							<%--create-customerName--%>
 							<div class="col-sm-10" style="width: 300px;">
 								<input type="text" class="form-control" id="create-customerName">
 							</div>
 						</div>
-						
+
+						<%--create-website--%>
 						<div class="form-group">
                             <label for="create-website" class="col-sm-2 control-label">公司网站</label>
                             <div class="col-sm-10" style="width: 300px;">
@@ -126,9 +193,9 @@
 							<label for="edit-customerOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-customerOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+<c:forEach items="${users}" var="user">
+	<option value="${user.id}">${user.name}</option>
+</c:forEach>
 								</select>
 							</div>
 							<label for="edit-customerName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
@@ -192,10 +259,8 @@
 			</div>
 		</div>
 	</div>
-	
-	
-	
-	
+
+	<%--标题--%>
 	<div>
 		<div style="position: relative; left: 10px; top: -10px;">
 			<div class="page-header">
@@ -209,33 +274,34 @@
 		<div style="width: 100%; position: absolute;top: 5px; left: 10px;">
 		
 			<div class="btn-toolbar" role="toolbar" style="height: 80px;">
+				<%--搜索栏--%>
 				<form class="form-inline" role="form" style="position: relative;top: 8%; left: 5px;">
-				  
+				  <%--search-name--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">名称</div>
-				      <input class="form-control" type="text">
+				      <input id="search-name" class="form-control" type="text">
 				    </div>
 				  </div>
-				  
+				  <%--search-owner--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">所有者</div>
-				      <input class="form-control" type="text">
+				      <input id="search-owner" class="form-control" type="text">
 				    </div>
 				  </div>
-				  
+				  <%--search-phone--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">公司座机</div>
-				      <input class="form-control" type="text">
+				      <input id="search-phone" class="form-control" type="text">
 				    </div>
 				  </div>
-				  
+				  <%--search-website--%>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">公司网站</div>
-				      <input class="form-control" type="text">
+				      <input id="search-website" class="form-control" type="text">
 				    </div>
 				  </div>
 				  
@@ -243,6 +309,7 @@
 				  
 				</form>
 			</div>
+			<%--工具栏--%>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCustomerModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
@@ -251,6 +318,8 @@
 				</div>
 				
 			</div>
+
+			<%--渲染列表--%>
 			<div style="position: relative;top: 10px;">
 				<table class="table table-hover">
 					<thead>
@@ -262,7 +331,7 @@
 							<td>公司网站</td>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="tbody-customer">
 						<tr>
 							<td><input type="checkbox" /></td>
 							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">动力节点</a></td>
@@ -280,9 +349,10 @@
 					</tbody>
 				</table>
 			</div>
-			
-			<div style="height: 50px; position: relative;top: 30px;">
-				<div>
+
+			<%--分页查询栏--%>
+			<div style="height: 50px; position: relative;top: 30px;" id="bs-pagination">
+				<%--<div>
 					<button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
 				</div>
 				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
@@ -313,7 +383,7 @@
 							<li class="disabled"><a href="#">末页</a></li>
 						</ul>
 					</nav>
-				</div>
+				</div>--%>
 			</div>
 			
 		</div>

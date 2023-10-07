@@ -21,6 +21,8 @@ public interface ClueRemarkMapper {
      * @return 数据库更新条数
      */
     int deleteClueRemarkById(String id);
+    //删除单条线索 根据线索id
+    int deleteClueRemarkByClueId(String clueId);
 
     int updateByPrimaryKeySelective(ClueRemark record);
     /**

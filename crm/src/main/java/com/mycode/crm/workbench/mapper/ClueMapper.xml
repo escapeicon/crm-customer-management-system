@@ -48,10 +48,19 @@
       #{address,jdbcType=VARCHAR})
   </insert>
 
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+  <delete id="deleteById" parameterType="java.lang.String" >
     delete from tbl_clue
     where id = #{id,jdbcType=CHAR}
   </delete>
+  <!--删除线索 根据id数组-->
+  <delete id="deleteClueByIds" parameterType="string">
+    delete from tbl_clue
+    where id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.Clue" >
     update tbl_clue
     <set >
@@ -267,15 +276,6 @@
       </if>
     </trim>
   </insert>
-
-  <!--删除线索 根据id数组-->
-  <delete id="deleteClueByIds" parameterType="string">
-    delete from tbl_clue
-    where id in
-    <foreach collection="array" item="id" separator="," open="(" close=")">
-      #{id}
-    </foreach>
-  </delete>
 
   <!--修改线索 根据id-->
   <update id="updateClue" parameterType="clue">

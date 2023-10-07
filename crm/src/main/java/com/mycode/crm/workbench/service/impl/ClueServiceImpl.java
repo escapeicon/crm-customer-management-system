@@ -107,11 +107,13 @@ public class ClueServiceImpl implements ClueService {
         contactsMapper.insertContact(contacts);//保存联系人实体类
 
         //转换备注列表类
-        if (clueRemarks.size() != 0) {
+        if (clueRemarks.size() > 0 && clueRemarks != null) {
             List<CustomerRemark> customerRemarks = new ArrayList<>();
             List<ContactsRemark> contactsRemarks = new ArrayList<>();
             clueRemarks.forEach(clueRemark -> {
                 CustomerRemark customerRemark = new CustomerRemark();
+                ContactsRemark contactsRemark = new ContactsRemark();
+
                 customerRemark.setId(UUIDUtil.getUUID());
                 customerRemark.setNoteContent(clueRemark.getNoteContent());
                 customerRemark.setCreateBy(clueRemark.getCreateBy());
@@ -120,11 +122,7 @@ public class ClueServiceImpl implements ClueService {
                 customerRemark.setEditTime(clueRemark.getEditTime());
                 customerRemark.setEditFlag(clueRemark.getEditFlag());
                 customerRemark.setCustomerId(customerId);
-                customerRemarks.add(customerRemark);
-            });
-            //转换备注列表类
-            clueRemarks.forEach(clueRemark -> {
-                ContactsRemark contactsRemark = new ContactsRemark();
+
                 contactsRemark.setId(UUIDUtil.getUUID());
                 contactsRemark.setContactsId(contactsId);
                 contactsRemark.setNoteContent(clueRemark.getNoteContent());
@@ -133,6 +131,8 @@ public class ClueServiceImpl implements ClueService {
                 contactsRemark.setEditBy(clueRemark.getEditBy());
                 contactsRemark.setEditTime(clueRemark.getEditTime());
                 contactsRemark.setEditFlag(clueRemark.getEditFlag());
+
+                customerRemarks.add(customerRemark);
                 contactsRemarks.add(contactsRemark);
             });
             customerRemarkMapper.insertCustomerRemarkByList(customerRemarks);//备注表 备份客户表一份
@@ -140,7 +140,7 @@ public class ClueServiceImpl implements ClueService {
         }
 
         //转换 线索市场活动 -> 联系人市场活动
-        if (clueActivityRelations.size() != 0) {
+        if (clueActivityRelations.size() > 0 && clueActivityRelations != null) {
             ArrayList<ContactsActivityRelation> contactsActivityRelations = new ArrayList<>();
             clueActivityRelations.forEach(clueActivityRelation -> {
                 ContactsActivityRelation contactsActivityRelation = new ContactsActivityRelation();
@@ -182,7 +182,7 @@ public class ClueServiceImpl implements ClueService {
             transactionMapper.insertTransaction(transaction);
 
             //转换线索备注 -> 交易备注
-            if (clueRemarks.size() != 0){
+            if (clueRemarks.size() > 0 && clueRemarks != null){
                 ArrayList<TransactionRemark> transactionRemarks = new ArrayList<>();
 
                 clueRemarks.forEach(clueRemark -> {
@@ -201,9 +201,14 @@ public class ClueServiceImpl implements ClueService {
 
                 transactionRemarkMapper.insertTransactionRemarkByList(transactionRemarks);
             }
-
-
         }
+
+        //删除该线索下所有备注
+        clueRemarkMapper.deleteClueRemarkByClueId(clueId);
+        //删除该线索和市场活动关联关系
+        clueActivityRelationMapper.deleteClueActivityRelationByClueId(clueId);
+        //删除该线索
+        clueMapper.deleteById(clueId);
     }
 
     /**
