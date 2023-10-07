@@ -19,4 +19,6 @@ public interface ClueActivityRelationMapper {
     int updateByPrimaryKey(ClueActivityRelation record);
 
     ClueActivityRelation selectByPrimaryKey(String id);
+    //根据线索id 查询所有该线索绑定的线索市场活动关系
+    List<ClueActivityRelation> selectClueActivityRelationListByClueId(String clueId);
 }

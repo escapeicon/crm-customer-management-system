@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mycode.crm.workbench.mapper.ContactsRemarkMapper" >
+  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.ContactsRemark" >
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="note_content" property="noteContent" jdbcType="VARCHAR" />
+    <result column="create_by" property="createBy" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="CHAR" />
+    <result column="edit_by" property="editBy" jdbcType="VARCHAR" />
+    <result column="edit_time" property="editTime" jdbcType="CHAR" />
+    <result column="edit_flag" property="editFlag" jdbcType="CHAR" />
+    <result column="contacts_id" property="contactsId" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, contacts_id
+  </sql>
+
+  <insert id="insertContactsRemarkByList" parameterType="contactsRemark">
+    insert into tbl_contacts_remark
+        (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,contacts_id)
+    values
+    <foreach collection="list" separator="," item="contactsRemark">
+      (#{contactsRemark.id},#{contactsRemark.noteContent},#{contactsRemark.createBy},#{contactsRemark.createTime},#{contactsRemark.editBy},#{contactsRemark.editTime},#{contactsRemark.editFlag},#{contactsRemark.contactsId})
+    </foreach>
+  </insert>
+</mapper>

@@ -25,16 +25,7 @@
     create_time, edit_by, edit_time, description, contact_summary, next_contact_time, 
     address
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_contacts
-    where id = #{id,jdbcType=CHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from tbl_contacts
-    where id = #{id,jdbcType=CHAR}
-  </delete>
+
   <insert id="insert" parameterType="com.mycode.crm.workbench.domain.Contacts" >
     insert into tbl_contacts (id, owner, source, 
       customer_id, fullname, appellation, 
@@ -158,6 +149,21 @@
       </if>
     </trim>
   </insert>
+
+  <insert id="insertContact" parameterType="contacts">
+    insert into tbl_contacts
+        (id,owner,source,customer_id,fullname,appellation,email,mphone,job,create_by,create_time,
+        description,contact_summary,next_contact_time,address)
+    value
+        (#{id},#{owner},#{source},#{customerId},#{fullname},#{appellation},#{email},#{mphone},#{job},#{createBy},#{createTime},
+         #{description},#{contactSummary},#{nextContactTime},#{address})
+  </insert>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tbl_contacts
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.Contacts" >
     update tbl_contacts
     <set >
@@ -232,4 +238,11 @@
       address = #{address,jdbcType=VARCHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_contacts
+    where id = #{id,jdbcType=CHAR}
+  </select>
 </mapper>

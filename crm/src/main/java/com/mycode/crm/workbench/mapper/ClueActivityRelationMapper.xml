@@ -85,4 +85,8 @@
     from tbl_clue_activity_relation
     where id = #{id,jdbcType=CHAR}
   </select>
+  <!--根据线索id 查询所有该线索绑定的线索市场活动关系-->
+  <select id="selectClueActivityRelationListByClueId" resultMap="BaseResultMap" parameterType="string">
+    select * from tbl_clue_activity_relation where clue_id = #{clueId}
+  </select>
 </mapper>

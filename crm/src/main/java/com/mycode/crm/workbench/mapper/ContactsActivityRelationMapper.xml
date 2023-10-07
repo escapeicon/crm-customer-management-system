@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mycode.crm.workbench.mapper.ContactsActivityRelationMapper" >
+  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.ContactsActivityRelation" >
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="contacts_id" property="contactsId" jdbcType="CHAR" />
+    <result column="activity_id" property="activityId" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, contacts_id, activity_id
+  </sql>
+
+  <!--添加多条联系人市场活动 通过list集合-->
+  <insert id="insertContactsActivityRelation" parameterType="contactsActivityRelation">
+    insert into
+        tbl_contacts_activity_relation
+    (id,contacts_id,activity_id)
+    values
+        <foreach collection="list" separator="," item="contactsActivityRelation">
+          (#{contactsActivityRelation.id},#{contactsActivityRelation.contactsId},#{contactsActivityRelation.activityId})
+        </foreach>
+  </insert>
+</mapper>
