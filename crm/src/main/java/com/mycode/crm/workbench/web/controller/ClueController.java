@@ -445,7 +445,7 @@ public class ClueController {
      * @return
      */
     @RequestMapping("/workbench/clue/convertClue.do")
-    public @ResponseBody Object convertClue(String clueId,String money,String name,String expectedDate, String stage,String source,String isCreateTran,HttpSession session){
+    public @ResponseBody Object convertClue(String clueId,String money,String name,String expectedDate, String stage,String activityId,String isCreateTran,HttpSession session){
         ReturnInfo returnInfo = new ReturnInfo();
         HashMap<String, Object> data = new HashMap<>();
         data.put("clueId",clueId);
@@ -453,15 +453,13 @@ public class ClueController {
         data.put("name",name);
         data.put("expectedDate",expectedDate);
         data.put("stage",stage);
-        data.put("source",source);
+        data.put("activityId",activityId);
         data.put("isCreateTran",isCreateTran);
         //封装当前登录用户
         User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);
         data.put(Constants.SESSION_USER_KEY,user);
         try {
-
             clueService.saveClueConvert(data);
-
             returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
         } catch (Exception e) {
             returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);

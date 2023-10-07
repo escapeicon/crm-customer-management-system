@@ -14,93 +14,15 @@
     id, value, text, order_no, type_code
   </sql>
 
-  <insert id="insert" parameterType="com.mycode.crm.settings.domain.DicValue" >
-    insert into tbl_dic_value (id, value, text, 
-      order_no, type_code)
-    values (#{id,jdbcType=CHAR}, #{value,jdbcType=VARCHAR}, #{text,jdbcType=VARCHAR}, 
-      #{orderNo,jdbcType=VARCHAR}, #{typeCode,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.mycode.crm.settings.domain.DicValue" >
-    insert into tbl_dic_value
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="value != null" >
-        value,
-      </if>
-      <if test="text != null" >
-        text,
-      </if>
-      <if test="orderNo != null" >
-        order_no,
-      </if>
-      <if test="typeCode != null" >
-        type_code,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=CHAR},
-      </if>
-      <if test="value != null" >
-        #{value,jdbcType=VARCHAR},
-      </if>
-      <if test="text != null" >
-        #{text,jdbcType=VARCHAR},
-      </if>
-      <if test="orderNo != null" >
-        #{orderNo,jdbcType=VARCHAR},
-      </if>
-      <if test="typeCode != null" >
-        #{typeCode,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from tbl_dic_value
-    where id = #{id,jdbcType=CHAR}
-  </delete>
-
-  <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.settings.domain.DicValue" >
-    update tbl_dic_value
-    <set >
-      <if test="value != null" >
-        value = #{value,jdbcType=VARCHAR},
-      </if>
-      <if test="text != null" >
-        text = #{text,jdbcType=VARCHAR},
-      </if>
-      <if test="orderNo != null" >
-        order_no = #{orderNo,jdbcType=VARCHAR},
-      </if>
-      <if test="typeCode != null" >
-        type_code = #{typeCode,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=CHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.mycode.crm.settings.domain.DicValue" >
-    update tbl_dic_value
-    set value = #{value,jdbcType=VARCHAR},
-      text = #{text,jdbcType=VARCHAR},
-      order_no = #{orderNo,jdbcType=VARCHAR},
-      type_code = #{typeCode,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=CHAR}
-  </update>
-
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select
-    <include refid="Base_Column_List" />
-    from tbl_dic_value
-    where id = #{id,jdbcType=CHAR}
-  </select>
   <!--查询数据字典 根据数据字典类型-->
   <select id="selectDicValueByTypeCode" resultMap="BaseResultMap" parameterType="string">
     select
         <include refid="Base_Column_List" />
     from tbl_dic_value
     where type_code = #{typeCode}
+  </select>
+  <!--查询单条信息 通过类型名-->
+  <select id="selectDicValueByValue" parameterType="string" resultMap="BaseResultMap">
+    select * from tbl_dic_value where value = #{value}
   </select>
 </mapper>

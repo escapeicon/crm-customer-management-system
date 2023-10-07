@@ -101,7 +101,7 @@
 			const name = $("#tradeName").val();
 			const expectedDate = $("#expectedClosingDate").val();
 			const stage = $("#stage").val();
-			const source = $("#activity").attr("activityId");
+			const activityId = $("#activity").attr("activityId");
 			const isCreateTran = $("#isCreateTransaction").prop("checked");
 
 			$.ajax({
@@ -113,7 +113,7 @@
 					name:name,
 					expectedDate:expectedDate,
 					stage:stage,
-					source:source,
+					activityId:activityId,
 					isCreateTran:isCreateTran
 				},
 				success(data) {

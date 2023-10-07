@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mycode.crm.workbench.mapper.TransactionRemarkMapper" >
+  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.TransactionRemark" >
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="note_content" property="noteContent" jdbcType="VARCHAR" />
+    <result column="create_by" property="createBy" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="CHAR" />
+    <result column="edit_by" property="editBy" jdbcType="VARCHAR" />
+    <result column="edit_time" property="editTime" jdbcType="CHAR" />
+    <result column="edit_flag" property="editFlag" jdbcType="CHAR" />
+    <result column="tran_id" property="tranId" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, tran_id
+  </sql>
+
+  <insert id="insertTransactionRemarkByList" parameterType="transactionRemark">
+    insert into tbl_transaction_remark
+    (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,transaction_id)
+    values
+        <foreach collection="list" item="transactionRemark" separator=",">
+          (#{transactionRemark.id},#{transactionRemark.noteContent},#{transactionRemark.createBy},#{transactionRemark.createTime},
+          #{transactionRemark.editBy},#{transactionRemark.editTime},#{transactionRemark.editFlag},#{transactionRemark.transactionId})
+        </foreach>
+  </insert>
+
+</mapper>
