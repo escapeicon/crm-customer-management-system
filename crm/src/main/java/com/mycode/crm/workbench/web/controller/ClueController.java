@@ -441,7 +441,14 @@ public class ClueController {
 
     /**
      * 转换线索 控制器方法
-     * @param data
+     * @param clueId
+     * @param money
+     * @param name
+     * @param expectedDate
+     * @param stage
+     * @param activityId
+     * @param isCreateTran
+     * @param session
      * @return
      */
     @RequestMapping("/workbench/clue/convertClue.do")

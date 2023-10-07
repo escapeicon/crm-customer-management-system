@@ -59,6 +59,11 @@
     delete from tbl_clue_activity_relation
     where clue_id = #{clueId} and activity_id = #{activityId}
   </delete>
+  <!--删除线索 通过线索id-->
+  <delete id="deleteClueActivityRelationByClueId" parameterType="string">
+    delete from tbl_clue_activity_relation
+    where clue_id = #{clueId}
+  </delete>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.mycode.crm.workbench.domain.ClueActivityRelation" >
     update tbl_clue_activity_relation

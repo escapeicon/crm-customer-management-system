@@ -201,9 +201,14 @@ public class ClueServiceImpl implements ClueService {
 
                 transactionRemarkMapper.insertTransactionRemarkByList(transactionRemarks);
             }
-
-
         }
+
+        //删除该线索下所有备注
+        clueRemarkMapper.deleteClueRemarkByClueId(clueId);
+        //删除该线索和市场活动关联关系
+        clueActivityRelationMapper.deleteClueActivityRelationByClueId(clueId);
+        //删除该线索
+        clueMapper.deleteById(clueId);
     }
 
     /**

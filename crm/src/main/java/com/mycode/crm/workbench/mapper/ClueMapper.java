@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface ClueMapper {
-    int deleteByPrimaryKey(String id);
 
     int insert(Clue record);
-
     int insertSelective(Clue record);
 
-    int updateByPrimaryKeySelective(Clue record);
+    int deleteById(String id);
 
+    int updateByPrimaryKeySelective(Clue record);
     int updateByPrimaryKey(Clue record);
 
     /**

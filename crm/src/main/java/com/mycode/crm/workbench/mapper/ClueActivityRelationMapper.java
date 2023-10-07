@@ -14,6 +14,8 @@ public interface ClueActivityRelationMapper {
     int deleteByPrimaryKey(String id);
     //删除线索市场活动关系 根据实体类对象
     int deleteClueActivityRelationByObject(ClueActivityRelation clueActivityRelation);
+    //删除线索 通过线索id
+    int deleteClueActivityRelationByClueId(String clueId);
 
     int updateByPrimaryKeySelective(ClueActivityRelation record);
     int updateByPrimaryKey(ClueActivityRelation record);
