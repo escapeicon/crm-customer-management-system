@@ -55,7 +55,7 @@
                 and customer.name like "%"#{name}"%"
             </if>
             <if test="owner != null">
-                and customer.owner like "%"#{owner}"%"
+                and user1.name like "%"#{owner}"%"
             </if>
             <if test="phone != null">
                 and customer.phone like "%"#{phone}"%"

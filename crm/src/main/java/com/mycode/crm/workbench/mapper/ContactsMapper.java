@@ -2,17 +2,24 @@ package com.mycode.crm.workbench.mapper;
 
 import com.mycode.crm.workbench.domain.Contacts;
 
+import java.util.List;
+import java.util.Map;
+
 public interface ContactsMapper {
 
-    int insert(Contacts record);
-    int insertSelective(Contacts record);
-    //新增联系人
+    /**
+     * 新增联系人
+     * @param contacts
+     * @return
+     */
     int insertContact(Contacts contacts);
 
-    int deleteByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(Contacts record);
-    int updateByPrimaryKey(Contacts record);
-
-    Contacts selectByPrimaryKey(String id);
+    /**
+     * 查询 多条联系人 分页查询 根据条件
+     * @param pageInfo
+     * @return
+     */
+    List<Contacts> selectContactsForPageByCondition(Map<String,Object> pageInfo);
+    //查询分页条件查询结果的总条数
+    int selectCountByCondition(Map<String,Object> pageInfo);
 }

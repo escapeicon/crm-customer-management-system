@@ -90,7 +90,7 @@ public class ClueServiceImpl implements ClueService {
         contacts.setId(contactsId);
         contacts.setOwner(user.getId());
         contacts.setSource(clue.getSource());
-        contacts.setCustomerId(customerId);
+        contacts.setCustomer(customerId);
         contacts.setFullname(clue.getFullname());
         contacts.setAppellation(clue.getAppellation());
         contacts.setEmail(clue.getEmail());

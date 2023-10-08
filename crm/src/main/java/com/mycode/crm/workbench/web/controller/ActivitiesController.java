@@ -106,16 +106,19 @@ public class ActivitiesController {
         //查询表信息总条数
         int count = activitiesService.queryCountOfActivityByCondition(pageInfo);
 
-        //封装结果集
-        HashMap<String, Object> retObj = new HashMap<>();
-        retObj.put("activityList",activityList);
-        retObj.put("totalRows",count);
+        if (activityList != null) {
+            //封装结果集
+            HashMap<String, Object> retObj = new HashMap<>();
+            retObj.put("activityList",activityList);
+            retObj.put("totalRows",count);
 
-        session.setAttribute(Constants.ACTIVITY_PAGE_NO,pageNo);
-        session.setAttribute(Constants.ACTIVITY_PAGE_SIZE,pageSize);
+            session.setAttribute(Constants.ACTIVITY_PAGE_NO,pageNo);
+            session.setAttribute(Constants.ACTIVITY_PAGE_SIZE,pageSize);
 
-        //返回结果集对象
-        return retObj;
+            //返回结果集对象
+            return retObj;
+        }
+        return null;
     }
 
     /**

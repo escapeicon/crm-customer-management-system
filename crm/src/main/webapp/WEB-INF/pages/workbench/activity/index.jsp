@@ -75,56 +75,62 @@
 				pageSize: pageSize
 			},
 			success(res) {
-				const totalRows = res.totalRows;//获取总数
-				const activityList = res.activityList;//获取查询到的所有数据
+				if (res != null) {
+					const totalRows = res.totalRows;//获取总数
+					const activityList = res.activityList;//获取查询到的所有数据
 
-				$("#allResultB").text(totalRows);//修改总条数显示内容
+					if (activityList.length == 0 && totalRows != 0) {
+						queryForPage(pageNo - 1,pageSize);
+					}else {
+						$("#allResultB").text(totalRows);//修改总条数显示内容
 
-				$("#tBody").empty();//删除所有子元素，刷新市场活动列表
+						$("#tBody").empty();//删除所有子元素，刷新市场活动列表
 
-				//拼接HTML代码
-				$(activityList).each(function (index,item){
-					const statement = '' +
-							'<tr class="active">'+
-							'<td><input type="checkbox" value="'+item.id+'"/></td>'+
-							'<td><a activityId="'+item.id+'" style="text-decoration: none; cursor: pointer;">'+item.name + '</a></td>'+
-							'<td>' + item.owner + '</td>'+
-							'<td>' + item.startDate + '</td>'+
-							'<td>' + item.endDate + '</td>'+
-							'</tr>';
+						//拼接HTML代码
+						$(activityList).each(function (index,item){
+							const statement = '' +
+									'<tr class="active">'+
+									'<td><input type="checkbox" value="'+item.id+'"/></td>'+
+									'<td><a activityId="'+item.id+'" style="text-decoration: none; cursor: pointer;">'+item.name + '</a></td>'+
+									'<td>' + item.owner + '</td>'+
+									'<td>' + item.startDate + '</td>'+
+									'<td>' + item.endDate + '</td>'+
+									'</tr>';
 
-					$("#tBody").append(statement);
-				})
+							$("#tBody").append(statement);
+						})
 
-				//切换页数的时候刷新市场活动列表时取消全选按钮
-				$("#checkAll").prop("checked",false);
+						//切换页数的时候刷新市场活动列表时取消全选按钮
+						$("#checkAll").prop("checked",false);
 
-				//计算总页数
-				let totalPages = 1;
-				if (totalRows % pageSize == 0) {
-					totalPages = totalRows / pageSize;
-				}else {
-					totalPages = parseInt((totalRows / pageSize) + 1);
-				}
+						//计算总页数
+						let totalPages = 1;
+						if (totalRows % pageSize == 0) {
+							totalPages = totalRows / pageSize;
+						}else {
+							totalPages = parseInt((totalRows / pageSize) + 1);
+						}
 
-				//分页插件
-				$("#demo_pag1").bs_pagination({
-					currentPage: pageNo,//当前页面
-					rowsPerPage: pageSize,//每页显示条数
-					totalRows:totalRows,//总条数
-					totalPages: totalPages,//总页数，必填参数
+						//分页插件
+						$("#demo_pag1").bs_pagination({
+							currentPage: pageNo,//当前页面
+							rowsPerPage: pageSize,//每页显示条数
+							totalRows:totalRows,//总条数
+							totalPages: totalPages,//总页数，必填参数
 
-					showGoToPage: true,//展示跳转页面组件
-					showRowsPerPage: true,//是否显示“每页显示条数”部分
-					showRowsInfo:true,//是否显示记录的信息
+							showGoToPage: true,//展示跳转页面组件
+							showRowsPerPage: true,//是否显示“每页显示条数”部分
+							showRowsInfo:true,//是否显示记录的信息
 
-					visiblePageLinks: 10,//可视的页面连接数
-					onChangePage:function (event,data){
-						const currentPage = data.currentPage;//获取当前页面
-						const rowsPerPage = data.rowsPerPage;//获取每页显示条数
-						queryForPage(currentPage,rowsPerPage);//刷新页面
+							visiblePageLinks: 10,//可视的页面连接数
+							onChangePage:function (event,data){
+								const currentPage = data.currentPage;//获取当前页面
+								const rowsPerPage = data.rowsPerPage;//获取每页显示条数
+								queryForPage(currentPage,rowsPerPage);//刷新页面
+							}
+						});
 					}
-				});
+				}
 			}
 		})
 	}

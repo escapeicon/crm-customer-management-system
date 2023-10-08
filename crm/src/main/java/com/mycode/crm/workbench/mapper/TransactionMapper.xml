@@ -1,39 +1,138 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.mycode.crm.workbench.mapper.TransactionMapper" >
-  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.Transaction" >
-    <id column="id" property="id" jdbcType="CHAR" />
-    <result column="owner" property="owner" jdbcType="CHAR" />
-    <result column="money" property="money" jdbcType="VARCHAR" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="expected_date" property="expectedDate" jdbcType="CHAR" />
-    <result column="customer_id" property="customerId" jdbcType="CHAR" />
-    <result column="stage" property="stage" jdbcType="VARCHAR" />
-    <result column="type" property="type" jdbcType="VARCHAR" />
-    <result column="source" property="source" jdbcType="VARCHAR" />
-    <result column="activity_id" property="activityId" jdbcType="CHAR" />
-    <result column="contacts_id" property="contactsId" jdbcType="CHAR" />
-    <result column="create_by" property="createBy" jdbcType="VARCHAR" />
-    <result column="create_time" property="createTime" jdbcType="CHAR" />
-    <result column="edit_by" property="editBy" jdbcType="VARCHAR" />
-    <result column="edit_time" property="editTime" jdbcType="CHAR" />
-    <result column="description" property="description" jdbcType="VARCHAR" />
-    <result column="contact_summary" property="contactSummary" jdbcType="VARCHAR" />
-    <result column="next_contact_time" property="nextContactTime" jdbcType="CHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-    id, owner, money, name, expected_date, customer_id, stage, type, source, activity_id, 
-    contacts_id, create_by, create_time, edit_by, edit_time, description, contact_summary, 
-    next_contact_time
-  </sql>
+    <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.Transaction" >
+        <id column="id" property="id" jdbcType="CHAR" />
+        <result column="owner" property="owner" jdbcType="CHAR" />
+        <result column="money" property="money" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="expected_date" property="expectedDate" jdbcType="CHAR" />
+        <result column="customer_id" property="customerId" jdbcType="CHAR" />
+        <result column="stage" property="stage" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+        <result column="source" property="source" jdbcType="VARCHAR" />
+        <result column="activity_id" property="activityId" jdbcType="CHAR" />
+        <result column="contacts_id" property="contactsId" jdbcType="CHAR" />
+        <result column="create_by" property="createBy" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="CHAR" />
+        <result column="edit_by" property="editBy" jdbcType="VARCHAR" />
+        <result column="edit_time" property="editTime" jdbcType="CHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="contact_summary" property="contactSummary" jdbcType="VARCHAR" />
+        <result column="next_contact_time" property="nextContactTime" jdbcType="CHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, owner, money, name, expected_date, customer_id, stage, type, source, activity_id,
+        contacts_id, create_by, create_time, edit_by, edit_time, description, contact_summary,
+        next_contact_time
+    </sql>
 
-  <!--插入一条 交易-->
-  <insert id="insertTransaction" parameterType="transaction">
-    insert into tbl_transaction
-    (id, owner, money, name, expected_date, customer_id, stage, type, source, activity_id,
-     contacts_id, create_by, create_time, description, contact_summary,next_contact_time)
-    value
-    (#{id}, #{owner}, #{money}, #{name}, #{expectedDate}, #{customerId}, #{stage}, #{type}, #{source}, #{activityId},
-     #{contactsId}, #{createBy}, #{createTime}, #{description}, #{contactSummary},#{nextContactTime})
-  </insert>
+    <!--插入一条 交易-->
+    <insert id="insertTransaction" parameterType="transaction">
+        insert into tbl_transaction
+            (id, owner, money, name, expected_date, customer_id, stage, type, source, activity_id,
+             contacts_id, create_by, create_time, description, contact_summary,next_contact_time)
+        value
+            (#{id}, #{owner}, #{money}, #{name}, #{expectedDate}, #{customerId}, #{stage}, #{type}, #{source}, #{activityId},
+             #{contactsId}, #{createBy}, #{createTime}, #{description}, #{contactSummary},#{nextContactTime})
+    </insert>
+
+    <!--查询 分页 条件-->
+    <select id="selectForPageByCondition" parameterType="map" resultMap="BaseResultMap">
+        select
+            transaction.id,
+            user1.name as owner,
+            transaction.money,
+            transaction.name,
+            transaction.expected_date,
+            customer.name as customer_id,
+            dic1.value as stage,
+            dic2.value as type,
+            dic3.value as source,
+            activity.name as activity_id,
+            contacts.fullname as contacts_id,
+            user2.name as create_by,
+            contacts.create_time,
+            user3.name as edit_by,
+            contacts.edit_time,
+            contacts.description,
+            contacts.contact_summary,
+            contacts.next_contact_time
+        from
+            tbl_transaction as transaction
+        join tbl_user as user1 on user1.id = transaction.owner
+        join tbl_customer as customer on transaction.customer_id = customer.id
+        join tbl_dic_value as dic1 on dic1.id = transaction.stage
+        join tbl_dic_value as dic2 on dic2.id = transaction.type
+        join tbl_dic_value as dic3 on dic3.id = transaction.source
+        left join tbl_activity as activity on activity.id = transaction.activity_id
+        left join tbl_contacts as contacts on contacts.id = transaction.contacts_id
+        join tbl_user as user2 on user2.id = transaction.create_by
+        left join tbl_user as user3 on user3.id = transaction.edit_by
+        <where>
+            <if test="owner != null and owner != ''">
+                and user1.name like "%"#{owner}"%"
+            </if>
+            <if test="name != null and name != ''">
+                and transaction.name like "%${name}%"
+            </if>
+            <if test="customerId != null and customerId != ''">
+                and customer.name like "%${customerId}%"
+            </if>
+            <if test="stage != null and stage != ''">
+                and dic1.id = #{stage}
+            </if>
+            <if test="type != null and type != ''">
+                and dic2.id = #{type}
+            </if>
+            <if test="source != null and source != ''">
+                and dic3.id = #{source}
+            </if>
+            <if test="contactsId != null and contactsId != ''">
+                and contacts.fullname like "%${contactsId}%"
+            </if>
+        </where>
+        order by transaction.create_time desc
+        limit #{beginNo},#{pageSize}
+    </select>
+    <!--条件查询总条数-->
+    <select id="selectCountByCondition" parameterType="map" resultType="int">
+        select
+            count(*)
+        from
+            tbl_transaction as transaction
+        join tbl_user as user1 on user1.id = transaction.owner
+        join tbl_customer as customer on transaction.customer_id = customer.id
+        join tbl_dic_value as dic1 on dic1.id = transaction.stage
+        join tbl_dic_value as dic2 on dic2.id = transaction.type
+        join tbl_dic_value as dic3 on dic3.id = transaction.source
+        left join tbl_activity as activity on activity.id = transaction.activity_id
+        left join tbl_contacts as contacts on contacts.id = transaction.contacts_id
+        join tbl_user as user2 on user2.id = transaction.create_by
+        left join tbl_user as user3 on user3.id = transaction.edit_by
+        <where>
+            <if test="owner != null and owner != ''">
+                and user1.name like "%"#{owner}"%"
+            </if>
+            <if test="name != null and name != ''">
+                and transaction.name like "%${name}%"
+            </if>
+            <if test="customerId != null and customerId != ''">
+                and customer.name like "%${customerId}%"
+            </if>
+            <if test="stage != null and stage != ''">
+                and dic1.id = #{stage}
+            </if>
+            <if test="type != null and type != ''">
+                and dic2.id = #{type}
+            </if>
+            <if test="source != null and source != ''">
+                and dic3.id = #{source}
+            </if>
+            <if test="contactsId != null and contactsId != ''">
+                and contacts.fullname like "%${contactsId}%"
+            </if>
+        </where>
+    </select>
+
 </mapper>

@@ -7,7 +7,7 @@ public class Contacts {
 
     private String source;
 
-    private String customerId;
+    private String customer;
 
     private String fullname;
 
@@ -59,12 +59,12 @@ public class Contacts {
         this.source = source == null ? null : source.trim();
     }
 
-    public String getCustomerId() {
-        return customerId;
+    public String getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId == null ? null : customerId.trim();
+    public void setCustomer(String customer) {
+        this.customer = customer == null ? null : customer.trim();
     }
 
     public String getFullname() {

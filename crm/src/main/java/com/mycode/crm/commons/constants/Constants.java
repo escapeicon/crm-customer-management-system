@@ -18,4 +18,12 @@ public class Constants {
     //客户 page-no and page-size
     public static final String CUSTOMER_PAGE_NO="customerPageNo";
     public static final String CUSTOMER_PAGE_SIZE="customerPageSize";
+
+    //联系人 page-no and page-size
+    public static final String CONTACTS_PAGE_NO="contactsPageNo";
+    public static final String CONTACTS_PAGE_SIZE="contactsPageSize";
+
+    //交易 page-no and page-size
+    public static final String TRANSACTION_PAGE_NO="transactionPageNo";
+    public static final String TRANSACTION_PAGE_SIZE="transactionPageSize";
 }

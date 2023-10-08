@@ -39,33 +39,29 @@ public class CustomerController {
 
     @RequestMapping("/workbench/customer/queryForPageByCondition.do")
     public @ResponseBody Object queryForPageByCondition(String name, String owner, String phone, String website, int pageNo, int pageSize,HttpSession session){
-        try {
-            //封装map集合
-            HashMap<String, Object> pageInfo = new HashMap<>();
-            pageInfo.put("name",name);
-            pageInfo.put("owner",owner);
-            pageInfo.put("phone",phone);
-            pageInfo.put("website",website);
-            pageInfo.put("beginNo",(pageNo - 1) * pageSize);
-            pageInfo.put("pageSize",pageSize);
+        //封装map集合
+        HashMap<String, Object> pageInfo = new HashMap<>();
+        pageInfo.put("name",name);
+        pageInfo.put("owner",owner);
+        pageInfo.put("phone",phone);
+        pageInfo.put("website",website);
+        pageInfo.put("beginNo",(pageNo - 1) * pageSize);
+        pageInfo.put("pageSize",pageSize);
 
-            List<Customer> customers = customerService.queryCustomerForPageByCondition(pageInfo);
-            int totalRows = customerService.queryCountCustomerForPageByCondition(pageInfo);
+        List<Customer> customers = customerService.queryCustomerForPageByCondition(pageInfo);
+        int totalRows = customerService.queryCountCustomerForPageByCondition(pageInfo);
 
-            if (customers != null) {
-                //封装返回实体类map集合
-                Map<String, Object> returnInfo = new HashMap<>();
-                returnInfo.put("customers",customers);
-                returnInfo.put("totalRows",totalRows);
+        if (customers != null) {
+            //封装返回实体类map集合
+            Map<String, Object> returnInfo = new HashMap<>();
+            returnInfo.put("customers",customers);
+            returnInfo.put("totalRows",totalRows);
 
-                //客户页面 pageNo and pageSize
-                session.setAttribute(Constants.CUSTOMER_PAGE_NO,pageNo);
-                session.setAttribute(Constants.ACTIVITY_PAGE_SIZE,pageSize);
+            //客户页面 pageNo and pageSize
+            session.setAttribute(Constants.CUSTOMER_PAGE_NO,pageNo);
+            session.setAttribute(Constants.CUSTOMER_PAGE_SIZE,pageSize);
 
-                return returnInfo;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
+            return returnInfo;
         }
         return null;
     }

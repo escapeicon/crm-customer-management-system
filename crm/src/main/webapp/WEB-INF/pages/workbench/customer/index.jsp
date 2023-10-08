@@ -38,41 +38,47 @@
 				pageSize:pageSize
 			},
 			success(data){
-				console.log(data);
-				const customers = data.customers;
-				let totalRows = data.totalRows;
+				if (data != null) {
+					const customers = data.customers;
+					let totalRows = data.totalRows;
 
-				//渲染 customers列表
-				let html = "";
+					if (customers.length == 0 && totalRows != 0) {
+						renderCustomerList(pageNo - 1,pageSize);
+					}else {
 
-				customers.forEach(customer => {
-					html += "<tr>";
-					html += "	<td><input type=\"checkbox\" value='"+customer.id+"'/></td>";
-					html += "	<td><a style=\"text-decoration: none; cursor: pointer;\" >"+customer.name+"</a></td>";
-					html += "	<td>"+customer.owner+"</td>";
-					html += "	<td>"+(customer.phone == null ? "" : customer.phone)+"</td>";
-					html += "	<td>"+(customer.website == null ? "" : customer.website)+"</td>";
-					html += "</tr>";
-				})
+						//渲染 customers列表
+						let html = "";
 
-				$("#tbody-customer").html(html);
+						customers.forEach(customer => {
+							html += "<tr>";
+							html += "	<td><input type=\"checkbox\" value='"+customer.id+"'/></td>";
+							html += "	<td><a style=\"text-decoration: none; cursor: pointer;\" >"+customer.name+"</a></td>";
+							html += "	<td>"+customer.owner+"</td>";
+							html += "	<td>"+(customer.phone == null ? "" : customer.phone)+"</td>";
+							html += "	<td>"+(customer.website == null ? "" : customer.website)+"</td>";
+							html += "</tr>";
+						})
 
-				//分页组件
-				$("#bs-pagination").bs_pagination({
-					currentPage:pageNo,//页码
-					rowsPerPage:pageSize,//每页显示条数
-					totalRows:totalRows,//总条数
-					totalPages:totalRows % pageSize == 0 ? totalRows / pageSize : parseInt(totalRows / pageSize + 1),//总页面
-					showGoToPage:true,
-					showRowsPerPage:true,
-					showRowsInfo:true,
-					visiblePageLinks:10,
-					onChangePage:function (event,data){
-						const currentPage = data.currentPage;//获取当前页面
-						const rowsPerPage = data.rowsPerPage;//获取每页显示条数
-						renderCustomerList(currentPage,rowsPerPage);//刷新页面
+						$("#tbody-customer").html(html);
+
+						//分页组件
+						$("#bs-pagination").bs_pagination({
+							currentPage:pageNo,//页码
+							rowsPerPage:pageSize,//每页显示条数
+							totalRows:totalRows,//总条数
+							totalPages:totalRows % pageSize == 0 ? totalRows / pageSize : parseInt(totalRows / pageSize + 1),//总页面
+							showGoToPage:true,
+							showRowsPerPage:true,
+							showRowsInfo:true,
+							visiblePageLinks:10,
+							onChangePage:function (event,data){
+								const currentPage = data.currentPage;//获取当前页面
+								const rowsPerPage = data.rowsPerPage;//获取每页显示条数
+								renderCustomerList(currentPage,rowsPerPage);//刷新页面
+							}
+						})
 					}
-				})
+				}
 			}
 		})
 	}
@@ -85,6 +91,11 @@
 			//防止下拉菜单消失
 	        e.stopPropagation();
 	    });
+
+		//条件查询
+		$("#search-btn").click(function (){
+			renderCustomerList(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
+		})
 	});
 
 </script>
@@ -305,7 +316,7 @@
 				    </div>
 				  </div>
 				  
-				  <button type="submit" class="btn btn-default">查询</button>
+				  <button id="search-btn" type="button" class="btn btn-default">查询</button>
 				  
 				</form>
 			</div>
@@ -351,39 +362,8 @@
 			</div>
 
 			<%--分页查询栏--%>
-			<div style="height: 50px; position: relative;top: 30px;" id="bs-pagination">
-				<%--<div>
-					<button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
-				</div>
-				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
-					<button type="button" class="btn btn-default" style="cursor: default;">显示</button>
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							10
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">20</a></li>
-							<li><a href="#">30</a></li>
-						</ul>
-					</div>
-					<button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
-				</div>
-				<div style="position: relative;top: -88px; left: 285px;">
-					<nav>
-						<ul class="pagination">
-							<li class="disabled"><a href="#">首页</a></li>
-							<li class="disabled"><a href="#">上一页</a></li>
-							<li class="active"><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li><a href="#">下一页</a></li>
-							<li class="disabled"><a href="#">末页</a></li>
-						</ul>
-					</nav>
-				</div>--%>
+			<div id="bs-pagination">
+
 			</div>
 			
 		</div>

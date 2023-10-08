@@ -58,41 +58,48 @@
 				pageSize:pageSize
 			},
 			success(data){
-				const totalRows = data.totalRows;//总条数
-				let clues = data.clues;//所有线索
+				if (data != null) {
+					const totalRows = data.totalRows;//总条数
+					let clues = data.clues;//所有线索
 
-				let html = "";
+					//如果该页面条数为0则跳回前页
+					if (clues.length == 0 && totalRows != 0) {
+						queryCluesForPage(pageNo - 1,pageSize);
+					}else {
+						let html = "";
 
-				clues.forEach(function (clue){
-					html += "<tr>"
-					html += "	<td><input type=\"checkbox\" value='"+clue.id+"' /></td>"
-					html += "	<td><a clueId='"+clue.id+"' style=\"text-decoration: none; cursor: pointer;\" >"+clue.fullname+(clue.appellation == null ? '' : clue.appellation)+"</a></td>"
-					html += "	<td>"+clue.company+"</td>"
-					html += "	<td>"+clue.phone+"</td>"
-					html += "	<td>"+clue.mphone+"</td>"
-					html += "	<td>"+(clue.source == null ? '' : clue.source)+"</td>"
-					html += "	<td>"+clue.owner+"</td>"
-					html += "	<td>"+(clue.state == null ? '' : clue.state)+"</td>"
-					html += "</tr>"
-				})
-				$("#tBody").html(html);
+						clues.forEach(function (clue){
+							html += "<tr>"
+							html += "	<td><input type=\"checkbox\" value='"+clue.id+"' /></td>"
+							html += "	<td><a clueId='"+clue.id+"' style=\"text-decoration: none; cursor: pointer;\" >"+clue.fullname+(clue.appellation == null ? '' : clue.appellation)+"</a></td>"
+							html += "	<td>"+clue.company+"</td>"
+							html += "	<td>"+clue.phone+"</td>"
+							html += "	<td>"+clue.mphone+"</td>"
+							html += "	<td>"+(clue.source == null ? '' : clue.source)+"</td>"
+							html += "	<td>"+clue.owner+"</td>"
+							html += "	<td>"+(clue.state == null ? '' : clue.state)+"</td>"
+							html += "</tr>"
+						})
+						$("#tBody").html(html);
 
-				//分页组件参数设置
-				$("#bs-pagination").bs_pagination({
-					currentPage:pageNo,//页码
-					rowsPerPage:pageSize,//每页显示条数
-					totalRows:totalRows,//总条数
-					totalPages:totalRows % pageSize == 0 ? totalRows / pageSize : parseInt(totalRows / pageSize + 1),//总页面
-					showGoToPage:true,
-					showRowsPerPage:true,
-					showRowsInfo:true,
-					visiblePageLinks:10,
-					onChangePage:function (event,data){
-						const currentPage = data.currentPage;//获取当前页面
-						const rowsPerPage = data.rowsPerPage;//获取每页显示条数
-						queryCluesForPage(currentPage,rowsPerPage);//刷新页面
+						//分页组件参数设置
+						$("#bs-pagination").bs_pagination({
+							currentPage:pageNo,//页码
+							rowsPerPage:pageSize,//每页显示条数
+							totalRows:totalRows,//总条数
+							totalPages:totalRows % pageSize == 0 ? totalRows / pageSize : parseInt(totalRows / pageSize + 1),//总页面
+							showGoToPage:true,
+							showRowsPerPage:true,
+							showRowsInfo:true,
+							visiblePageLinks:10,
+							onChangePage:function (event,data){
+								const currentPage = data.currentPage;//获取当前页面
+								const rowsPerPage = data.rowsPerPage;//获取每页显示条数
+								queryCluesForPage(currentPage,rowsPerPage);//刷新页面
+							}
+						})
 					}
-				})
+				}
 			}
 		})
 

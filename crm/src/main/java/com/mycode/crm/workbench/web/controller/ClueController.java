@@ -108,14 +108,17 @@ public class ClueController {
         List<Clue> clues = clueService.queryCluesByConditionForPage(pageInfo);
         int count = clueService.queryCountCluesByConditionForPage(pageInfo);
 
-        HashMap<String, Object> returnMap = new HashMap<>();//创建返回map集合
-        returnMap.put("clues",clues);
-        returnMap.put("totalRows",count);
+        if (clues != null) {
+            HashMap<String, Object> returnMap = new HashMap<>();//创建返回map集合
+            returnMap.put("clues",clues);
+            returnMap.put("totalRows",count);
 
-        session.setAttribute(Constants.CLUE_PAGE_NO,pageNo);
-        session.setAttribute(Constants.CLUE_PAGE_SIZE,pageSize);
+            session.setAttribute(Constants.CLUE_PAGE_NO,pageNo);
+            session.setAttribute(Constants.CLUE_PAGE_SIZE,pageSize);
 
-        return returnMap;
+            return returnMap;
+        }
+        return null;
     }
 
     /**
