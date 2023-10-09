@@ -15,6 +15,20 @@ public interface CustomerMapper {
     int insertCustomer(Customer customer);
 
     /**
+     * 删除 通过ids
+     * @param ids
+     * @return
+     */
+    int deleteByIds(String[] ids);
+
+    /**
+     * 修改 通过customer id
+     * @param customer
+     * @return 修改记录条数
+     */
+    int updateCustomerById(Customer customer);
+
+    /**
      * 查询客户 分页查询 通过条件
      * @param pageInfo
      * @return 客户集合
@@ -22,5 +36,7 @@ public interface CustomerMapper {
     List<Customer> selectCustomerForPageByCondition(Map<String,Object> pageInfo);
     //查询上面查询结果的总条数
     int selectCountCustomerForPageByCondition(Map<String,Object> pageInfo);
+    //简略查询单条 根据id
+    Customer selectOneByIdCustomer(String id);
 
 }

@@ -18,7 +18,15 @@
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
+	let isOwnerAndName = false;//所有者 和 名称 是否填写
+	let isWebsite = true;//网站 是否正确
+	let isPhone = true;//电话 是否正确
 
+	/**
+	 * 渲染客户列表
+	 * @param pageNo
+	 * @param pageSize
+	 */
 	function renderCustomerList(pageNo,pageSize){
 		//获取用户查询栏的输入
 		let name = $("#search-name").val();
@@ -83,6 +91,46 @@
 		})
 	}
 
+	/**
+	 * 创建 更新 表单验证
+	 */
+	function judgeAll(type){
+
+		//获取名称 输入内容
+		const name = $("#"+type+"-name").val();
+		//获取网址 电话输入内容
+		const website = $("#"+type+"-website").val();
+		const phone = $("#"+type+"-phone").val();
+
+		//验证名称
+		isOwnerAndName = (name != "");
+		//验证网站
+		isWebsite = (website != "" ? /^http([s]?):\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/.test(website) : true);
+		//验证公司座机
+		isPhone = (phone != "" ? /^(\d{3,4}-)?\d{7,8}$/.test(phone) : true);
+
+		//是否解禁提交按钮
+		$("#"+type+"-btn").prop("disabled",!(isOwnerAndName && isWebsite && isPhone));
+	}
+
+	/**
+	 * 获取用户输入的表单数据
+	 * @param type
+	 * @returns {{owner: (*|jQuery), nextContactTime: (*|jQuery), website: (*|jQuery), address: (*|jQuery), phone: (*|jQuery), name: (*|jQuery), description: (*|jQuery), contactSummary: (*|jQuery)}}
+	 */
+	function getAllInput(type){
+		return{
+			owner:$("#"+type+"-owner").val(),
+			name:$("#"+type+"-name").val(),
+			website:$("#"+type+"-website").val(),
+			phone:$("#"+type+"-phone").val(),
+			description:$("#"+type+"-description").val(),
+			contactSummary:$("#"+type+"-contactSummary").val(),
+			nextContactTime:$("#"+type+"-nextContactTime").val(),
+			address:$("#"+type+"-address").val(),
+		}
+	}
+
 	$(function(){
 		renderCustomerList(${customerPageNo == null ? 1 : customerPageNo},${customerPageSize == null ? 10 : customerPageSize});
 		
@@ -92,12 +140,167 @@
 	        e.stopPropagation();
 	    });
 
-		//条件查询
+		//实现全选
+		$("#all-checkbox").click(function (){
+			$("#tbody-customer input[type='checkbox']").prop("checked",$("#all-checkbox").prop("checked"));
+		})
+		//实现反选
+		$("#tbody-customer").on("click","input[type='checkbox']",function (){
+			$("#all-checkbox").prop("checked",$("#tbody-customer input[type='checkbox']").length == $("#tbody-customer input[type='checkbox']:checked").length);
+		})
+
+		/**
+		 * 条件查询
+		 */
 		$("#search-btn").click(function (){
 			renderCustomerList(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
 		})
-	});
 
+		/**
+		 * 创建客户
+		 */
+		$("#create-btn").click(function (){
+			const customer = getAllInput("create");
+
+			$.ajax({
+				type:'post',
+				url:'workbench/customer/saveCustomer.do',
+				data:customer,
+				success(data) {
+					if (data.code) {
+						renderCustomerList(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));//刷新网页
+						$("#createCustomerModal").modal("hide");//隐藏创建客户模态窗口
+
+						//留在表单更新完成后执行
+						$(".form-horizontal")[0].reset();
+						$("#create-btn").prop("disabled",true);
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		})
+		//创建表单验证
+		$("#create-name,#create-website,#create-phone").keyup(function (){
+			judgeAll("create");
+		})
+
+		/**
+		 * 更新
+		 */
+		//弹出更新模态窗口
+		$("#update").click(function (){
+			const checkedCustomer = $("#tbody-customer input[type='checkbox']:checked");
+			if (checkedCustomer.length == 1) {
+				const customerId = checkedCustomer.val();//获取客户id
+
+				$.ajax({
+					type:'post',
+					url:'workbench/customer/loadCustomer.do',
+					data:{
+						id:customerId
+					},
+					success(data){
+						if (data.code) {
+							const customer = data.data;
+
+							$("#customer-id").val(customer.id);
+							$("#edit-owner").val(customer.owner);
+							$("#edit-name").val(customer.name);
+							$("#edit-website").val(customer.website);
+							$("#edit-phone").val(customer.phone);
+							$("#edit-description").val(customer.description);
+							$("#edit-contactSummary").val(customer.contactSummary);
+							$("#edit-nextContactTime").val(customer.nextContactTime);
+							$("#edit-address").val(customer.address);
+
+							$("#editCustomerModal").modal("show");//显示模态窗口
+						}else{
+							alert(data.message)
+						}
+					}
+				})
+			}else {
+				alert("请选择一位客户进行修改!");
+			}
+		})
+		//更新按钮
+		$("#edit-btn").click(function (){
+			const customer = getAllInput("edit");//获取用户已修改的客户对象
+			customer.id = $("#customer-id").val();
+
+			$.ajax({
+				type:'post',
+				url:'workbench/customer/saveEditedCustomer.do',
+				data:customer,
+				success(data){
+					if (data.code) {
+						$("#editCustomerModal").modal("hide");//关闭模态窗口
+						renderCustomerList(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
+
+						//留在表单更新完成后执行
+						$(".form-horizontal")[1].reset();
+                        $("#edit-btn").prop("disabled",true);
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		})
+		//更新表单验证
+		$("#edit-owner").change(function (){
+			judgeAll("edit");
+		})
+		$(".form-horizontal:eq(1) input,.form-horizontal:eq(1) textarea").keyup(function (){
+			judgeAll("edit");
+		})
+
+		/**
+		 * 删除 客户
+		 */
+		$("#delete").click(function (){
+			const customer_checkbox = $("#tbody-customer input[type='checkbox']:checked");
+
+			if (customer_checkbox.length > 0) {
+				if (confirm("你确定要删除这些用户吗?")) {
+					let ids = [];
+
+					customer_checkbox.each(function (){
+						ids.push($(this).val())
+					})
+
+					$.ajax({
+						type:'post',
+						url:'workbench/customer/deleteCustomer.do',
+						traditional:true,
+						data:{
+							ids:ids
+						},
+						success(data){
+							if (data.code) {
+								renderCustomerList(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
+							}else {
+								alert(data.message);
+							}
+						}
+					})
+				}
+			}else {
+				alert("请至少选择一个客户进行删除...")
+			}
+		})
+
+		//日历组件
+		$("#create-nextContactTime,#edit-nextContactTime").datetimepicker({
+			format:"yyyy-mm-dd",//日期格式
+			language:"zh-CN",//语言
+			minView:'month',
+			initialDate:new Date(),//初始化时显示当前日期
+			autoclose:true,//设置选择完日期或时间之后，是否自动关闭日历
+			clearBtn:true,//设置是否显示清空按钮，默认为false
+			todayBtn:true//设置是否显示今日按钮
+		});
+	});
 </script>
 </head>
 <body>
@@ -115,24 +318,24 @@
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
 
-						<%--create-customerOwner create-customerName--%>
+						<%--create-owner create-name--%>
 						<div class="form-group">
-							<label for="create-customerOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="create-owner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-customerOwner">
+								<select class="form-control" id="create-owner">
 									<c:forEach items="${users}" var="user">
 										<option value="${user.id}">${user.name}</option>
 									</c:forEach>
 								</select>
 							</div>
-							<label for="create-customerName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="create-name" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
 							<%--create-customerName--%>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-customerName">
+								<input type="text" class="form-control" id="create-name">
 							</div>
 						</div>
 
-						<%--create-website--%>
+						<%--create-website create-phone--%>
 						<div class="form-group">
                             <label for="create-website" class="col-sm-2 control-label">公司网站</label>
                             <div class="col-sm-10" style="width: 300px;">
@@ -143,14 +346,16 @@
 								<input type="text" class="form-control" id="create-phone">
 							</div>
 						</div>
+						<%--create-description--%>
 						<div class="form-group">
-							<label for="create-describe" class="col-sm-2 control-label">描述</label>
+							<label for="create-description" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="create-describe"></textarea>
+								<textarea class="form-control" rows="3" id="create-description"></textarea>
 							</div>
 						</div>
 						<div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative;"></div>
 
+						<%--create-contactSummary create-nextContactTime--%>
                         <div style="position: relative;top: 15px;">
                             <div class="form-group">
                                 <label for="create-contactSummary" class="col-sm-2 control-label">联系纪要</label>
@@ -161,18 +366,19 @@
                             <div class="form-group">
                                 <label for="create-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
                                 <div class="col-sm-10" style="width: 300px;">
-                                    <input type="text" class="form-control" id="create-nextContactTime">
+                                    <input type="text" class="form-control" id="create-nextContactTime" readonly>
                                 </div>
                             </div>
                         </div>
 
                         <div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative; top : 10px;"></div>
 
+						<%--create-address--%>
                         <div style="position: relative;top: 20px;">
                             <div class="form-group">
-                                <label for="create-address1" class="col-sm-2 control-label">详细地址</label>
+                                <label for="create-address" class="col-sm-2 control-label">详细地址</label>
                                 <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="1" id="create-address1"></textarea>
+                                    <textarea class="form-control" rows="1" id="create-address"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -181,7 +387,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button id="create-btn" type="button" class="btn btn-primary" disabled>保存</button>
 				</div>
 			</div>
 		</div>
@@ -199,22 +405,25 @@
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
-					
+						<%--customer-id--%>
+						<input id="customer-id" type="hidden">
+						<%--edit-owner edit-name--%>
 						<div class="form-group">
-							<label for="edit-customerOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="edit-owner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="edit-customerOwner">
-<c:forEach items="${users}" var="user">
-	<option value="${user.id}">${user.name}</option>
-</c:forEach>
+								<select class="form-control" id="edit-owner">
+								<c:forEach items="${users}" var="user">
+									<option value="${user.id}">${user.name}</option>
+								</c:forEach>
 								</select>
 							</div>
-							<label for="edit-customerName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="edit-name" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-customerName" value="动力节点">
+								<input type="text" class="form-control" id="edit-name" value="动力节点">
 							</div>
 						</div>
-						
+
+						<%--edit-website edit-phone--%>
 						<div class="form-group">
                             <label for="edit-website" class="col-sm-2 control-label">公司网站</label>
                             <div class="col-sm-10" style="width: 300px;">
@@ -225,38 +434,40 @@
 								<input type="text" class="form-control" id="edit-phone" value="010-84846003">
 							</div>
 						</div>
-						
+						<%--edit-description--%>
 						<div class="form-group">
-							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
+							<label for="edit-description" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="edit-describe"></textarea>
+								<textarea class="form-control" rows="3" id="edit-description"></textarea>
 							</div>
 						</div>
 						
 						<div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative;"></div>
 
+						<%--edit-contactSummary edit-nextContactTime--%>
                         <div style="position: relative;top: 15px;">
                             <div class="form-group">
-                                <label for="create-contactSummary1" class="col-sm-2 control-label">联系纪要</label>
+                                <label for="edit-contactSummary" class="col-sm-2 control-label">联系纪要</label>
                                 <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="3" id="create-contactSummary1"></textarea>
+                                    <textarea class="form-control" rows="3" id="edit-contactSummary"></textarea>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="create-nextContactTime2" class="col-sm-2 control-label">下次联系时间</label>
+                                <label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
                                 <div class="col-sm-10" style="width: 300px;">
-                                    <input type="text" class="form-control" id="create-nextContactTime2">
+                                    <input type="text" class="form-control" id="edit-nextContactTime" readonly>
                                 </div>
                             </div>
                         </div>
 
                         <div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative; top : 10px;"></div>
 
+						<%--edit-address--%>
                         <div style="position: relative;top: 20px;">
                             <div class="form-group">
-                                <label for="create-address" class="col-sm-2 control-label">详细地址</label>
+                                <label for="edit-address" class="col-sm-2 control-label">详细地址</label>
                                 <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="1" id="create-address">北京大兴大族企业湾</textarea>
+                                    <textarea class="form-control" rows="1" id="edit-address">北京大兴大族企业湾</textarea>
                                 </div>
                             </div>
                         </div>
@@ -265,7 +476,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button id="edit-btn" type="button" class="btn btn-primary" disabled>更新</button>
 				</div>
 			</div>
 		</div>
@@ -324,8 +535,8 @@
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCustomerModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editCustomerModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button id="update" type="button" class="btn btn-default" ><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button id="delete" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
 			</div>
@@ -335,7 +546,7 @@
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" /></td>
+							<td><input id="all-checkbox" type="checkbox" /></td>
 							<td>名称</td>
 							<td>所有者</td>
 							<td>公司座机</td>
@@ -343,20 +554,7 @@
 						</tr>
 					</thead>
 					<tbody id="tbody-customer">
-						<tr>
-							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">动力节点</a></td>
-							<td>zhangsan</td>
-							<td>010-84846003</td>
-							<td>http://www.bjpowernode.com</td>
-						</tr>
-                        <tr class="active">
-                            <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">动力节点</a></td>
-                            <td>zhangsan</td>
-                            <td>010-84846003</td>
-                            <td>http://www.bjpowernode.com</td>
-                        </tr>
+
 					</tbody>
 				</table>
 			</div>

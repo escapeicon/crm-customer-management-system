@@ -16,6 +16,36 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerMapper customerMapper;
 
     /**
+     * 保存客户
+     * @param customer
+     * @return
+     */
+    @Override
+    public int saveCustomer(Customer customer) {
+        return customerMapper.insertCustomer(customer);
+    }
+
+    /**
+     * 删除 根据ids
+     * @param ids
+     * @return 删除条数
+     */
+    @Override
+    public int deleteCustomerByIds(String[] ids) {
+        return customerMapper.deleteByIds(ids);
+    }
+
+    /**
+     * 修改 客户 根据id
+     * @param customer
+     * @return
+     */
+    @Override
+    public int modifyCustomer(Customer customer) {
+        return customerMapper.updateCustomerById(customer);
+    }
+
+    /**
      * 查询多个客户 根据条件 分页查询
      * @param pageInfo
      * @return 客户集合
@@ -28,5 +58,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public int queryCountCustomerForPageByCondition(Map<String, Object> pageInfo) {
         return customerMapper.selectCountCustomerForPageByCondition(pageInfo);
+    }
+    //简略查询 单个客户 根据客户id
+    @Override
+    public Customer queryOneById(String id) {
+        return customerMapper.selectOneByIdCustomer(id);
     }
 }

@@ -23,12 +23,37 @@
 
     <!--增添客户-->
     <insert id="insertCustomer" parameterType="customer">
-    insert into tbl_customer
-    (id, owner, name, website,
-     phone, create_by, create_time,contact_summary,
-     next_contact_time, description, address)
-    value(#{id},#{owner},#{name},#{website},#{phone},#{createBy},#{createTime},#{contactSummary},#{nextContactTime},#{description},#{address})
+        insert into tbl_customer
+        (id, owner, name, website,
+         phone, create_by, create_time,contact_summary,
+         next_contact_time, description, address)
+        value(#{id},#{owner},#{name},#{website},#{phone},#{createBy},#{createTime},#{contactSummary},#{nextContactTime},#{description},#{address})
     </insert>
+
+    <!--删除 根据id数组-->
+    <delete id="deleteByIds" parameterType="string">
+        delete from tbl_customer
+        where id in
+        <foreach collection="array" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--修改 根据id-->
+    <update id="updateCustomerById" parameterType="customer">
+        update tbl_customer set
+            owner = #{owner},
+            name = #{name},
+            website = #{website},
+            phone = #{phone},
+            edit_by = #{editBy},
+            edit_time = #{editTime},
+            contact_summary = #{contactSummary},
+            next_contact_time = #{nextContactTime},
+            description = #{description},
+            address = #{address}
+        where id = #{id}
+    </update>
 
     <!--查询客户 分页查询 通过条件-->
     <select id="selectCustomerForPageByCondition" parameterType="map" resultMap="BaseResultMap">
@@ -86,5 +111,9 @@
             </if>
         </where>
         limit #{beginNo},#{pageSize}
+    </select>
+    <!--查询简略 单条 根据id-->
+    <select id="selectOneByIdCustomer" resultMap="BaseResultMap" parameterType="string">
+        select * from tbl_customer where id = #{id}
     </select>
 </mapper>
