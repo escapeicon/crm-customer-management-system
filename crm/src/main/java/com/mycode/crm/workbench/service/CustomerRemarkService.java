@@ -7,5 +7,12 @@ import java.util.List;
 
 public interface CustomerRemarkService {
 
+    int saveCustomerRemark(CustomerRemark customerRemark);
+
+    int deleteCustomerRemarkById(String id);
+
+    int updateCustomerRemark(CustomerRemark customerRemark);
+
     List<CustomerRemark> queryCustomerRemarkForListByCustomerId(String customerId);
+    CustomerRemark queryCustomerRemarkForDetailById(String id);
 }

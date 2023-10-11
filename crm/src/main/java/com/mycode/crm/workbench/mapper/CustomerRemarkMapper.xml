@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.mycode.crm.workbench.mapper.CustomerRemarkMapper" >
-  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.CustomerRemark" >
+    <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.CustomerRemark" >
     <id column="id" property="id" jdbcType="CHAR" />
     <result column="note_content" property="noteContent" jdbcType="VARCHAR" />
     <result column="create_by" property="createBy" jdbcType="VARCHAR" />
@@ -10,23 +10,46 @@
     <result column="edit_time" property="editTime" jdbcType="CHAR" />
     <result column="edit_flag" property="editFlag" jdbcType="CHAR" />
     <result column="customer_id" property="customerId" jdbcType="CHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+    </resultMap>
+    <sql id="Base_Column_List" >
     id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, customer_id
-  </sql>
+    </sql>
 
-  <!--添加 客户备注 通过集合-->
-  <insert id="insertCustomerRemarkByList" parameterType="clueRemark">
-    insert into tbl_customer_remark
-    (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,customer_id)
-    values
-    <foreach collection="list" separator="," item="clueRemark">
-      (#{clueRemark.id},#{clueRemark.noteContent},#{clueRemark.createBy},#{clueRemark.createTime},#{clueRemark.editBy},#{clueRemark.editTime},#{clueRemark.editFlag},#{clueRemark.customerId})
-    </foreach>
-  </insert>
+    <!--添加 客户备注 通过集合-->
+    <insert id="insertCustomerRemarkByList" parameterType="clueRemark">
+        insert into tbl_customer_remark
+        (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,customer_id)
+        values
+        <foreach collection="list" separator="," item="clueRemark">
+            (#{clueRemark.id},#{clueRemark.noteContent},#{clueRemark.createBy},#{clueRemark.createTime},#{clueRemark.editBy},#{clueRemark.editTime},#{clueRemark.editFlag},#{clueRemark.customerId})
+        </foreach>
+    </insert>
+    <!--添加 客户备注-->
+    <insert id="insertCustomerRemark" parameterType="customer" >
+        insert into tbl_customer_remark
+        (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,customer_id)
+        value
+            (#{id},#{noteContent},#{createBy},#{createTime},#{editBy},#{editTime},#{editFlag},#{customerId})
+    </insert>
 
-  <!--查询 客户备注 通过客户id-->
-  <select id="selectCustomerRemarkByCustomerId" parameterType="string" resultMap="BaseResultMap">
+    <!--删除客户备注 根据id-->
+    <delete id="deleteCustomerRemarkById" parameterType="string" >
+        delete from tbl_customer_remark
+        where id = #{id}
+    </delete>
+
+    <!--修改 客户备注 通过客户备注id-->
+    <update id="updateCustomerRemarkById" parameterType="customerRemark" >
+        update tbl_customer_remark set
+            note_content=#{noteContent},
+            edit_by=#{editBy},
+            edit_time=#{editTime},
+            edit_flag=#{editFlag}
+        where id = #{id}
+    </update>
+
+    <!--查询 客户备注 通过客户id-->
+    <select id="selectCustomerRemarkByCustomerId" parameterType="string" resultMap="BaseResultMap">
     select
         customerRemark.id,
         customerRemark.note_content,
@@ -40,5 +63,22 @@
     join tbl_user as user1 on user1.id = customerRemark.create_by
     left join tbl_user as user2 on user2.id = customerRemark.edit_by
     where customerRemark.customer_id = #{customerId}
-  </select>
+    order by customerRemark.create_time asc
+    </select>
+    <!--查询单条客户备注 通过客户备注id-->
+    <select id="selectCustomerRemarkForDetailById" parameterType="string" resultMap="BaseResultMap">
+        select
+            customerRemark.id,
+            customerRemark.note_content,
+            user1.name as create_by,
+            customerRemark.create_time,
+            user2.name as edit_by,
+            customerRemark.edit_time,
+            customerRemark.edit_flag,
+            customerRemark.customer_id
+        from tbl_customer_remark as customerRemark
+         join tbl_user as user1 on user1.id = customerRemark.create_by
+         left join tbl_user as user2 on user2.id = customerRemark.edit_by
+        where customerRemark.id=#{id}
+    </select>
 </mapper>

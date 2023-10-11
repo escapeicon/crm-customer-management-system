@@ -65,7 +65,7 @@ public class ClueServiceImpl implements ClueService {
         String isCreateTran = (String) data.get("isCreateTran");//获取用户是否点击了创建交易选项
 
         Clue clue = clueMapper.selectClueById(clueId);//查询该条线索
-        List<ClueRemark> clueRemarks = clueRemarkMapper.selectClueRemarkByClueId(clueId);//查询该clueId下所有备注
+        List<ClueRemark> clueRemarks = clueRemarkMapper.selectClueRemarkByClueIdForSimple(clueId);//查询该clueId下所有备注
         List<ClueActivityRelation> clueActivityRelations = clueActivityRelationMapper.selectClueActivityRelationListByClueId(clueId);//查询所有线索市场活动关联关系
         DicValue dicValue = dicValueMapper.selectDicValueByValue("新业务");//获取类型实体类
 

@@ -158,4 +158,11 @@
     where tcr.clue_id = #{clueId}
     order by tcr.create_time asc
   </select>
+  <!--精简查询线索备注 根据线索id 返回集合-->
+  <select id="selectClueRemarkByClueIdForSimple" parameterType="string" resultMap="BaseResultMap">
+    select *
+    from tbl_clue_remark
+    where clue_id = #{id}
+  </select>
+
 </mapper>

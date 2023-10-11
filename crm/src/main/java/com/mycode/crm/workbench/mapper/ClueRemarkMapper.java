@@ -40,4 +40,6 @@ public interface ClueRemarkMapper {
      * @return 线索实体类
      */
     List<ClueRemark> selectClueRemarkByClueId(String clueId);
+    //精简查询线索备注 根据线索id 返回集合
+    List<ClueRemark> selectClueRemarkByClueIdForSimple(String clueId);
 }
