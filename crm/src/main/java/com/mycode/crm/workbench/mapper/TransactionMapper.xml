@@ -134,5 +134,18 @@
             </if>
         </where>
     </select>
-
+    <!--查询多条 用于备注页面展示 通过客户Id-->
+    <select id="selectForRemarkPageByCustomerId" parameterType="string" resultMap="BaseResultMap">
+        select
+            transaction.id,
+            transaction.name,
+            transaction.money,
+            dic1.value as stage,
+            transaction.expected_date,
+            dic2.value as type
+        from tbl_transaction as transaction
+        join tbl_dic_value as dic1 on dic1.id = transaction.stage
+        left join tbl_dic_value as dic2 on dic2.id = transaction.type
+        where transaction.customer_id = #{customerId}
+    </select>
 </mapper>

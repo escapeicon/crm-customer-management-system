@@ -68,7 +68,7 @@
 					clueId:'${clue.id}'
 				},
 				success(data){
-					if (data.code) {
+					if (data.code = "1") {
 						activities = data.data;//保存查询到的所有市场活动
 						renderActivitiesList(activities);//渲染市场活动源 市场活动列表
 						$("#searchActivityModal").modal("show");//显示市场活动源模态窗口
@@ -117,7 +117,7 @@
 					isCreateTran:isCreateTran
 				},
 				success(data) {
-					if (data.code) {
+					if (data.code = "1") {
 						window.location.href = "workbench/clue/index.do";
 					}else {
 						alert(data.message);

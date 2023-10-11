@@ -22,5 +22,6 @@ public interface TransactionMapper {
     List<Transaction> selectForPageByCondition(Map<String,Object> pageInfo);
     //查询 条件查询总条数
     int selectCountByCondition(Map<String,Object> pageInfo);
-
+    //查询多条 用于备注页面展示 通过客户Id
+    List<Transaction> selectForRemarkPageByCustomerId(String customerId);
 }

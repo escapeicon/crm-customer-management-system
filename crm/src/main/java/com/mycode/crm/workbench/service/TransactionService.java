@@ -10,4 +10,6 @@ public interface TransactionService {
 
     List<Transaction> queryForPageByCondition(Map<String,Object> pageInfo);
     int queryCountByCondition(Map<String,Object> pageInfo);
+    List<Transaction> queryForRemarkPageByCustomerId(String customerId);
+    void saveTransaction(Map<String,Object> map) throws Exception;
 }

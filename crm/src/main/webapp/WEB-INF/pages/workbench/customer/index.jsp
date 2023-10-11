@@ -60,7 +60,7 @@
 						customers.forEach(customer => {
 							html += "<tr>";
 							html += "	<td><input type=\"checkbox\" value='"+customer.id+"'/></td>";
-							html += "	<td><a style=\"text-decoration: none; cursor: pointer;\" >"+customer.name+"</a></td>";
+							html += "	<td><a customerId='"+customer.id+"' style=\"text-decoration: none; cursor: pointer;\" >"+customer.name+"</a></td>";
 							html += "	<td>"+customer.owner+"</td>";
 							html += "	<td>"+(customer.phone == null ? "" : customer.phone)+"</td>";
 							html += "	<td>"+(customer.website == null ? "" : customer.website)+"</td>";
@@ -167,7 +167,7 @@
 				url:'workbench/customer/saveCustomer.do',
 				data:customer,
 				success(data) {
-					if (data.code) {
+					if (data.code = "1") {
 						renderCustomerList(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));//刷新网页
 						$("#createCustomerModal").modal("hide");//隐藏创建客户模态窗口
 
@@ -201,7 +201,7 @@
 						id:customerId
 					},
 					success(data){
-						if (data.code) {
+						if (data.code = "1") {
 							const customer = data.data;
 
 							$("#customer-id").val(customer.id);
@@ -234,7 +234,7 @@
 				url:'workbench/customer/saveEditedCustomer.do',
 				data:customer,
 				success(data){
-					if (data.code) {
+					if (data.code = "1") {
 						$("#editCustomerModal").modal("hide");//关闭模态窗口
 						renderCustomerList(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
 
@@ -277,7 +277,7 @@
 							ids:ids
 						},
 						success(data){
-							if (data.code) {
+							if (data.code = "1") {
 								renderCustomerList(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
 							}else {
 								alert(data.message);
@@ -288,6 +288,14 @@
 			}else {
 				alert("请至少选择一个客户进行删除...")
 			}
+		})
+
+		/**
+		 * 查看客户详情
+		 */
+		$("#tbody-customer").on("click","tr td a",function (){
+			const customerId = $(this).attr("customerId");//获取客户id
+			window.location.href = "workbench/customer/toCustomerRemark.do?customerId="+customerId;
 		})
 
 		//日历组件

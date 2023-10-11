@@ -225,7 +225,7 @@
 				dataType:'json',
 				data:getInputVal("create"),
 				success(data) {
-					if (data.code) {
+					if (data.code == "1") {
 						$("#createClueModal").modal("hide");//让模态窗口消失
 						queryCluesForPage(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));//重新查询线索
 					}else{
@@ -260,7 +260,7 @@
 				contentType:'application/json',
 				data:JSON.stringify(ids),
 				success(data){
-					if (data.code) {
+					if (data.code == "1") {
 						queryCluesForPage(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
 					}else{
 						alert(data.message)
@@ -312,7 +312,7 @@
 				url:'workbench/clue/saveUpdateClue.do',
 				data:getInputVal("edit"),
 				success(data){
-					if (data.code) {
+					if (data.code == "1") {
 						$("#editClueModal").modal("hide");//隐藏修改模态窗口
 						queryCluesForPage(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));//刷新线索列表
 					}else{

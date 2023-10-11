@@ -1,6 +1,9 @@
 package com.mycode.crm.workbench.web.controller;
 
 import com.mycode.crm.commons.constants.Constants;
+import com.mycode.crm.commons.domain.ReturnInfo;
+import com.mycode.crm.commons.utils.DateFormat;
+import com.mycode.crm.commons.utils.UUIDUtil;
 import com.mycode.crm.settings.domain.DicValue;
 import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.DicValueService;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,5 +92,36 @@ public class ContactsController {
             return returnInfo;
         }
         return null;
+    }
+
+    /**
+     * 创建联系人
+     * @param contact
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/addOneContact.do")
+    public @ResponseBody Object addOneContact(Contacts contact,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try{
+            //封装联系人
+            User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);
+            contact.setId(UUIDUtil.getUUID());
+            contact.setCreateBy(user.getId());
+            contact.setCreateTime(DateFormat.formatDateTime(new Date()));
+
+            int count = contactsService.saveContact(contact);
+
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙,请稍后重试...");
+            }
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
     }
 }

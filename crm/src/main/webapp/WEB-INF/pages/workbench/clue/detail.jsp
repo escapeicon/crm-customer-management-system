@@ -84,7 +84,7 @@
 						clueId:'${clue.id}'
 					},
 					success(data){
-						if (data.code) {
+						if (data.code = "1") {
 							const clueRemark = data.data;//获取线索备注实体类
 							$("#remark").val("");//清空备注栏
 							//拼接html标签
@@ -121,7 +121,7 @@
 					id:remarkId
 				},
 				success(data) {
-					if (data.code) {
+					if (data.code = "1") {
 						$("#div_"+remarkId).remove();
 					}else{
 						alert(data.message);
@@ -152,7 +152,7 @@
 					noteContent:noteContent
 				},
 				success(data){
-					if (data.code) {
+					if (data.code = "1") {
 						const clueRemark = data.data;
 
 						//拼接html标签
@@ -193,7 +193,7 @@
 					clueId:'${clue.id}'
 				},
 				success(data){
-					if (data.code) {
+					if (data.code = "1") {
 						activities = data.data;//获取市场活动信息
 						renderActivities(activities);//渲染市场活动列表
 						$("#bundModal").modal("show")//显示绑定页面
@@ -240,7 +240,7 @@
 					activityIds:activityIds
 				}),
 				success(data){
-					if (data.code) {
+					if (data.code = "1") {
 						const bundledActivities = data.data;
 
 						let html = "";
@@ -282,7 +282,7 @@
 						clueId:clueId
 					},
 					success(data){
-						if (data.code) {
+						if (data.code = "1") {
 							$("#tr_"+activityId).remove();
 						}else {
 							alert(data.message);
