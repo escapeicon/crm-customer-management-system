@@ -145,4 +145,9 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     public List<Activity> queryActivitiesForClueConvertByClueId(String clueId) {
         return activitiesMapper.selectActivitiesForClueConvertBundledByClueId(clueId);
     }
+    //查询一个联系人关联的所有市场活动 根据联系人id
+    @Override
+    public List<Activity> queryActivitiesForContactRelationByContactId(String contactId) {
+        return activitiesMapper.selectActivitiesForContactRelationByContactId(contactId);
+    }
 }

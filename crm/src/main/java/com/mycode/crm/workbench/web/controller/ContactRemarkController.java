@@ -1,5 +1,6 @@
 package com.mycode.crm.workbench.web.controller;
 
+import com.mycode.crm.workbench.domain.Activity;
 import com.mycode.crm.workbench.domain.Contacts;
 import com.mycode.crm.workbench.domain.ContactsRemark;
 import com.mycode.crm.workbench.domain.Transaction;
@@ -41,13 +42,14 @@ public class ContactRemarkController {
         //交易
         List<Transaction> transactions = transactionService.queryForRemarkPageByContactId(contactId);
         //关联市场活动
-
+        List<Activity> activities = activitiesService.queryActivitiesForContactRelationByContactId(contactId);
 
         request.setAttribute("contact",contact);
         request.setAttribute("contactsRemarks",contactsRemarks);
         request.setAttribute("transactions",transactions);
-
+        request.setAttribute("activities",activities);
         return "/workbench/contacts/detail";
     }
+
 
 }

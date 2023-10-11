@@ -365,4 +365,27 @@
         select activity_id from tbl_clue_activity_relation where clue_id = #{clueId}
       )
   </select>
+  <!--查询一个联系人关联的所有市场活动 根据联系人id-->
+  <select id="selectActivitiesForContactRelationByContactId" parameterType="string" resultMap="BaseResultMap">
+    select
+        activity.id,
+        activity.name,
+        user1.name as owner,
+        activity.start_date,
+        activity.end_date,
+        activity.cost,
+        activity.description,
+        activity.create_time,
+        user2.name as create_by,
+        activity.edit_time,
+        user3.name as edit_by
+    from tbl_activity as activity
+    join tbl_user as user1 on user1.id = activity.owner
+    join tbl_user as user2 on user2.id = activity.create_by
+    left join tbl_user as user3 on user3.id = activity.edit_by
+    where activity.id in
+    (
+        select activity_id from tbl_contacts_activity_relation where contacts_id = #{contactId}
+      )
+  </select>
 </mapper>

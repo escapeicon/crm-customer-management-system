@@ -139,7 +139,7 @@
 
 	<!-- 返回按钮 -->
 	<div style="position: relative; top: 35px; left: 10px;">
-		<a href="javascript:void(0);" onclick="window.history.back();"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
+		<a href="javascript:void(0);" onclick="window.location.href = 'workbench/contacts/index.do';"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
 	</div>
 	
 	<!-- 大标题 -->
@@ -318,14 +318,23 @@
 							<td></td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
+					<tbody id="tbody-activities">
+						<%--<tr>
 							<td><a href="../activity/detail.jsp" style="text-decoration: none;">发传单</a></td>
 							<td>2020-10-10</td>
 							<td>2020-10-20</td>
 							<td>zhangsan</td>
 							<td><a href="javascript:void(0);" data-toggle="modal" data-target="#unbundActivityModal" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
+						</tr>--%>
+						<c:forEach items="${activities}" var="activity">
+						<tr>
+							<td><a activityId="${activity.id}" style="text-decoration: none;">${activity.name}</a></td>
+							<td>${activity.startDate}</td>
+							<td>${activity.endDate}</td>
+							<td>${activity.owner}</td>
+							<td><a href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
 						</tr>
+						</c:forEach>
 					</tbody>
 				</table>
 			</div>

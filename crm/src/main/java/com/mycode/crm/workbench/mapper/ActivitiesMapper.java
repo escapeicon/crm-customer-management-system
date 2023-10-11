@@ -105,4 +105,6 @@ public interface ActivitiesMapper {
     List<Activity> selectAllActivitiesForClueRemarkExcludeBundledByClueId(String clueId);
     //查询多条市场活动 for 线索转换 查询该线索已绑定的市场活动
     List<Activity> selectActivitiesForClueConvertBundledByClueId(String Clueid);
+    //查询一个联系人关联的所有市场活动 根据联系人id
+    List<Activity> selectActivitiesForContactRelationByContactId(String contactId);
 }

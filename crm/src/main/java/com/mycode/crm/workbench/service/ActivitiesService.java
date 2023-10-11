@@ -88,4 +88,5 @@ public interface ActivitiesService {
     List<Activity> queryAllActivitiesForClueRemarkPageByClueIdExcludeBundled(String clueId);
 
     List<Activity> queryActivitiesForClueConvertByClueId(String clueId);
+    List<Activity> queryActivitiesForContactRelationByContactId(String contactId);
 }

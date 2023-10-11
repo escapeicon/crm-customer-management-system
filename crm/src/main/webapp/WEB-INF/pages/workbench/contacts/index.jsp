@@ -329,7 +329,6 @@
 </head>
 <body>
 
-	
 	<!-- 创建联系人的模态窗口 -->
 	<div class="modal fade" id="createContactsModal" role="dialog">
 		<div class="modal-dialog" role="document" style="width: 85%;">
