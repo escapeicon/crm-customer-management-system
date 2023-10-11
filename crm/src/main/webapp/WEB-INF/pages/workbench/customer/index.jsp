@@ -236,7 +236,7 @@
 				url:'workbench/customer/saveEditedCustomer.do',
 				data:customer,
 				success(data){
-					if (data.code = "1") {
+					if (+data.code) {
 						$("#editCustomerModal").modal("hide");//关闭模态窗口
 						renderCustomerList(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
 

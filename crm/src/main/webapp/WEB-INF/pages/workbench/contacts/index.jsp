@@ -275,9 +275,6 @@
 					const contacts = data.contacts;//获取联系人集合
 					const totalRows = data.totalRows;//获取总条数
 
-					console.log(totalRows);
-					console.log(contacts.length == 0 && totalRows != 0)
-
 					if (contacts.length == 0 && pageNo != 1) {
 						queryForPageByCondition(pageNo - 1,pageSize);
 					}else {
