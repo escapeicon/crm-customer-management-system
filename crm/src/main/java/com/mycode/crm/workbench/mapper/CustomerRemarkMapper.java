@@ -6,17 +6,18 @@ import com.mycode.crm.workbench.domain.CustomerRemark;
 import java.util.List;
 
 public interface CustomerRemarkMapper {
-    int deleteByPrimaryKey(String id);
 
-    int insert(CustomerRemark record);
-
-    int insertSelective(CustomerRemark record);
-
-    CustomerRemark selectByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(CustomerRemark record);
-
-    int updateByPrimaryKey(CustomerRemark record);
-
+    /**
+     * 添加 客户备注 通过集合
+     * @param customerRemarks
+     * @return
+     */
     int insertCustomerRemarkByList(List<CustomerRemark> customerRemarks);
+
+    /**
+     * 查询 客户备注 通过客户id
+     * @param customerId
+     * @return
+     */
+    List<CustomerRemark> selectCustomerRemarkByCustomerId(String customerId);
 }

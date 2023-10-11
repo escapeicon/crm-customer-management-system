@@ -110,10 +110,96 @@
                 and website like "%"#{website}"%"
             </if>
         </where>
-        limit #{beginNo},#{pageSize}
     </select>
     <!--查询简略 单条 根据id-->
     <select id="selectOneByIdCustomer" resultMap="BaseResultMap" parameterType="string">
         select * from tbl_customer where id = #{id}
+    </select>
+    <!--精细查询单条 根据id-->
+    <select id="selectOneByIdForDetail" parameterType="string" resultMap="BaseResultMap">
+        select
+            customer.id,
+            user1.name as owner,
+            customer.name,
+            customer.website,
+            user2.name as create_by,
+            customer.create_time,
+            user3.name as edit_by,
+            customer.edit_time,
+            customer.contact_summary,
+            customer.next_contact_time,
+            customer.description,
+            customer.address
+        from
+            tbl_customer as customer
+        join tbl_user as user1 on user1.id = customer.owner
+        join tbl_user as user2 on user2.id = customer.create_by
+        left join tbl_user as user3 on user3.id = customer.edit_by
+        where customer.id = #{id}
+    </select>
+    <!--查询 所有客户-->
+    <select id="selectAllCustomerForDetail" resultMap="BaseResultMap">
+        select
+            customer.id,
+            user1.name as owner,
+            customer.name,
+            customer.website,
+            user2.name as create_by,
+            customer.create_time,
+            user3.name as edit_by,
+            customer.edit_time,
+            customer.contact_summary,
+            customer.next_contact_time,
+            customer.description,
+            customer.address
+        from
+            tbl_customer as customer
+        join tbl_user as user1 on user1.id = customer.owner
+        join tbl_user as user2 on user2.id = customer.create_by
+        left join tbl_user as user3 on user3.id = customer.edit_by
+    </select>
+    <!--详细查询 根据name值-->
+    <select id="selectCustomerListByName" parameterType="string" resultMap="BaseResultMap">
+        select
+            customer.id,
+            user1.name as owner,
+            customer.name,
+            customer.website,
+            user2.name as create_by,
+            customer.create_time,
+            user3.name as edit_by,
+            customer.edit_time,
+            customer.contact_summary,
+            customer.next_contact_time,
+            customer.description,
+            customer.address
+        from
+            tbl_customer as customer
+        join tbl_user as user1 on user1.id = customer.owner
+        join tbl_user as user2 on user2.id = customer.create_by
+        left join tbl_user as user3 on user3.id = customer.edit_by
+        where customer.name like "%"#{name}"%"
+    </select>
+    <!--精确查询客户 通过 name-->
+    <select id="selectCustomerByName" parameterType="string" resultMap="BaseResultMap">
+        select
+            customer.id,
+            user1.name as owner,
+            customer.name,
+            customer.website,
+            user2.name as create_by,
+            customer.create_time,
+            user3.name as edit_by,
+            customer.edit_time,
+            customer.contact_summary,
+            customer.next_contact_time,
+            customer.description,
+            customer.address
+        from
+            tbl_customer as customer
+        join tbl_user as user1 on user1.id = customer.owner
+        join tbl_user as user2 on user2.id = customer.create_by
+        left join tbl_user as user3 on user3.id = customer.edit_by
+        where customer.name = #{name}
     </select>
 </mapper>

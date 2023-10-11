@@ -62,6 +62,8 @@
 		const queryStartDate = $("#queryStartDate").val();
 		const queryEndDate = $("#queryEndDate").val();
 
+		$("#checkAll").prop("checked",false);
+
 		//加载页面顺便加载市场活动列表
 		$.ajax({
 			type: "post",

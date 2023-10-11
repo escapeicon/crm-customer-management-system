@@ -1,19 +1,26 @@
 package com.mycode.crm.workbench.web.controller;
 
 import com.mycode.crm.commons.constants.Constants;
+import com.mycode.crm.commons.domain.ReturnInfo;
+import com.mycode.crm.commons.utils.DateFormat;
+import com.mycode.crm.commons.utils.UUIDUtil;
 import com.mycode.crm.settings.domain.DicValue;
 import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.service.DicValueService;
 import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Contacts;
+import com.mycode.crm.workbench.domain.Customer;
 import com.mycode.crm.workbench.service.ContactsService;
+import com.mycode.crm.workbench.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +34,8 @@ public class ContactsController {
     private DicValueService dicValueService;
     @Autowired
     private ContactsService contactsService;
+    @Autowired
+    private CustomerService customerService;
 
     /**
      * 跳转 联系人主页
@@ -88,5 +97,96 @@ public class ContactsController {
             return returnInfo;
         }
         return null;
+    }
+
+    /**
+     * 创建联系人
+     * @param map
+     * @param session
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/addOneContact.do")
+    public @ResponseBody Object addOneContact(@RequestBody Map<String,Object> map, HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try{
+            Object user = session.getAttribute(Constants.SESSION_USER_KEY);
+            map.put("user",user);
+
+            contactsService.saveContactForManual(map);
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 为创建和修改模态窗口提供客户名称
+     * @param name
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/getCustomerListForCreateAndEdit.do")
+    public @ResponseBody Object getCustomerListForCreateAndEdit(String name){
+        List<Customer> customers = customerService.queryCustomerListByName(name);//获取客户模糊查询的客户名集合
+        return customers;
+    }
+
+    /**
+     * 删除联系人 根据id数组
+     * @param ids
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/deleteContacts.do")
+    public @ResponseBody Object deleteContacts(String[] ids){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            int count = contactsService.deleteContactByIds(ids);
+
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙,请稍后重试...");
+            }
+        } catch (Exception e) {
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            throw new RuntimeException(e);
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 加载修改页面 联系人信息
+     * @param id
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/loadEditPage.do")
+    public @ResponseBody Object loadEditPage(String id){
+        Contacts contacts = contactsService.queryOneById(id);
+        return contacts;
+    }
+
+    /**
+     * 保存用户已修改的联系人信息
+     * @param map
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/saveEditContact.do")
+    public @ResponseBody Object saveEditContact(@RequestBody Map<String,Object> map,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            Object user = session.getAttribute(Constants.SESSION_USER_KEY);
+            map.put("user",user);
+            contactsService.updateContactById(map);
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试....");
+            e.printStackTrace();
+        }
+        return returnInfo;
     }
 }

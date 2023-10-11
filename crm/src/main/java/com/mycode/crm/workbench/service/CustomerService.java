@@ -16,4 +16,8 @@ public interface CustomerService {
     List<Customer> queryCustomerForPageByCondition(Map<String,Object> pageInfo);
     int queryCountCustomerForPageByCondition(Map<String,Object> pageInfo);
     Customer queryOneById(String id);
+    List<Customer> queryAllForDetail();
+    List<Customer> queryCustomerListByName(String name);
+    Customer queryCustomerByName(String name);
+    Customer queryOneByIdForDetail(String id);
 }

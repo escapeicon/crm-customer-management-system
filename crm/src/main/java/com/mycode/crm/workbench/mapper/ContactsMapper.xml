@@ -36,6 +36,33 @@
              #{description},#{contactSummary},#{nextContactTime},#{address})
   </insert>
 
+    <!--删除联系人 根据id数组-->
+    <delete id="deleteContactByIds" parameterType="string">
+        delete from tbl_contacts
+        where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--修改联系人 根据id-->
+    <update id="updateContactById" parameterType="contacts" >
+        update tbl_contacts set
+            owner = #{owner},
+            source = #{source},
+            fullname = #{fullname},
+            appellation = #{appellation},
+            job = #{job},
+            mphone = #{mphone},
+            email = #{email},
+            customer = #{customer},
+            description = #{description},
+            contact_summary = #{contactSummary},
+            next_contact_time = #{nextContactTime},
+            address = #{address}
+        where id = #{id}
+    </update>
+
     <!--查询 多条联系人 分页查询 根据条件-->
     <select id="selectContactsForPageByCondition" parameterType="map" resultMap="BaseResultMap">
         select
@@ -91,18 +118,95 @@
         left join tbl_dic_value as dic1 on dic1.id = contacts.source
         left join tbl_customer as customer on customer.id = contacts.customer
         <where>
-            <if test="owner != null">
+            <if test="owner != null and owner != ''">
                 and user1.name like "%" #{owner} "%"
             </if>
-            <if test="fullname != null">
+            <if test="fullname != null and owner != ''">
                 and contacts.fullname like "%" #{fullname} "%"
             </if>
-            <if test="customer != null">
+            <if test="customer != null and fullname != ''">
                 and customer.name like "%${customer}%"
             </if>
-            <if test="source != null">
+            <if test="source != null and customer != ''">
                 and dic1.id = #{source}
             </if>
         </where>
+    </select>
+    <!--查询 多条联系人 根据客户id-->
+    <select id="selectContactsForRemarkPageByCustomerId" parameterType="string" resultMap="BaseResultMap">
+        select
+            contacts.id,
+            contacts.fullname,
+            contacts.email,
+            contacts.mphone
+        from
+            tbl_contacts as contacts
+        where contacts.customer = #{customerId}
+    </select>
+    <!--查询所有 精细查询-->
+    <select id="selectAllForDetail" resultMap="BaseResultMap">
+        select
+            contacts.id,
+            user1.name as owner,
+            dic1.value as source,
+            customer.name as customer,
+            contacts.fullname,
+            dic2.value as appellation,
+            contacts.email,
+            contacts.mphone,
+            contacts.job,
+            user2.name as create_by,
+            contacts.create_time,
+            user3.name as edit_by,
+            contacts.edit_time,
+            contacts.description,
+            contacts.contact_summary,
+            contacts.next_contact_time,
+            contacts.address
+        from
+        tbl_contacts as contacts
+        join tbl_user as user1 on user1.id = contacts.owner
+        left join tbl_dic_value as dic1 on dic1.id = contacts.source
+        left join tbl_dic_value as dic2 on dic2.id = contacts.appellation
+        join tbl_user as user2 on user2.id = contacts.create_by
+        left join tbl_user as user3 on user3.id = contacts.edit_by
+        left join tbl_customer as customer on customer.id = contacts.customer
+    </select>
+    <!--精细查询单条 根据id-->
+    <select id="selectOneByIdForDetail" parameterType="string" resultMap="BaseResultMap">
+        select
+            contacts.id,
+            user1.name as owner,
+            dic1.value as source,
+            customer.name as customer,
+            contacts.fullname,
+            dic2.value as appellation,
+            contacts.email,
+            contacts.mphone,
+            contacts.job,
+            user2.name as create_by,
+            contacts.create_time,
+            user3.name as edit_by,
+            contacts.edit_time,
+            contacts.description,
+            contacts.contact_summary,
+            contacts.next_contact_time,
+            contacts.address
+        from
+            tbl_contacts as contacts
+        join tbl_user as user1 on user1.id = contacts.owner
+        left join tbl_dic_value as dic1 on dic1.id = contacts.source
+        left join tbl_dic_value as dic2 on dic2.id = contacts.appellation
+        join tbl_user as user2 on user2.id = contacts.create_by
+        left join tbl_user as user3 on user3.id = contacts.edit_by
+        left join tbl_customer as customer on customer.id = contacts.customer
+        where contacts.id = #{id}
+    </select>
+    <!--快速查询单条 根据id-->
+    <select id="selectOneByIdContacts" parameterType="string" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List" />
+        from tbl_contacts
+        where id = #{id}
     </select>
 </mapper>

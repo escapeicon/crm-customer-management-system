@@ -38,5 +38,12 @@ public interface CustomerMapper {
     int selectCountCustomerForPageByCondition(Map<String,Object> pageInfo);
     //简略查询单条 根据id
     Customer selectOneByIdCustomer(String id);
-
+    //精细查询单条 根据id
+    Customer selectOneByIdForDetail(String id);
+    //详细查询 所有客户
+    List<Customer> selectAllCustomerForDetail();
+    //详细查询 根据name值
+    List<Customer> selectCustomerListByName(String name);
+    //精确查询客户 通过 name
+    Customer selectCustomerByName(String name);
 }

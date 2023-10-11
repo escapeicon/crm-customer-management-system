@@ -90,6 +90,14 @@ public class CustomerController {
     public @ResponseBody Object saveCustomer(Customer customer,HttpSession session){
         ReturnInfo returnInfo = new ReturnInfo();
         try {
+            Customer customerByName = customerService.queryCustomerByName(customer.getName());
+
+            if (customerByName != null) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("客户名重复,请更改客户名");
+                return returnInfo;
+            }
+
             User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);
 
             //补充客户实体类
