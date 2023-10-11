@@ -4,7 +4,10 @@ import com.mycode.crm.commons.constants.Constants;
 import com.mycode.crm.commons.domain.ReturnInfo;
 import com.mycode.crm.commons.utils.DateFormat;
 import com.mycode.crm.commons.utils.UUIDUtil;
+import com.mycode.crm.settings.domain.DicValue;
 import com.mycode.crm.settings.domain.User;
+import com.mycode.crm.settings.service.DicValueService;
+import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Contacts;
 import com.mycode.crm.workbench.domain.Customer;
 import com.mycode.crm.workbench.domain.CustomerRemark;
@@ -15,6 +18,7 @@ import com.mycode.crm.workbench.service.CustomerService;
 import com.mycode.crm.workbench.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -22,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class CustomerRemarkController {
@@ -34,6 +39,10 @@ public class CustomerRemarkController {
     private ContactsService contactsService;
     @Autowired
     private TransactionService transactionService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private DicValueService dicValueService;
 
     /**
      * 跳转客户 详情页
@@ -51,11 +60,17 @@ public class CustomerRemarkController {
             List<Transaction> transactions = transactionService.queryForRemarkPageByCustomerId(customerId);
             //客户联系人
             List<Contacts> contacts = contactsService.queryForRemarkPageByCustomerId(customerId);
+            List<User> users = userService.queryAllUsers();//获取所有用户
+            List<DicValue> sources = dicValueService.queryDicValueByTypeCode("source");//获取所有来源
+            List<DicValue> appellations = dicValueService.queryDicValueByTypeCode("appellation");//获取所有来源
 
             request.setAttribute("customer",customer);
             request.setAttribute("customerRemarks",customerRemarks);
             request.setAttribute("transactions",transactions);
             request.setAttribute("contacts",contacts);
+            request.setAttribute("users",users);
+            request.setAttribute("sources",sources);
+            request.setAttribute("appellations",appellations);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -168,6 +183,57 @@ public class CustomerRemarkController {
      */
     @RequestMapping("/workbench/customer/deleteTransaction.do")
     public @ResponseBody Object deleteTransaction(String id){
-        return null;
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            transactionService.deleteTransactionById(id);
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+        } catch (Exception e) {
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            throw new RuntimeException(e);
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 创建联系人
+     * @param map
+     * @param session
+     * @return
+     */
+    @RequestMapping("/workbench/customer/addOneContact.do")
+    public @ResponseBody Object addOneContact(@RequestBody Map<String,Object> map, HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try{
+            Object user = session.getAttribute(Constants.SESSION_USER_KEY);
+            map.put("user",user);
+
+            contactsService.saveContactForManual(map);
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 删除联系人 根据id
+     * @param contactId
+     * @return
+     */
+    @RequestMapping("/workbench/customer/deleteContactById.do")
+    public @ResponseBody Object deleteContactById(String contactId){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            contactsService.deleteContactById(contactId);
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+        } catch (Exception e) {
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙，请稍后重试...");
+            throw new RuntimeException(e);
+        }
+        return returnInfo;
     }
 }

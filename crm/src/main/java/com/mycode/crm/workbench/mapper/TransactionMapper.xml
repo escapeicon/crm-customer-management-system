@@ -37,6 +37,12 @@
              #{contactsId}, #{createBy}, #{createTime}, #{description}, #{contactSummary},#{nextContactTime})
     </insert>
 
+    <!--删除交易 根据id-->
+    <delete id="deleteTransactionById" parameterType="string">
+        delete from tbl_transaction
+        where id = #{id}
+    </delete>
+
     <!--查询 分页 条件-->
     <select id="selectForPageByCondition" parameterType="map" resultMap="BaseResultMap">
         select

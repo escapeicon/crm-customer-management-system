@@ -9,12 +9,13 @@
     <result column="edit_by" property="editBy" jdbcType="VARCHAR" />
     <result column="edit_time" property="editTime" jdbcType="CHAR" />
     <result column="edit_flag" property="editFlag" jdbcType="CHAR" />
-    <result column="tran_id" property="tranId" jdbcType="CHAR" />
+    <result column="transaction_id" property="transactionId" jdbcType="CHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, tran_id
+    id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, transaction_id
   </sql>
 
+  <!--插入多条 交易备注 通过list集合-->
   <insert id="insertTransactionRemarkByList" parameterType="transactionRemark">
     insert into tbl_transaction_remark
     (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,transaction_id)
@@ -25,4 +26,9 @@
         </foreach>
   </insert>
 
+  <!--删除多条交易备注 根据交易id-->
+  <delete id="deleteTransactionRemarkByTransactionId" parameterType="string">
+    delete from tbl_transaction_remark
+    where transaction_id = #{transactionId}
+  </delete>
 </mapper>

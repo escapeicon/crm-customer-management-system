@@ -44,6 +44,11 @@
             #{id}
         </foreach>
     </delete>
+    <!--删除联系人 根据id-->
+    <delete id="deleteContactById" parameterType="string">
+        delete from tbl_contacts
+        where id = #{id}
+    </delete>
 
     <!--修改联系人 根据id-->
     <update id="updateContactById" parameterType="contacts" >

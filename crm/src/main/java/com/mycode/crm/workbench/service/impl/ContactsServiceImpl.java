@@ -6,6 +6,7 @@ import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.workbench.domain.Contacts;
 import com.mycode.crm.workbench.domain.Customer;
 import com.mycode.crm.workbench.mapper.ContactsMapper;
+import com.mycode.crm.workbench.mapper.ContactsRemarkMapper;
 import com.mycode.crm.workbench.mapper.CustomerMapper;
 import com.mycode.crm.workbench.service.ContactsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class ContactsServiceImpl implements ContactsService {
     private ContactsMapper contactsMapper;
     @Autowired
     private CustomerMapper customerMapper;
+    @Autowired
+    private ContactsRemarkMapper contactsRemarkMapper;
 
     /**
      * 添加 联系人
@@ -76,6 +79,12 @@ public class ContactsServiceImpl implements ContactsService {
     @Override
     public int deleteContactByIds(String[] ids) {
         return contactsMapper.deleteContactByIds(ids);
+    }
+    //删除联系人 根据id
+    @Override
+    public void deleteContactById(String id) {
+        contactsRemarkMapper.deleteContactsRemarkByContactId(id);//删除该联系人所有备注
+        contactsMapper.deleteContactById(id);//删除该联系人
     }
 
     /**

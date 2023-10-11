@@ -12,4 +12,11 @@ public interface TransactionRemarkMapper {
      * @return 插入记录条数
      */
     int insertTransactionRemarkByList(List<TransactionRemark> transactionRemarkList);
+
+    /**
+     * 删除多条交易备注 根据交易id
+     * @param transactionId
+     * @return
+     */
+    int deleteTransactionRemarkByTransactionId(String transactionId);
 }

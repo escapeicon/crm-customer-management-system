@@ -11,6 +11,7 @@ public interface ContactsService {
     void saveContactForManual(Map<String,Object> map);
 
     int deleteContactByIds(String[] ids);
+    void deleteContactById(String id);
 
     void updateContactById(Map<String,Object> map);
 

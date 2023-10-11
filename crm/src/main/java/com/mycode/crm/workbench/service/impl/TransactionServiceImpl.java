@@ -9,6 +9,7 @@ import com.mycode.crm.workbench.domain.Customer;
 import com.mycode.crm.workbench.domain.Transaction;
 import com.mycode.crm.workbench.mapper.CustomerMapper;
 import com.mycode.crm.workbench.mapper.TransactionMapper;
+import com.mycode.crm.workbench.mapper.TransactionRemarkMapper;
 import com.mycode.crm.workbench.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ public class TransactionServiceImpl implements TransactionService {
     private CustomerMapper customerMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private TransactionRemarkMapper transactionRemarkMapper;
 
     /**
      * 添加 交易
@@ -69,6 +72,19 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setNextContactTime((String) map.get("nextContactTime"));
         //添加一条交易
         transactionMapper.insertTransaction(transaction);
+    }
+
+    /**
+     * 删除交易 根据id
+     * @param id
+     * @return
+     */
+    @Override
+    public void deleteTransactionById(String id) throws Exception{
+        //删除交易备注
+        transactionRemarkMapper.deleteTransactionRemarkByTransactionId(id);
+        //删除交易
+        transactionMapper.deleteTransactionById(id);
     }
 
     /**

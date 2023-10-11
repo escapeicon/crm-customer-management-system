@@ -15,6 +15,13 @@ public interface TransactionMapper {
     int insertTransaction(Transaction transaction);
 
     /**
+     * 删除交易 根据id
+     * @param id
+     * @return
+     */
+    int deleteTransactionById(String id);
+
+    /**
      * 查询 分页 条件
      * @param pageInfo
      * @return 交易结果集

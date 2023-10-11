@@ -20,6 +20,8 @@ public interface ContactsMapper {
      * @return 数据库更新条数
      */
     int deleteContactByIds(String[] ids);
+    //删除联系人 根据id
+    int deleteContactById(String id);
 
     /**
      * 修改联系人 根据id

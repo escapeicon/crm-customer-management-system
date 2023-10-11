@@ -15,6 +15,7 @@
     id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, contacts_id
   </sql>
 
+  <!--添加联系人备注 通过list集合-->
   <insert id="insertContactsRemarkByList" parameterType="contactsRemark">
     insert into tbl_contacts_remark
         (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,contacts_id)
@@ -23,4 +24,10 @@
       (#{contactsRemark.id},#{contactsRemark.noteContent},#{contactsRemark.createBy},#{contactsRemark.createTime},#{contactsRemark.editBy},#{contactsRemark.editTime},#{contactsRemark.editFlag},#{contactsRemark.contactsId})
     </foreach>
   </insert>
+
+  <!--删除联系人备注 根据联系人id-->
+  <delete id="deleteContactsRemarkByContactId" parameterType="string">
+    delete from tbl_contacts_remark
+    where contacts_id = #{contactsId}
+  </delete>
 </mapper>
