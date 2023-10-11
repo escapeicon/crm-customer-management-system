@@ -163,6 +163,16 @@
 				}
 			})
 		})
+
+		/**
+		 * 交易
+		 */
+		//删除交易
+		$("#tbody-transaction").on("click","a",function (){
+			const transactionId = $(this).attr("transactionId");
+
+
+		})
 	});
 	
 </script>
@@ -510,15 +520,15 @@
 							<td></td>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="tbody-transaction">
 						<c:forEach items="${transactions}" var="transaction">
 							<tr>
-								<td><a transactionId="${transaction.id}" href="../transaction/detail.html" style="text-decoration: none;">动力节点-交易01</a></td>
+								<td><a transactionId="${transaction.id}" href="../transaction/detail.html" style="text-decoration: none;">${transaction.customerId}-${transaction.name}</a></td>
 								<td>${transaction.money}</td>
 								<td>${transaction.stage}</td>
-								<td>90</td>
+								<td>待定</td>
 								<td>${transaction.expectedDate}</td>
-								<td>${tranaction.type}</td>
+								<td>${transaction.type}</td>
 								<td><a transactionId="${transaction.id}" href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>
 							</tr>
 						</c:forEach>
@@ -527,7 +537,7 @@
 			</div>
 			
 			<div>
-				<a href="../transaction/save.jsp" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>新建交易</a>
+				<a href="workbench/transaction/toTransactionSavePage.do" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>新建交易</a>
 			</div>
 		</div>
 	</div>

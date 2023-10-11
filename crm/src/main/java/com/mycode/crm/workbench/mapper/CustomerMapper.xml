@@ -77,16 +77,16 @@
         join tbl_user as user2 on user2.id = customer.create_by
         left join tbl_user as user3 on user3.id = customer.edit_by
         <where>
-            <if test="name != null">
+            <if test="name != null and name != ''">
                 and customer.name like "%"#{name}"%"
             </if>
-            <if test="owner != null">
+            <if test="owner != null and owner != ''">
                 and user1.name like "%"#{owner}"%"
             </if>
-            <if test="phone != null">
+            <if test="phone != null and phone != ''">
                 and customer.phone like "%"#{phone}"%"
             </if>
-            <if test="website != null">
+            <if test="website != null and website != ''">
                 and customer.website like "%"#{website}"%"
             </if>
         </where>
@@ -98,16 +98,16 @@
             count(*)
         from tbl_customer
         <where>
-            <if test="name != null">
+            <if test="name != null and name != ''">
                 and name like "%"#{name}"%"
             </if>
-            <if test="owner != null">
+            <if test="owner != null and owner != ''">
                 and owner like "%"#{owner}"%"
             </if>
-            <if test="phone != null">
+            <if test="phone != null and phone != ''">
                 and phone like "%"#{phone}"%"
             </if>
-            <if test="website != null">
+            <if test="website != null and website != ''">
                 and website like "%"#{website}"%"
             </if>
         </where>

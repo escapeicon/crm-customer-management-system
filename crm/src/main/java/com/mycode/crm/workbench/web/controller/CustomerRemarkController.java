@@ -160,4 +160,14 @@ public class CustomerRemarkController {
         }
         return returnInfo;
     }
+
+    /**
+     * 删除交易 根据id
+     * @param id
+     * @return
+     */
+    @RequestMapping("/workbench/customer/deleteTransaction.do")
+    public @ResponseBody Object deleteTransaction(String id){
+        return null;
+    }
 }

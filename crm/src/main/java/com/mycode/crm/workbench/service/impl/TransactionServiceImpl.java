@@ -38,11 +38,10 @@ public class TransactionServiceImpl implements TransactionService {
 
         Customer customer = customerMapper.selectCustomerByName(name);//从数据库查询该条客户通过name
 
-        String customerId = UUIDUtil.getUUID();
         //如果为null 则新建客户
         if (customer == null) {
             customer = new Customer();
-            customer.setId(customerId);
+            customer.setId(UUIDUtil.getUUID());
             customer.setOwner(user.getId());
             customer.setName(name);
             customer.setCreateBy(user.getId());
@@ -57,7 +56,7 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setMoney((String) map.get("money"));
         transaction.setName((String) map.get("name"));
         transaction.setExpectedDate((String) map.get("expectedDate"));
-        transaction.setCustomerId(customerId);
+        transaction.setCustomerId(customer.getId());
         transaction.setStage((String) map.get("stage"));
         transaction.setType((String) map.get("type"));
         transaction.setSource((String) map.get("source"));

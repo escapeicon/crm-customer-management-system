@@ -138,14 +138,34 @@
     <select id="selectForRemarkPageByCustomerId" parameterType="string" resultMap="BaseResultMap">
         select
             transaction.id,
-            transaction.name,
+            user1.name as owner,
             transaction.money,
-            dic1.value as stage,
+            transaction.name,
             transaction.expected_date,
-            dic2.value as type
-        from tbl_transaction as transaction
+            customer.name as customer_id,
+            dic1.value as stage,
+            dic2.value as type,
+            dic3.value as source,
+            activity.name as activity_id,
+            contacts.fullname as contacts_id,
+            user2.name as create_by,
+            contacts.create_time,
+            user3.name as edit_by,
+            contacts.edit_time,
+            contacts.description,
+            contacts.contact_summary,
+            contacts.next_contact_time
+        from
+            tbl_transaction as transaction
+        join tbl_user as user1 on user1.id = transaction.owner
+        join tbl_customer as customer on transaction.customer_id = customer.id
         join tbl_dic_value as dic1 on dic1.id = transaction.stage
-        left join tbl_dic_value as dic2 on dic2.id = transaction.type
+        join tbl_dic_value as dic2 on dic2.id = transaction.type
+        join tbl_dic_value as dic3 on dic3.id = transaction.source
+        left join tbl_activity as activity on activity.id = transaction.activity_id
+        left join tbl_contacts as contacts on contacts.id = transaction.contacts_id
+        join tbl_user as user2 on user2.id = transaction.create_by
+        left join tbl_user as user3 on user3.id = transaction.edit_by
         where transaction.customer_id = #{customerId}
     </select>
 </mapper>

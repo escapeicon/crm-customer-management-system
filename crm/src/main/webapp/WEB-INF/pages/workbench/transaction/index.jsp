@@ -70,7 +70,7 @@
 					const transactions = data.transactions;
 					const totalRows = data.totalRows;
 
-					if (transactions.length == 0 && totalRows != 0) {
+					if (transactions.length == 0 && pageNo != 1) {
 						queryForPage(pageNo - 1,pageSize);
 					}else {
 						//渲染交易列表
@@ -84,8 +84,8 @@
 							html += "	<td>"+transaction.stage+"</td>";
 							html += "	<td>"+transaction.type+"</td>";
 							html += "	<td>"+transaction.owner+"</td>";
-							html += "	<td>"+transaction.source+"</td>";
-							html += "	<td>"+transaction.contactsId+"</td>";
+							html += "	<td>"+(transaction.source == null ? "" : transaction.source)+"</td>";
+							html += "	<td>"+(transaction.contactsId == null ? "" : transaction.contactsId)+"</td>";
 							html += "</tr>";
 						})
 
