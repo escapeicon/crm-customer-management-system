@@ -110,12 +110,12 @@
                        selectByExampleQueryId="false">
                 </table>
 
-                <table tableName="tbl_contacts_activity_relation" domainObjectName="ContactsActivityRelation"
+                <table tableName="tbl_contact_activity_relation" domainObjectName="ContactActivityRelation"
                        enableCountByExample="false" enableUpdateByExample="false"
                        enableDeleteByExample="false" enableSelectByExample="false"
                        selectByExampleQueryId="false">
                 </table>
-                -->
+-->
         <!--
                         <table tableName="tbl_contacts_remark" domainObjectName="ContactsRemark"
                                enableCountByExample="false" enableUpdateByExample="false"
