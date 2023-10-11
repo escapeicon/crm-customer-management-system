@@ -308,8 +308,9 @@
         a.end_date,
         a.cost,
         a.description,
-        a.create_time,
         u2.name as create_by,
+        a.create_time,
+        u3.name as edit_by,
         a.edit_time,
         u3.name as edti_by
     from

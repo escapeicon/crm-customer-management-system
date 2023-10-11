@@ -18,4 +18,9 @@ public interface ContactsRemarkMapper {
      * @return
      */
     int deleteContactsRemarkByContactId(String contactsId);
+
+    /**
+     * 精确查询多条联系人备注 根据联系人id
+     */
+    List<ContactsRemark> selectContactsRemarkByContactId(String contactId);
 }

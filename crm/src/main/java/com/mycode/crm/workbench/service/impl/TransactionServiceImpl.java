@@ -106,4 +106,9 @@ public class TransactionServiceImpl implements TransactionService {
     public List<Transaction> queryForRemarkPageByCustomerId(String customerId) {
         return transactionMapper.selectForRemarkPageByCustomerId(customerId);
     }
+    //查询多条 用于备注页面展示 通过联系人id
+    @Override
+    public List<Transaction> queryForRemarkPageByContactId(String contactId) {
+        return transactionMapper.selectForRemarkPageByContactId(contactId);
+    }
 }

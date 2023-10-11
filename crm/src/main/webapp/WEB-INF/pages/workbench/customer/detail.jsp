@@ -500,17 +500,17 @@
 	<div style="position: relative; top: -70px;">
 		<div style="position: relative; left: 40px; height: 30px;">
 			<div style="width: 300px; color: gray;">所有者</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${customer.owner}</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${customer.owner} &nbsp;</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">名称</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${customer.name}</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${customer.name} &nbsp;</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 10px;">
 			<div style="width: 300px; color: gray;">公司网站</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${customer.website}</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${customer.website} &nbsp;</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">公司座机</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${customer.phone}</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${customer.phone} &nbsp;</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
@@ -528,21 +528,21 @@
             <div style="width: 300px; color: gray;">联系纪要</div>
             <div style="width: 630px;position: relative; left: 200px; top: -20px;">
                 <b>
-                    ${customer.contactSummary}
+                    ${customer.contactSummary}&nbsp;
                 </b>
             </div>
             <div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
         </div>
         <div style="position: relative; left: 40px; height: 30px; top: 50px;">
             <div style="width: 300px; color: gray;">下次联系时间</div>
-            <div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${customer.nextContactTime}</b></div>
+            <div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${customer.nextContactTime}&nbsp;</b></div>
             <div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -20px; "></div>
         </div>
 		<div style="position: relative; left: 40px; height: 30px; top: 60px;">
 			<div style="width: 300px; color: gray;">描述</div>
 			<div style="width: 630px;position: relative; left: 200px; top: -20px;">
 				<b>
-					${customer.description}
+					${customer.description}&nbsp;
 				</b>
 			</div>
 			<div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
@@ -551,7 +551,7 @@
             <div style="width: 300px; color: 'gray';">详细地址</div>
             <div style="width: 630px;position: relative; left: 200px; top: -20px;">
                 <b>
-                    ${customer.address}
+                    ${customer.address}&nbsp;
                 </b>
             </div>
             <div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
@@ -650,7 +650,7 @@
 					<tbody id="tbody-contacts">
 						<c:forEach items="${contacts}" var="contact">
 							<tr>
-								<td><a contactId="${contact.id}" href="../contacts/detail.html" style="text-decoration: none;">${contact.fullname}</a></td>
+								<td><a contactId="${contact.id}" href="../contacts/detail.jsp" style="text-decoration: none;">${contact.fullname}</a></td>
 								<td>${contact.email}</td>
 								<td>${contact.mphone}</td>
 								<td><a contactId="${contact.id}" href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>

@@ -10,4 +10,6 @@ public interface ContactsRemarkService {
 
     int deleteContactsRemarkByContactId(String contactId);
 
+    List<ContactsRemark> queryContactsRemarkByContactId(String contactId);
+
 }

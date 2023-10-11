@@ -31,4 +31,6 @@ public interface TransactionMapper {
     int selectCountByCondition(Map<String,Object> pageInfo);
     //查询多条 用于备注页面展示 通过客户Id
     List<Transaction> selectForRemarkPageByCustomerId(String customerId);
+    //查询多条 用于备注页展示 根据联系人id
+    List<Transaction> selectForRemarkPageByContactId(String contactId);
 }

@@ -33,4 +33,14 @@ public class ContactsRemarkServiceImpl implements ContactsRemarkService {
     public int deleteContactsRemarkByContactId(String contactId) {
         return contactsRemarkMapper.deleteContactsRemarkByContactId(contactId);
     }
+
+    /**
+     * 查询多条联系人备注 根据联系人id
+     * @param contactId
+     * @return
+     */
+    @Override
+    public List<ContactsRemark> queryContactsRemarkByContactId(String contactId) {
+        return contactsRemarkMapper.selectContactsRemarkByContactId(contactId);
+    }
 }

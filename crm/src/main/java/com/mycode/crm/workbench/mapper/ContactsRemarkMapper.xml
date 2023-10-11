@@ -30,4 +30,20 @@
     delete from tbl_contacts_remark
     where contacts_id = #{contactsId}
   </delete>
+
+  <!--精确查询多条联系人备注 根据联系人id-->
+  <select id="selectContactsRemarkByContactId" parameterType="string" resultMap="BaseResultMap">
+    select
+        contactRemark.id,
+        user1.name as create_by,
+        contactRemark.create_time,
+        user2.name as edit_by,
+        contactRemark.edit_time,
+        contactRemark.edit_flag,
+        contactRemark.contacts_id
+    from tbl_contacts_remark as contactRemark
+    join tbl_user as user1 on user1.id = contactRemark.create_by
+    left join tbl_user as user2 on user2.id = contactRemark.edit_by
+    where contactRemark.contacts_id = #{contactId}
+  </select>
 </mapper>

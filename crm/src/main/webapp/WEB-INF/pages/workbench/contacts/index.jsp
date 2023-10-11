@@ -62,6 +62,9 @@
 		}
 	}
 
+	/**
+	 * 入口函数
+	 */
 	$(function(){
 		queryForPageByCondition(${contactsPageNo == null ? 1 : contactsPageNo},${contactsPageSize == null ? 10 : contactsPageSize})
 
@@ -232,6 +235,14 @@
 			}
 		})
 
+		/**
+		 * 查看详情
+		 */
+		$("#tbody-contacts").on("click","a",function (){
+			const contactId = $(this).attr("contactId");
+			window.location.href = "workbench/contacts/toContactDetailPage.do?contactId="+contactId;
+		})
+
 		//日历组件
 		$("#create-nextContactTime,#edit-nextContactTime").datetimepicker({
 			format:"yyyy-mm-dd",//日期格式
@@ -284,10 +295,10 @@
 						contacts.forEach(contact => {
 							html += "<tr>";
 							html += "	<td><input value='"+contact.id+"' type=\"checkbox\" /></td>";
-							html += "	<td><a style=\"text-decoration: none; cursor: pointer;\">"+contact.fullname+"</a></td>";
-							html += "	<td>"+contact.customer+"</td>";
-							html += "	<td>"+contact.owner+"</td>";
-							html += "	<td>"+contact.source+"</td>";
+							html += "	<td><a contactId='"+contact.id+"' style=\"text-decoration: none; cursor: pointer;\">"+contact.fullname+"</a></td>";
+							html += "	<td>"+(contact.customer == null ? "" : contact.customer)+"</td>";
+							html += "	<td>"+(contact.owner == null ? "" : contact.owner)+"</td>";
+							html += "	<td>"+(contact.source == null ? "" : contact.source)+"</td>";
 							html += "</tr>";
 						})
 
