@@ -53,6 +53,146 @@
 		$(".myHref").mouseout(function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
+
+		/**
+		 * 联系人备注
+		 */
+		//添加联系人备注
+		$("#saveBtn").click(function (){
+			const noteContent = $("#remark").val().trim();//获取备注信息
+
+			$.ajax({
+				type:'post',
+				url:'workbench/contacts/saveContactRemark.do',
+				data:{
+					noteContent:noteContent,
+					contactId:'${contact.id}'
+				},
+				success(data) {
+					if (+data.code) {
+						const contactRemark = data.data;
+
+						$("#remark").val("");
+
+						let html = "";
+
+						html += "<div id='div_"+contactRemark.id+"' className=\"remarkDiv\" style=\"height: 60px;\">";
+						html += "	<img title='${contact.owner}' src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
+						html += "		<div style=\"position: relative; top: -40px; left: 40px;\">";
+						html += "			<h5>"+contactRemark.noteContent+"</h5>";
+						html += "			<font color=\"gray\">联系人</font> <font color=\"gray\">-</font> <b>${contact.fullname}${contact.appellation}-${contact.customer}</b> <small style=\"color: gray;\">"+ contactRemark.createTime +"由${contact.createBy}创建</small>";
+						html += "			<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+						html += "				<a remarkId="+contactRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "				&nbsp;&nbsp;&nbsp;&nbsp;";
+						html += "				<a remarkId="+contactRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "			</div>";
+						html += "		</div>";
+						html += "</div>";
+
+						$("#remarkDiv").before(html);
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		})
+		//加载修改备注模态窗口数据
+		$(document).on("click",".myHref:even",function (){
+			const remarkId = $(this).attr("remarkId");
+			$.ajax({
+				type:'post',
+				url:'workbench/contacts/loadEditContactRemark.do',
+				data:{
+					contactRemarkId:remarkId
+				},
+				success(data) {
+					$("#noteContent").val(data.noteContent)
+					$("#remarkId").val(data.id);
+					$("#editRemarkModal").modal("show");
+				}
+			})
+		})
+		//修改备注
+		$("#updateRemarkBtn").click(function (){
+			const noteContent = $("#noteContent").val().trim();
+			const id = $("#remarkId").val();
+
+			$.ajax({
+				type:'post',
+				url:'workbench/contacts/saveEditedContactRemark.do',
+				data:{
+					id:id,
+					noteContent:noteContent
+				},
+				success(data){
+					if (+data.code) {
+						const contactRemark = data.data;//获取客户备注
+
+						let html = "";
+						//渲染网页
+						html += "<img title='${contact.owner}' src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
+						html += "<div style=\"position: relative; top: -40px; left: 40px;\">";
+						html += "	<h5>"+contactRemark.noteContent+"</h5>";
+						html += "	<font color=\"gray\">联系人</font> <font color=\"gray\">-</font> <b>${contact.fullname}-${contact.customer}</b> <small style=\"color: gray;\"> "+contactRemark.editTime+" 由 ${contact.owner} 修改</small>";
+						html += "	<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+						html += "		<a remarkid="+contactRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "		&nbsp;&nbsp;&nbsp;&nbsp;";
+						html += "		<a remarkid="+contactRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "	</div>";
+						html += "</div>";
+
+						$("#div_"+contactRemark.id).html(html);
+						$("#editRemarkModal").modal("hide");
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		})
+		//删除备注
+		$(document).on("click",".myHref:odd",function (){
+			const remarkId = $(this).attr("remarkId");
+
+			$.ajax({
+				type:'post',
+				url:"workbench/contacts/deleteContactsRemark.do",
+				data:{
+					id:remarkId
+				},
+				success(data){
+					if (+data.code) {
+						$("#div_"+remarkId).remove();
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		})
+
+		/**
+		 * 交易
+		 */
+		//删除交易
+		$("#tbody-transaction").on("click","a",function (){
+			if (confirm("你确定要删除该交易吗?")) {
+				const transactionId = $(this).attr("transactionId");//获取交易id
+
+				$.ajax({
+					type:'post',
+					url:"workbench/contacts/deleteTransactionById.do",
+					data:{
+						transactionId:transactionId
+					},
+					success(data){
+						if (+data.code) {
+							window.location.reload();
+						}else {
+							alert(data.message);
+						}
+					}
+				})
+			}
+		})
 	});
 	
 </script>
@@ -132,6 +272,38 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
 					<button type="button" class="btn btn-primary" data-dismiss="modal">关联</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 修改市场活动备注的模态窗口 -->
+	<div class="modal fade" id="editRemarkModal" role="dialog">
+		<%-- 备注的id --%>
+		<input type="hidden" id="remarkId">
+		<div class="modal-dialog" role="document" style="width: 40%;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">修改备注</h4>
+				</div>
+				<%--modal-body--%>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="noteContent" class="col-sm-2 control-label">内容</label>
+							<div class="col-sm-10" style="width: 81%;">
+								<textarea class="form-control" rows="3" id="noteContent"></textarea>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" id="updateRemarkBtn">更新</button>
 				</div>
 			</div>
 		</div>
@@ -235,10 +407,10 @@
 		</div>
 		
 		<c:forEach items="${contactsRemarks}" var="contactRemark">
-		<div class="remarkDiv" style="height: 60px;">
+		<div id="div_${contactRemark.id}" class="remarkDiv" style="height: 60px;">
 			<img title="${contact.owner}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 			<div style="position: relative; top: -40px; left: 40px;" >
-				<h5>${contact.noteContent}</h5>
+				<h5>${contactRemark.noteContent}</h5>
 				<font color="gray">联系人</font> <font color="gray">-</font> <b>${contact.fullname}${contact.appellation}-${contact.customer}</b> <small style="color: gray;"> ${contactRemark.editFlag == '1' ? contactRemark.editTime : contactRemark.createTime} 由${contactRemark.editFlag == '1' ? contactRemark.editBy : contactRemark.createBy} ${contactRemark.editFlag == '1' ? '修改' : '创建'}</small>
 				<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
 					<a remarkId="${contactRemark.id}" class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
@@ -288,7 +460,7 @@
 							<td>待定</td>
 							<td>${transaction.expectedDate}</td>
 							<td>${transaction.type}</td>
-							<td><a href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>
+							<td><a transactionId="${transaction.id}" href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>
 						</tr>
 						</c:forEach>
 					</tbody>
@@ -296,7 +468,7 @@
 			</div>
 			
 			<div>
-				<a href="../transaction/save.jsp" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>新建交易</a>
+				<a href="workbench/transaction/toTransactionSavePage.do" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>新建交易</a>
 			</div>
 		</div>
 	</div>
@@ -319,13 +491,6 @@
 						</tr>
 					</thead>
 					<tbody id="tbody-activities">
-						<%--<tr>
-							<td><a href="../activity/detail.jsp" style="text-decoration: none;">发传单</a></td>
-							<td>2020-10-10</td>
-							<td>2020-10-20</td>
-							<td>zhangsan</td>
-							<td><a href="javascript:void(0);" data-toggle="modal" data-target="#unbundActivityModal" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
-						</tr>--%>
 						<c:forEach items="${activities}" var="activity">
 						<tr>
 							<td><a activityId="${activity.id}" style="text-decoration: none;">${activity.name}</a></td>

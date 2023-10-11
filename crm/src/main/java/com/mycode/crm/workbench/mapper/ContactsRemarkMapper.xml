@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.mycode.crm.workbench.mapper.ContactsRemarkMapper" >
-  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.ContactsRemark" >
+    <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.ContactsRemark" >
     <id column="id" property="id" jdbcType="CHAR" />
     <result column="note_content" property="noteContent" jdbcType="VARCHAR" />
     <result column="create_by" property="createBy" jdbcType="VARCHAR" />
@@ -10,31 +10,54 @@
     <result column="edit_time" property="editTime" jdbcType="CHAR" />
     <result column="edit_flag" property="editFlag" jdbcType="CHAR" />
     <result column="contacts_id" property="contactsId" jdbcType="CHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+    </resultMap>
+    <sql id="Base_Column_List" >
     id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, contacts_id
-  </sql>
+    </sql>
 
-  <!--添加联系人备注 通过list集合-->
-  <insert id="insertContactsRemarkByList" parameterType="contactsRemark">
+    <!--添加联系人备注 通过list集合-->
+    <insert id="insertContactsRemarkByList" parameterType="contactsRemark">
     insert into tbl_contacts_remark
         (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,contacts_id)
     values
     <foreach collection="list" separator="," item="contactsRemark">
       (#{contactsRemark.id},#{contactsRemark.noteContent},#{contactsRemark.createBy},#{contactsRemark.createTime},#{contactsRemark.editBy},#{contactsRemark.editTime},#{contactsRemark.editFlag},#{contactsRemark.contactsId})
     </foreach>
-  </insert>
+    </insert>
+    <!--添加一条联系人-->
+    <insert id="insertContactRemark" parameterType="contactsRemark" >
+        insert into tbl_contacts_remark
+        (id,note_content,create_by,create_time,edit_flag,contacts_id)
+        value
+        (#{id},#{noteContent},#{createBy},#{createTime},#{editFlag},#{contactsId})
+    </insert>
 
-  <!--删除联系人备注 根据联系人id-->
-  <delete id="deleteContactsRemarkByContactId" parameterType="string">
+    <!--删除联系人备注 根据联系人id-->
+    <delete id="deleteContactsRemarkByContactId" parameterType="string">
     delete from tbl_contacts_remark
     where contacts_id = #{contactsId}
-  </delete>
+    </delete>
+    <!--删除联系人备注 根据id-->
+    <delete id="deleteContactsRemarkById" parameterType="string">
+        delete from tbl_contacts_remark
+        where id = #{id}
+    </delete>
 
-  <!--精确查询多条联系人备注 根据联系人id-->
-  <select id="selectContactsRemarkByContactId" parameterType="string" resultMap="BaseResultMap">
+    <!--修改联系人备注 根据联系人id-->
+    <update id="updateContactsRemarkById" parameterType="contactsRemark">
+        update tbl_contacts_remark set
+           note_content=#{noteContent},
+           edit_by=#{editBy},
+           edit_time=#{editTime},
+           edit_flag=#{editFlag}
+        where id = #{id}
+    </update>
+
+    <!--精确查询多条联系人备注 根据联系人id-->
+    <select id="selectContactsRemarkByContactId" parameterType="string" resultMap="BaseResultMap">
     select
         contactRemark.id,
+        contactRemark.note_content,
         user1.name as create_by,
         contactRemark.create_time,
         user2.name as edit_by,
@@ -45,5 +68,21 @@
     join tbl_user as user1 on user1.id = contactRemark.create_by
     left join tbl_user as user2 on user2.id = contactRemark.edit_by
     where contactRemark.contacts_id = #{contactId}
-  </select>
+    </select>
+    <!--精确查询一条 根据id-->
+    <select id="selectOneById" parameterType="string" resultMap="BaseResultMap">
+        select
+            contactRemark.id,
+            contactRemark.note_content,
+            user1.name as create_by,
+            contactRemark.create_time,
+            user2.name as edit_by,
+            contactRemark.edit_time,
+            contactRemark.edit_flag,
+            contactRemark.contacts_id
+        from tbl_contacts_remark as contactRemark
+         join tbl_user as user1 on user1.id = contactRemark.create_by
+         left join tbl_user as user2 on user2.id = contactRemark.edit_by
+        where contactRemark.id = #{id}
+    </select>
 </mapper>

@@ -160,7 +160,11 @@ public class ContactsServiceImpl implements ContactsService {
     public Contacts queryOneById(String id) {
         Contacts contacts = contactsMapper.selectOneByIdContacts(id);
         Customer customer = customerMapper.selectOneByIdCustomer(contacts.getCustomer());
-        contacts.setCustomer(customer.getName());
+        if (customer != null) {
+            contacts.setCustomer(customer.getName());
+        }else {
+            contacts.setCustomer(null);
+        }
         return contacts;
     }
 }

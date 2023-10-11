@@ -279,7 +279,12 @@
 					nextContactTime:nextContactTime
 				}),
 				success(data){
-					console.log(data);
+					if (+data.code) {
+						alert(data.message);
+						$(".form-horizontal")[0].reset();
+					}else {
+						alert(data.message)
+					}
 				}
 			})
 		})

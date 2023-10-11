@@ -220,6 +220,7 @@ public class TransactionController {
 
             transactionService.saveTransaction(map);
             returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            returnInfo.setMessage("创建交易成功~");
         } catch (Exception e) {
             returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("系统繁忙,请稍后重试...");
