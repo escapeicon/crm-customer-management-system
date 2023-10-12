@@ -150,4 +150,9 @@ public class ActivitiesServiceImpl implements ActivitiesService {
     public List<Activity> queryActivitiesForContactRelationByContactId(String contactId) {
         return activitiesMapper.selectActivitiesForContactRelationByContactId(contactId);
     }
+    //查询所有联系人未绑定的市场活动 根据联系人id
+    @Override
+    public List<Activity> queryActivitiesForContactUnBundledByContactId(String contactId) {
+        return activitiesMapper.selectAllActivitiesForContactRemarkExcludeBundledByContactId(contactId);
+    }
 }

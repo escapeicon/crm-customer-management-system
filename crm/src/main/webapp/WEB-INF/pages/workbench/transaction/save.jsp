@@ -244,25 +244,24 @@
 		 */
 		$("#save").click(function (){
 			const owner = $("#create-owner").val();
-			const money = $("#create-money").val();
-			const name = $("#create-name").val();
+			const money = $("#create-money").val().trim();
+			const name = $("#create-name").val().trim();
 			const expectedDate = $("#create-expected-date").val();
-			const customerId = $("#create-customer-id").val();
+			const customerId = $("#create-customer-id").val().trim();
 			const stage = $("#create-stage").val();
 			const type = $("#create-type").val();
 			const possibility = $("#create-possibility").val();
 			const source = $("#create-source").val();
 			const activityId = $("#create-activity-id").attr("activityId");
 			const contactsId = $("#create-contacts-id").attr("contactsId");
-			const description = $("#create-description").val();
-			const contactSummary = $("#create-contactSummary").val();
+			const description = $("#create-description").val().trim();
+			const contactSummary = $("#create-contactSummary").val().trim();
 			const nextContactTime = $("#create-nextContactTime").val();
 
 			$.ajax({
 				type:'post',
-				url:'workbencu/transaction/saveCreateTransation.do',
-				contentType:'application/json',
-				data:JSON.stringify({
+				url:'workbench/transaction/saveCreateTransaction.do',
+				data:{
 					owner:owner,
 					money:money,
 					name:name,
@@ -277,7 +276,7 @@
 					description:description,
 					contactSummary:contactSummary,
 					nextContactTime:nextContactTime
-				}),
+				},
 				success(data){
 					if (+data.code) {
 						alert(data.message);

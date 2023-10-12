@@ -7,7 +7,9 @@ import com.mycode.crm.settings.mapper.UserMapper;
 import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Customer;
 import com.mycode.crm.workbench.domain.Transaction;
+import com.mycode.crm.workbench.domain.TransactionHistory;
 import com.mycode.crm.workbench.mapper.CustomerMapper;
+import com.mycode.crm.workbench.mapper.TransactionHistoryMapper;
 import com.mycode.crm.workbench.mapper.TransactionMapper;
 import com.mycode.crm.workbench.mapper.TransactionRemarkMapper;
 import com.mycode.crm.workbench.service.TransactionService;
@@ -29,6 +31,8 @@ public class TransactionServiceImpl implements TransactionService {
     private UserMapper userMapper;
     @Autowired
     private TransactionRemarkMapper transactionRemarkMapper;
+    @Autowired
+    private TransactionHistoryMapper transactionHistoryMapper;
 
     /**
      * 添加 交易
@@ -72,6 +76,18 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setNextContactTime((String) map.get("nextContactTime"));
         //添加一条交易
         transactionMapper.insertTransaction(transaction);
+
+        //添加一条交易历史
+        TransactionHistory transactionHistory = new TransactionHistory();
+        transactionHistory.setId(UUIDUtil.getUUID());
+        transactionHistory.setStage(transaction.getStage());
+        transactionHistory.setMoney(transaction.getMoney());
+        transactionHistory.setExpectedDate(transaction.getExpectedDate());
+        transactionHistory.setCreateTime(DateFormat.formatDateTime(new Date()));
+        transactionHistory.setCreateBy(user.getId());
+        transactionHistory.setTransactionId(transaction.getId());
+
+        transactionHistoryMapper.insertTransactionHistory(transactionHistory);
     }
 
     /**

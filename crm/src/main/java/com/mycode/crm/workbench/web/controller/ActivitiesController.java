@@ -337,7 +337,7 @@ public class ActivitiesController {
      * @param id 市场活动id
      * @return 市场活动信息和备注信息
      */
-    @RequestMapping("workbench/activity/detailActivity.do")
+    @RequestMapping("/workbench/activity/detailActivity.do")
     public String detailActivity(String id,HttpServletRequest request){
         //查询市场活动信息
         Activity activity = activitiesService.queryActivityByIdForDetail(id);

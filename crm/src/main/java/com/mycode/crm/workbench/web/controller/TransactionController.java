@@ -211,8 +211,8 @@ public class TransactionController {
      * @param session
      * @return
      */
-    @RequestMapping("/workbencu/transaction/saveCreateTransation.do")
-    public @ResponseBody Object saveCreateTransation(@RequestBody Map<String,Object> map, HttpSession session){
+    @RequestMapping("/workbench/transaction/saveCreateTransaction.do")
+    public @ResponseBody Object saveCreateTransation(@RequestParam Map<String,Object> map, HttpSession session){
         ReturnInfo returnInfo = new ReturnInfo();
         try {
             User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);

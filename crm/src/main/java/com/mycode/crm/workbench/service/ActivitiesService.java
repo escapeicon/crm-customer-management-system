@@ -89,4 +89,5 @@ public interface ActivitiesService {
 
     List<Activity> queryActivitiesForClueConvertByClueId(String clueId);
     List<Activity> queryActivitiesForContactRelationByContactId(String contactId);
+    List<Activity> queryActivitiesForContactUnBundledByContactId(String contactId);
 }

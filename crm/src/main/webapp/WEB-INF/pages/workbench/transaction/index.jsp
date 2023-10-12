@@ -82,7 +82,7 @@
 							html += "	<td><a transactionId='"+transaction.id+"' style=\"text-decoration: none; cursor: pointer;\">"+transaction.name+"</a></td>";
 							html += "	<td>"+transaction.customerId+"</td>";
 							html += "	<td>"+transaction.stage+"</td>";
-							html += "	<td>"+transaction.type+"</td>";
+							html += "	<td>"+(transaction.type == null ? '&nbsp;' : transaction.type)+"</td>";
 							html += "	<td>"+transaction.owner+"</td>";
 							html += "	<td>"+(transaction.source == null ? "" : transaction.source)+"</td>";
 							html += "	<td>"+(transaction.contactsId == null ? "" : transaction.contactsId)+"</td>";

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mycode.crm.workbench.mapper.TransactionHistoryMapper" >
+  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.TransactionHistory" >
+    <id column="id" property="id" jdbcType="CHAR" />
+    <result column="stage" property="stage" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="VARCHAR" />
+    <result column="expected_date" property="expectedDate" jdbcType="CHAR" />
+    <result column="create_time" property="createTime" jdbcType="CHAR" />
+    <result column="create_by" property="createBy" jdbcType="VARCHAR" />
+    <result column="transaction_id" property="transactionId" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, stage, money, expected_date, create_time, create_by, transaction_id
+  </sql>
+
+  <!--添加 交易历史-->
+  <insert id="insertTransactionHistory" parameterType="transactionHistory">
+    insert into tbl_transaction_history (id, stage, money, expected_date, create_time, create_by, transaction_id)
+    value (#{id}, #{stage}, #{money}, #{expectedDate}, #{createTime}, #{createBy}, #{transactionId})
+  </insert>
+</mapper>

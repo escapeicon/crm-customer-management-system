@@ -16,6 +16,7 @@ import com.mycode.crm.workbench.service.ContactsService;
 import com.mycode.crm.workbench.service.CustomerRemarkService;
 import com.mycode.crm.workbench.service.CustomerService;
 import com.mycode.crm.workbench.service.TransactionService;
+import com.mysql.cj.ServerPreparedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class CustomerRemarkController {
+public class CustomerDetailController {
 
     @Autowired
     private CustomerService customerService;
@@ -235,5 +236,15 @@ public class CustomerRemarkController {
             throw new RuntimeException(e);
         }
         return returnInfo;
+    }
+
+    /**
+     * 前往联系人详情页
+     * @param contactId
+     * @return
+     */
+    @RequestMapping("/workbench/customer/toContactDetail.do")
+    public String toContactDetail(String contactId,HttpServletRequest request){
+        return "redirect:/workbench/contacts/toContactDetailPage.do?contactId="+contactId;
     }
 }
