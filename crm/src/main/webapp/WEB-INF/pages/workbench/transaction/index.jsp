@@ -19,12 +19,71 @@
 
 <script type="text/javascript">
 
+	/**
+	 * 入口函数
+	 */
 	$(function(){
 		queryForPage(${transactionPageNo == null ? 1 : transactionPageNo},${transactionPageSize == null ? 10 : transactionPageSize});
 
 		//模糊查询
 		$("#search-btn").click(function (){
 			queryForPage(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
+		})
+
+		//全选 && 反选
+		$("#checkAll").click(function (){
+			$("#tbody-transaction input[type='checkbox']").prop("checked",$("#checkAll").prop("checked"));
+		})
+		$("#tbody-transaction").on("click","input[type='checkbox']",function (){
+			$("#checkAll").prop("checked",$("#tbody-transaction input[type='checkbox']:checked").length == $("#tbody-transaction input[type='checkbox']").length);
+		})
+
+		/**
+		 * 跳转修改交易页面
+		 */
+		$("#update").click(function (){
+			const transactionChecked = $("#tbody-transaction input[type='checkbox']:checked");
+			if (transactionChecked.length == 1) {
+				const transactionId = transactionChecked.val();
+				window.location.href = "workbench/transaction/toEditTransaction.do?transactionId="+transactionId;
+			}else {
+				alert("请选择一条交易进行修改...");
+			}
+		})
+
+		/**
+		 * 删除交易
+		 */
+		$("#delete").click(function (){
+			if (confirm("你确认删除该条记录吗？")) {
+				const transactionChecked = $("#tbody-transaction input[type='checkbox']:checked");
+
+				if (transactionChecked.length > 0) {
+
+					let ids = [];
+					transactionChecked.each(function (){
+						ids.push($(this).val())
+					})
+
+					$.ajax({
+						tyep:'post',
+						url:'workbench/transaction/deleteTransaction.do',
+						traditional:true,
+						data:{
+							ids:ids
+						},
+						success(data) {
+							if (+data.code) {
+								queryForPage(1,$("#bs-pagination").bs_pagination("getOption","rowsPerPage"));
+							}else {
+								alert(data.message);
+							}
+						}
+					})
+				}else {
+					alert("请至少选择一条交易进行删除...");
+				}
+			}
 		})
 
 		/**
@@ -212,8 +271,8 @@
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 10px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" onclick="window.location.href='workbench/transaction/toTransactionSavePage.do';"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" onclick="window.location.href='edit.html';"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button id="update" type="button" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button id="delete" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 			</div>
 

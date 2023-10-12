@@ -23,6 +23,8 @@ public interface TransactionRemarkMapper {
     int deleteTransactionRemarkByTransactionId(String transactionId);
     //删除一条交易备注 根据交易备注id
     int deleteTransactionRemarkById(String id);
+    //删除多条交易备注 根据交易id数组
+    int deleteTransactionRemarkByTransactionIds(String[] transactionIds);
 
     /**
      * 修改一条交易备注 根据id

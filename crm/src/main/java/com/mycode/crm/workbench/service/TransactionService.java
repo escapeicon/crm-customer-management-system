@@ -11,10 +11,14 @@ public interface TransactionService {
     void saveTransaction(Map<String,Object> map) throws Exception;
 
     void deleteTransactionById(String id) throws Exception;
+    void deleteTransactionByIds(String[] ids) throws Exception;
+
+    void updateTransactionById(Map<String,Object> map) throws Exception;
 
     List<Transaction> queryForPageByCondition(Map<String,Object> pageInfo);
     int queryCountByCondition(Map<String,Object> pageInfo);
     List<Transaction> queryForRemarkPageByCustomerId(String customerId);
     List<Transaction> queryForRemarkPageByContactId(String contactId);
     Transaction queryOneById(String id);
+    Transaction queryOneByIdForSimple(String id);
 }

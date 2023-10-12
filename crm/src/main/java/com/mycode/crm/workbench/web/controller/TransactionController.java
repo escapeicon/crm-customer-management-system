@@ -184,28 +184,6 @@ public class TransactionController {
     }
 
     /**
-     * 点击市场活动源 获取一条市场活动
-     * @param activityId
-     * @return
-     */
-    @RequestMapping("/workbench/transaction/getActivity.do")
-    public @ResponseBody Object getActivity(String activityId){
-        Activity activity = activitiesService.queryActivityById(activityId);
-        return activity;
-    }
-
-    /**
-     * 点击联系人源获取 单条联系人
-     * @param contactId
-     * @return
-     */
-    @RequestMapping("/workbench/transaction/getContact.do")
-    public @ResponseBody Object getContact(String contactId){
-        Contacts contacts = contactsService.queryOneForDetail(contactId);
-        return contacts;
-    }
-
-    /**
      * 保存交易
      * @param map
      * @param session
@@ -222,6 +200,93 @@ public class TransactionController {
             returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
             returnInfo.setMessage("创建交易成功~");
         } catch (Exception e) {
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 跳转交易修改页面
+     * @param transactionId
+     * @return
+     */
+    @RequestMapping("/workbench/transaction/toEditTransaction.do")
+    public String toEditTransaction(String transactionId,HttpServletRequest request){
+        Transaction transaction = transactionService.queryOneByIdForSimple(transactionId);
+
+        //获取交易的客户name
+        String customerId = transaction.getCustomerId();
+        if (customerId != null && !("".equals(customerId))) {
+            Customer customer = customerService.queryOneById(customerId);
+            transaction.setCustomerId(customer.getName());
+        }
+        //获取市场活动名
+        String activityId = transaction.getActivityId();
+        if (activityId != null) {
+            Activity activity = activitiesService.queryActivityById(activityId);
+            transaction.setActivityId(activity.getName());
+        }
+        //获取联系人名
+        String contactsId = transaction.getContactsId();
+        if (contactsId != null) {
+            Contacts contacts = contactsService.queryOneById(contactsId);
+            transaction.setContactsId(contacts.getFullname());
+        }
+
+        request.setAttribute("transaction",transaction);
+        //所有者
+        List<User> users = userService.queryAllUsers();
+        //阶段
+        List<DicValue> stages = dicValueService.queryDicValueByTypeCode("stage");
+        //类型
+        List<DicValue> types = dicValueService.queryDicValueByTypeCode("transactionType");
+        //来源
+        List<DicValue> sources = dicValueService.queryDicValueByTypeCode("source");
+        request.setAttribute("users",users);
+        request.setAttribute("stages",stages);
+        request.setAttribute("types",types);
+        request.setAttribute("sources",sources);
+        return "workbench/transaction/edit";
+    }
+
+    /**
+     * 保存已修改的交易
+     * @param transaction
+     * @return
+     */
+    @RequestMapping("/workbench/transaction/updateTransaction.do")
+    public @ResponseBody Object updateTransaction(Transaction transaction,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try{
+            HashMap<String, Object> map = new HashMap<>();
+
+            User user = (User) session.getAttribute(Constants.SESSION_USER_KEY);
+            map.put("user",user);
+            map.put("transaction",transaction);
+            transactionService.updateTransactionById(map);
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 删除交易
+     * @param ids
+     * @return
+     */
+    @RequestMapping("/workbench/transaction/deleteTransaction.do")
+    public @ResponseBody Object deleteTransaction(String[] ids){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try{
+            transactionService.deleteTransactionByIds(ids);
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+        }catch (Exception e){
             returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("系统繁忙,请稍后重试...");
             e.printStackTrace();

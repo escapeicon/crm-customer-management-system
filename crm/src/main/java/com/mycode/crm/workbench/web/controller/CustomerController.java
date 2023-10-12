@@ -151,7 +151,7 @@ public class CustomerController {
         try {
             Customer customerByName = customerService.queryCustomerByName(customer.getName());
 
-            if (customerByName != null) {
+            if (customerByName != null && !customerByName.getId().equals(customer.getId())) {
                 returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
                 returnInfo.setMessage("客户名重复,请更改客户名");
                 return returnInfo;

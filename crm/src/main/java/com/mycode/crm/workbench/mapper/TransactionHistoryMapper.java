@@ -14,6 +14,15 @@ public interface TransactionHistoryMapper {
     int insertTransactionHistory(TransactionHistory transactionHistory);
 
     /**
+     * 删除 交易历史 根据交易id
+     * @param transactionId
+     * @return
+     */
+    int deleteByTransactionId(String transactionId);
+    //删除多条交易历史 根据多个交易id
+    int deleteByTransactionIds(String[] transactionIds);
+
+    /**
      * 查询多条交易历史 根据交易id
      * @param transactionId
      * @return

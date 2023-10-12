@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-	String base = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/";
+String base = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/";
 %>
 <html>
 <head>
@@ -11,16 +11,14 @@
 <link href="jquery/bs_pagination-master/css/jquery.bs_pagination.min.css">
 
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
+<script type="text/javascript" src="jquery/bs_typeahead/bootstrap3-typeahead.min.js" ></script>
 <script type="text/javascript" src="jquery/bs_pagination-master/js/jquery.bs_pagination.min.js"></script>
 <script type="text/javascript" src="jquery/bs_pagination-master/localization/en.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-
-<script type="text/javascript" src="jquery/bs_typeahead/bootstrap3-typeahead.min.js" ></script>
-
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
-<script type="text/javascript">
+<script type="text/javascript" >
 	//模态窗口数据渲染属性
 	let activities = null;
 	let contacts = null;
@@ -38,7 +36,11 @@
 
 		activities.forEach(activity => {
 			html += "<tr id='tr_"+activity.id+"'>";
-			html += "	<td><input activityId='"+activity.id+"' type=\"radio\" name=\"activity\"></td>";
+			if (activity.name == '${transaction.activityId}') {
+				html += "	<td><input activityId='"+activity.id+"' type=\"radio\" name=\"activity\" checked></td>";
+			}else {
+				html += "	<td><input activityId='"+activity.id+"' type=\"radio\" name=\"activity\"></td>";
+			}
 			html += "	<td>"+activity.name+"</td>";
 			html += "	<td>"+activity.startDate+"</td>";
 			html += "	<td>"+activity.endDate+"</td>";
@@ -58,7 +60,11 @@
 
 		contacts.forEach(contact => {
 			html += "<tr id='tr_"+contact.id+"'>";
-			html += "	<td><input contactId='"+contact.id+"' type=\"radio\" name=\"activity\"/></td>";
+			if (contact.fullname === '${transaction.contactsId}') {
+				html += "	<td><input contactId='"+contact.id+"' type=\"radio\" name=\"contact\" checked/></td>";
+			}else {
+				html += "	<td><input contactId='"+contact.id+"' type=\"radio\" name=\"contact\"/></td>";
+			}
 			html += "	<td>"+contact.fullname+"</td>";
 			html += "	<td>"+contact.email+"</td>";
 			html += "	<td>"+contact.mphone+"</td>";
@@ -72,12 +78,12 @@
 	 * 表单验证
 	 */
 	function judgeAll(){
-		const owner = $("#create-owner").val()
-		const money = $("#create-money").val()
-		const name = $("#create-name").val()
-		const expectedDate = $("#create-expected-date").val()
-		const customerId = $("#create-customer-id").val()
-		const stage = $("#create-stage").val()
+		const owner = $("#edit-owner").val()
+		const money = $("#edit-money").val()
+		const name = $("#edit-name").val()
+		const expectedDate = $("#edit-expected-date").val()
+		const customerId = $("#edit-customer-id").val()
+		const stage = $("#edit-stage").val()
 
 		isName_expectedDate_customer_stage = (owner != "" && name != "" && expectedDate != "" && customerId != "" && stage != "");
 		isMoney = (money == "" ? true : /^[+]?\d*$/.test(money));
@@ -85,6 +91,9 @@
 		$("#save").prop("disabled",!(isName_expectedDate_customer_stage && isMoney))
 	}
 
+	/**
+	 * 入口函数
+	 */
 	$(function (){
 
 		/**
@@ -113,12 +122,11 @@
 		//用户选中市场活动
 		$("#tbody-searchActivityModal").on("click","input[type='radio']",function (){
 			const activityId = $(this).attr("activityId");//获取市场活动id
-
 			//向服务器请求 市场活动对象
 			let activity = activities.filter(activity => activity.id === activityId);
 			//关闭模态窗口
 			$("#findMarketActivity").modal("hide");
-			$("#create-activity-id").val(activity[0].name).attr("activityId",activityId);
+			$("#edit-activity-id").val(activity[0].name).attr("activityId",activityId);
 		})
 
 		/**
@@ -152,13 +160,23 @@
 			//关闭模态窗口
 			$("#findContacts").modal("hide");
 			//显示数据
-			$("#create-contacts-id").val(contact[0].fullname).attr("contactsId",contactId);
+			$("#edit-contacts-id").val(contact[0].fullname).attr("contactsId",contactId);
+		})
+
+		/**
+		 * 输入规则判断
+		 */
+		$(".form-horizontal:eq(0) input,.form-horizontal:eq(0) textarea").keyup(function (){
+			judgeAll();
+		})
+		$("#edit-stage,#edit-expected-date").change(function (){
+			judgeAll();
 		})
 
 		/**
 		 * 可行性
 		 */
-		$("#create-stage").change(function (){
+		$("#edit-stage").change(function (){
 			const stage = $(this).find('option:checked').text();//获取用户选中的阶段文字
 			if (stage != "" && stage != undefined) {
 				$.ajax({
@@ -169,19 +187,19 @@
 					},
 					success(data){
 						if (data.code = "1") {
-							$("#create-possibility").val(data.data);
+							$("#edit-possibility").val(data.data);
 						}
 					}
 				})
 			}else{
-				$("#create-possibility").val("");
+				$("#edit-possibility").val("loading...");
 			}
 		})
 
 		/**
 		 * 自动补全客户名称
 		 */
-		$("#create-customer-id").typeahead({
+		$("#edit-customer-id").typeahead({
 			source(jquery,process){
 				$.ajax({
 					type:'post',
@@ -205,38 +223,29 @@
 		})
 
 		/**
-		 * 输入规则判断
-		 */
-		$("#create-money,#create-name,#create-customer-id").keyup(function (){
-			judgeAll();
-		})
-		$("#create-stage,#create-expected-date").change(function (){
-			judgeAll();
-		})
-
-		/**
 		 * 保存交易
 		 */
 		$("#save").click(function (){
-			const owner = $("#create-owner").val();
-			const money = $("#create-money").val().trim();
-			const name = $("#create-name").val().trim();
-			const expectedDate = $("#create-expected-date").val();
-			const customerId = $("#create-customer-id").val().trim();
-			const stage = $("#create-stage").val();
-			const type = $("#create-type").val();
-			const possibility = $("#create-possibility").val();
-			const source = $("#create-source").val();
-			const activityId = $("#create-activity-id").attr("activityId");
-			const contactsId = $("#create-contacts-id").attr("contactsId");
-			const description = $("#create-description").val().trim();
-			const contactSummary = $("#create-contactSummary").val().trim();
-			const nextContactTime = $("#create-nextContactTime").val();
+			const owner = $("#edit-owner").val();
+			const money = $("#edit-money").val().trim();
+			const name = $("#edit-name").val().trim();
+			const expectedDate = $("#edit-expected-date").val();
+			const customerId = $("#edit-customer-id").val().trim();
+			const stage = $("#edit-stage").val();
+			const type = $("#edit-type").val();
+			const possibility = $("#edit-possibility").val();
+			const source = $("#edit-source").val();
+			const activityId = $("#edit-activity-id").attr("activityId");
+			const contactsId = $("#edit-contacts-id").attr("contactsId");
+			const description = $("#edit-description").val().trim();
+			const contactSummary = $("#edit-contactSummary").val().trim();
+			const nextContactTime = $("#edit-nextContactTime").val();
 
 			$.ajax({
 				type:'post',
-				url:'workbench/transaction/saveCreateTransaction.do',
+				url:'workbench/transaction/updateTransaction.do',
 				data:{
+					id:'${transaction.id}',
 					owner:owner,
 					money:money,
 					name:name,
@@ -254,8 +263,7 @@
 				},
 				success(data){
 					if (+data.code) {
-						alert(data.message);
-						$(".form-horizontal")[0].reset();
+						window.location.href = "workbench/transaction/index.do";
 					}else {
 						alert(data.message)
 					}
@@ -266,7 +274,7 @@
 		/**
 		 * 日历插件
 		 */
-		$("#create-nextContactTime,#create-expected-date").datetimepicker({
+		$("#edit-nextContactTime,#edit-expected-date").datetimepicker({
 			format:"yyyy-mm-dd",//日期格式
 			language:"zh-CN",//语言
 			minView:'month',
@@ -275,9 +283,30 @@
 			clearBtn:true,//设置是否显示清空按钮，默认为false
 			todayBtn:true//设置是否显示今日按钮
 		});
+
+	})
+
+	/**
+	 * 加载交易数据
+	 */
+	$(function (){
+		//页面加载完成后输入数据
+		$("#edit-owner").val('${transaction.owner}')
+		$("#edit-money").val('${transaction.money}')
+		$("#edit-name").val('${transaction.name}')
+		$("#edit-expected-date").val('${transaction.expectedDate}')
+		$("#edit-customer-id").val('${transaction.customerId}')
+		$("#edit-stage").val('${transaction.stage}')
+		$("#edit-type").val('${transaction.type}')
+		$("#edit-possibility").val('loading...')
+		$("#edit-source").val('${transaction.source}')
+		$("#edit-activity-id").val('${transaction.activityId}')
+		$("#edit-contacts-id").val('${transaction.contactsId}')
+		$("#edit-description").val('${transaction.description}')
+		$("#edit-contactSummary").val('${transaction.contactSummary}')
+		$("#edit-nextContactTime").val('${transaction.nextContactTime}')
 	})
 </script>
-
 </head>
 <body>
 
@@ -295,7 +324,7 @@
 					<div class="btn-group" style="position: relative; top: 18%; left: 8px;">
 						<form class="form-inline" role="form">
 						  <div class="form-group has-feedback">
-						    <input id="input-search-activities" activityId="" type="text" class="form-control" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
+						    <input id="input-search-activities" type="text" class="form-control" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
 						    <span class="glyphicon glyphicon-search form-control-feedback"></span>
 						  </div>
 						</form>
@@ -311,6 +340,20 @@
 							</tr>
 						</thead>
 						<tbody id="tbody-searchActivityModal">
+							<tr>
+								<td><input type="radio" name="activity"/></td>
+								<td>发传单</td>
+								<td>2020-10-10</td>
+								<td>2020-10-20</td>
+								<td>zhangsan</td>
+							</tr>
+							<tr>
+								<td><input type="radio" name="activity"/></td>
+								<td>发传单</td>
+								<td>2020-10-10</td>
+								<td>2020-10-20</td>
+								<td>zhangsan</td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
@@ -365,126 +408,128 @@
 			</div>
 		</div>
 	</div>
-
+	
+	
 	<div style="position:  relative; left: 30px;">
-		<h3>创建交易</h3>
+		<h3>修改交易</h3>
 	  	<div style="position: relative; top: -40px; left: 70%;">
 			<button id="save" type="button" class="btn btn-primary" disabled>保存</button>
 			<button type="button" class="btn btn-default" onclick="window.history.back();">取消</button>
 		</div>
 		<hr style="position: relative; top: -40px;">
 	</div>
+
 	<form class="form-horizontal" role="form" style="position: relative; top: -30px;">
-		<%--create-owner--%>
-		<%--create-money--%>
+		<%--edit-owner--%>
+		<%--edit-money--%>
 		<div class="form-group">
-			<label for="create-owner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
-			<%--create-owner--%>
+			<label for="edit-owner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
+			<%--edit-owner--%>
 			<div class="col-sm-10" style="width: 300px;">
-				<select class="form-control" id="create-owner">
-				  <c:forEach items="${users}" var="user">
-					<option value="${user.id}" >${user.name}</option>
-				</c:forEach>
+				<select class="form-control" id="edit-owner">
+					<c:forEach items="${users}" var="user">
+						<option value="${user.id}" >${user.name}</option>
+					</c:forEach>
 				</select>
 			</div>
-			<%--create-money--%>
-			<label for="create-money" class="col-sm-2 control-label">金额</label>
+			<%--edit-money--%>
+			<label for="edit-money" class="col-sm-2 control-label">金额</label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="create-money">
+				<input type="text" class="form-control" id="edit-money">
 			</div>
 		</div>
-		<%--create-name--%>
-		<%--create-expected-date--%>
+		<%--edit-name--%>
+		<%--edit-expected-date--%>
 		<div class="form-group">
-			<label for="create-name" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
+			<label for="edit-name" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="create-name">
+				<input type="text" class="form-control" id="edit-name">
 			</div>
-			<label for="create-expected-date" class="col-sm-2 control-label">预计成交日期<span style="font-size: 15px; color: red;">*</span></label>
+			<label for="edit-expected-date" class="col-sm-2 control-label">预计成交日期<span style="font-size: 15px; color: red;">*</span></label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="create-expected-date" readonly>
+				<input type="text" class="form-control" id="edit-expected-date" readonly>
 			</div>
 		</div>
-		<%--create-customer-id--%>
-		<%--create-stage--%>
+		<%--edit-customer-id--%>
+		<%--edit-stage--%>
 		<div class="form-group">
-			<label for="create-customer-id" class="col-sm-2 control-label">客户名称<span style="font-size: 15px; color: red;">*</span></label>
+			<label for="edit-customer-id" class="col-sm-2 control-label">客户名称<span style="font-size: 15px; color: red;">*</span></label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="create-customer-id" placeholder="支持自动补全，输入客户不存在则新建">
+				<input type="text" class="form-control" id="edit-customer-id" placeholder="支持自动补全，输入客户不存在则新建">
 			</div>
-			<label for="create-stage" class="col-sm-2 control-label">阶段<span style="font-size: 15px; color: red;">*</span></label>
+			<label for="edit-stage" class="col-sm-2 control-label">阶段<span style="font-size: 15px; color: red;">*</span></label>
 			<div class="col-sm-10" style="width: 300px;">
-			  <select class="form-control" id="create-stage">
-			  	<option></option>
+				<select class="form-control" id="edit-stage">
+					<option></option>
 					<c:forEach items="${stages}" var="stage">
 						<option value="${stage.id}">${stage.value}</option>
 					</c:forEach>
-			  </select>
+				</select>
 			</div>
 		</div>
-		<%--create-type--%>
-		<%--create-possibility--%>
+		<%--edit-type--%>
+		<%--edit-possibility--%>
 		<div class="form-group">
-			<label for="create-type" class="col-sm-2 control-label">类型</label>
+			<label for="edit-type" class="col-sm-2 control-label">类型</label>
 			<div class="col-sm-10" style="width: 300px;">
-				<select class="form-control" id="create-type">
-				  <option></option>
+				<select class="form-control" id="edit-type">
+					<option></option>
 					<c:forEach items="${types}" var="type">
 						<option value="${type.id}">${type.value}</option>
 					</c:forEach>
 				</select>
 			</div>
-			<label for="create-possibility" class="col-sm-2 control-label">可能性</label>
+			<label for="edit-possibility" class="col-sm-2 control-label">可能性</label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="create-possibility">
+				<input type="text" class="form-control" id="edit-possibility">
 			</div>
 		</div>
-		<%--create-source--%>
-		<%--create-activity-id--%>
+		<%--edit-source--%>
+		<%--edit-activity-id--%>
 		<div class="form-group">
-			<label for="create-source" class="col-sm-2 control-label">来源</label>
+			<label for="edit-source" class="col-sm-2 control-label">来源</label>
 			<div class="col-sm-10" style="width: 300px;">
-				<select class="form-control" id="create-source">
-				  <option></option>
+				<select class="form-control" id="edit-source">
+					<option></option>
 					<c:forEach items="${sources}" var="source">
 						<option value="${source.id}">${source.value}</option>
 					</c:forEach>
 				</select>
 			</div>
-			<label for="create-activity-id" class="col-sm-2 control-label">市场活动源&nbsp;&nbsp;<a href="javascript:void(0);" id="bundle-activity"><span class="glyphicon glyphicon-search"></span></a></label>
+			<label for="edit-activity-id" class="col-sm-2 control-label">市场活动源&nbsp;&nbsp;<a href="javascript:void(0);" id="bundle-activity"><span class="glyphicon glyphicon-search"></span></a></label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="create-activity-id" readonly>
+				<input type="text" class="form-control" id="edit-activity-id" readonly>
 			</div>
 		</div>
-		<%--create-contacts-id--%>
+		<%--edit-contacts-id--%>
 		<div class="form-group">
-			<label for="create-contacts-id" class="col-sm-2 control-label">联系人名称&nbsp;&nbsp;<a href="javascript:void(0);" id="bundle-contact"><span class="glyphicon glyphicon-search"></span></a></label>
+			<label for="edit-contacts-id" class="col-sm-2 control-label">联系人名称&nbsp;&nbsp;<a href="javascript:void(0);" id="bundle-contact"><span class="glyphicon glyphicon-search"></span></a></label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="create-contacts-id" readonly>
+				<input type="text" class="form-control" id="edit-contacts-id" readonly>
 			</div>
 		</div>
-		<%--create-description--%>
+		<%--edit-description--%>
 		<div class="form-group">
-			<label for="create-description" class="col-sm-2 control-label">描述</label>
+			<label for="edit-description" class="col-sm-2 control-label">描述</label>
 			<div class="col-sm-10" style="width: 70%;">
-				<textarea class="form-control" rows="3" id="create-description"></textarea>
+				<textarea class="form-control" rows="3" id="edit-description"></textarea>
 			</div>
 		</div>
-		<%--create-contactSummary--%>
+		<%--edit-contactSummary--%>
 		<div class="form-group">
-			<label for="create-contactSummary" class="col-sm-2 control-label">联系纪要</label>
+			<label for="edit-contactSummary" class="col-sm-2 control-label">联系纪要</label>
 			<div class="col-sm-10" style="width: 70%;">
-				<textarea class="form-control" rows="3" id="create-contactSummary"></textarea>
+				<textarea class="form-control" rows="3" id="edit-contactSummary"></textarea>
 			</div>
 		</div>
-		<%--create-nextContactTime--%>
+		<%--edit-nextContactTime--%>
 		<div class="form-group">
-			<label for="create-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
+			<label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="create-nextContactTime" readonly>
+				<input type="text" class="form-control" id="edit-nextContactTime" readonly>
 			</div>
 		</div>
-		
+
 	</form>
 </body>
 </html>

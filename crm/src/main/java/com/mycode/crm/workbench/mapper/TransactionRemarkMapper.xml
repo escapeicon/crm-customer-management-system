@@ -50,6 +50,14 @@
         delete from tbl_transaction_remark
         where id = #{id}
     </delete>
+    <!--删除多条交易备注 根据交易id数组-->
+    <delete id="deleteTransactionRemarkByTransactionIds" parameterType="string">
+        delete from tbl_transaction_remark
+        where transaction_id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
 
     <!--修改一条交易备注 根据id-->
     <update id="updateTransactionRemarkById" parameterType="transactionRemark">

@@ -99,8 +99,61 @@ public class TransactionServiceImpl implements TransactionService {
     public void deleteTransactionById(String id) throws Exception{
         //删除交易备注
         transactionRemarkMapper.deleteTransactionRemarkByTransactionId(id);
+        //删除交易历史
+        transactionHistoryMapper.deleteByTransactionId(id);
         //删除交易
         transactionMapper.deleteTransactionById(id);
+    }
+    //删除交易 根据id数组
+    @Override
+    public void deleteTransactionByIds(String[] ids) throws Exception {
+        transactionHistoryMapper.deleteByTransactionIds(ids);
+        transactionRemarkMapper.deleteTransactionRemarkByTransactionIds(ids);
+        transactionMapper.deleteTransactionByIds(ids);
+    }
+
+    /**
+     * 修改交易
+     * @param map
+     * @throws Exception
+     */
+    @Override
+    public void updateTransactionById(Map<String, Object> map) throws Exception {
+        Transaction transaction = (Transaction) map.get("transaction");
+        User user = (User) map.get("user");
+
+        String name = transaction.getCustomerId();
+        Customer customer = customerMapper.selectCustomerByName(name);//从数据库查询该条客户通过name
+
+        //如果为null 则新建客户
+        if (customer == null) {
+            customer = new Customer();
+            customer.setId(UUIDUtil.getUUID());
+            customer.setOwner(user.getId());
+            customer.setName(name);
+            customer.setCreateBy(user.getId());
+            customer.setCreateTime(DateFormat.formatDateTime(new Date()));
+            customerMapper.insertCustomer(customer);//创建新客户
+        }
+
+        //封装交易实体类
+        transaction.setCustomerId(customer.getId());
+        transaction.setEditBy(user.getId());
+        transaction.setEditTime(DateFormat.formatDateTime(new Date()));
+        //修改交易
+        transactionMapper.updateTransactionById(transaction);
+
+        //添加一条交易历史
+        TransactionHistory transactionHistory = new TransactionHistory();
+        transactionHistory.setId(UUIDUtil.getUUID());
+        transactionHistory.setStage(transaction.getStage());
+        transactionHistory.setMoney(transaction.getMoney());
+        transactionHistory.setExpectedDate(transaction.getExpectedDate());
+        transactionHistory.setCreateTime(DateFormat.formatDateTime(new Date()));
+        transactionHistory.setCreateBy(user.getId());
+        transactionHistory.setTransactionId(transaction.getId());
+
+        transactionHistoryMapper.insertTransactionHistory(transactionHistory);
     }
 
     /**
@@ -131,5 +184,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction queryOneById(String id) {
         return transactionMapper.selectOneById(id);
+    }
+    //精简查询单条 根据交易id
+    @Override
+    public Transaction queryOneByIdForSimple(String id) {
+        return transactionMapper.selectOneByIdForSimple(id);
     }
 }

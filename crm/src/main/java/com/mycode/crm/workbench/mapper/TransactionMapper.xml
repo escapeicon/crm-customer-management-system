@@ -42,6 +42,35 @@
         delete from tbl_transaction
         where id = #{id}
     </delete>
+    <!--删除多条交易 根据id数组-->
+    <delete id="deleteTransactionByIds" parameterType="string">
+        delete from tbl_transaction
+        where id in
+        <foreach collection="array" item="id" separator="," close=")" open="(">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--修改交易 根据id-->
+    <update id="updateTransactionById" parameterType="transaction" >
+        update tbl_transaction set
+            owner=#{owner},
+            money=#{money},
+            name=#{name},
+            expected_date=#{expectedDate},
+            customer_id=#{customerId},
+            stage=#{stage},
+            type=#{type},
+            source=#{source},
+            activity_id=#{activityId},
+            contacts_id=#{contactsId},
+            edit_by=#{editBy},
+            edit_time=#{editTime},
+            description=#{description},
+            contact_summary=#{contactSummary},
+            next_contact_time=#{nextContactTime}
+        where id=#{id}
+    </update>
 
     <!--查询 分页 条件-->
     <select id="selectForPageByCondition" parameterType="map" resultMap="BaseResultMap">
@@ -241,5 +270,11 @@
         join tbl_user as user2 on user2.id = transaction.create_by
         left join tbl_user as user3 on user3.id = transaction.edit_by
         where transaction.id = #{id}
+    </select>
+    <!--精简查询单条 根据交易id-->
+    <select id="selectOneByIdForSimple" parameterType="string" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from tbl_transaction
+        where id = #{id}
     </select>
 </mapper>
