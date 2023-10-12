@@ -19,4 +19,11 @@ public interface TransactionRemarkMapper {
      * @return
      */
     int deleteTransactionRemarkByTransactionId(String transactionId);
+
+    /**
+     * 查询多条 交易备注 根据交易id
+     * @param transactionId
+     * @return
+     */
+    List<TransactionRemark> selectByTransactionIdForList(String transactionId);
 }

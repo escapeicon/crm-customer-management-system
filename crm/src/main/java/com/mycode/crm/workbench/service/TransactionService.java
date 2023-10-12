@@ -16,4 +16,5 @@ public interface TransactionService {
     int queryCountByCondition(Map<String,Object> pageInfo);
     List<Transaction> queryForRemarkPageByCustomerId(String customerId);
     List<Transaction> queryForRemarkPageByContactId(String contactId);
+    Transaction queryOneById(String id);
 }

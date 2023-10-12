@@ -19,4 +19,20 @@
     insert into tbl_transaction_history (id, stage, money, expected_date, create_time, create_by, transaction_id)
     value (#{id}, #{stage}, #{money}, #{expectedDate}, #{createTime}, #{createBy}, #{transactionId})
   </insert>
+
+  <!--查询多条交易历史 根据交易id-->
+  <select id="selectByTransactionIdForList" parameterType="string" resultMap="BaseResultMap">
+    select
+        history.id,
+        dic.value as stage,
+        history.money,
+        history.expected_date,
+        history.create_time,
+        user.name as create_by,
+        history.transaction_id
+    from tbl_transaction_history as history
+    join tbl_dic_value as dic on dic.id = history.stage
+    join tbl_user as user on user.id = history.create_by
+    where history.transaction_id = #{transactionId}
+  </select>
 </mapper>

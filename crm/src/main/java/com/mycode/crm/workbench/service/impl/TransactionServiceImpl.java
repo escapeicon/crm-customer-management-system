@@ -127,4 +127,9 @@ public class TransactionServiceImpl implements TransactionService {
     public List<Transaction> queryForRemarkPageByContactId(String contactId) {
         return transactionMapper.selectForRemarkPageByContactId(contactId);
     }
+    //查询单条 根据交易id
+    @Override
+    public Transaction queryOneById(String id) {
+        return transactionMapper.selectOneById(id);
+    }
 }

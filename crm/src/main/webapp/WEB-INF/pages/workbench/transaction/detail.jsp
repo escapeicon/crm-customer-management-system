@@ -1,9 +1,12 @@
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+	String base = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/";
+%>
 <html>
 <head>
-<meta charset="UTF-8">
-
-<link href="../../jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+<base href="<%= base%>" />
+<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 
 <style type="text/css">
 .mystage{
@@ -18,8 +21,8 @@
 }
 </style>
 	
-<script type="text/javascript" src="../../jquery/jquery-1.11.1-min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
+<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
 
 <script type="text/javascript">
 
@@ -36,7 +39,6 @@
 				cancelAndSaveBtnDefault = false;
 			}
 		});
-		
 		$("#cancelBtn").click(function(){
 			//显示
 			$("#cancelAndSaveBtn").hide();
@@ -44,24 +46,18 @@
 			$("#remarkDiv").css("height","90px");
 			cancelAndSaveBtnDefault = true;
 		});
-		
 		$(".remarkDiv").mouseover(function(){
 			$(this).children("div").children("div").show();
 		});
-		
 		$(".remarkDiv").mouseout(function(){
 			$(this).children("div").children("div").hide();
 		});
-		
 		$(".myHref").mouseover(function(){
 			$(this).children("span").css("color","red");
 		});
-		
 		$(".myHref").mouseout(function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
-		
-		
 		//阶段提示框
 		$(".mystage").popover({
             trigger:'manual',
@@ -99,7 +95,7 @@
 	<!-- 大标题 -->
 	<div style="position: relative; left: 40px; top: -30px;">
 		<div class="page-header">
-			<h3>动力节点-交易01 <small>￥5,000</small></h3>
+			<h3>${transaction.customerId}-${transaction.name} <small>￥${transaction.money}</small></h3>
 		</div>
 		
 	</div>
@@ -136,64 +132,64 @@
 	<div style="position: relative; top: 0px;">
 		<div style="position: relative; left: 40px; height: 30px;">
 			<div style="width: 300px; color: gray;">所有者</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>zhangsan</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.owner}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">金额</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>5,000</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${transaction.money == null ? '&nbsp;' : transaction.money}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 10px;">
 			<div style="width: 300px; color: gray;">名称</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>动力节点-交易01</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.customerId}-${transaction.name}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">预计成交日期</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>2017-02-07</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${transaction.expectedDate}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 20px;">
 			<div style="width: 300px; color: gray;">客户名称</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>动力节点</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.customerId}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">阶段</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>谈判/复审</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${transaction.stage}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 30px;">
 			<div style="width: 300px; color: gray;">类型</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>新业务</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.type == null ? '&nbsp;' : transaction.type}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">可能性</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>90</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>待定</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 40px;">
 			<div style="width: 300px; color: gray;">来源</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>广告</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.source == null ? '&nbsp;' : transaction.source}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">市场活动源</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>发传单</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${transaction.activityId == null ? '&nbsp;' : transaction.activityId}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 50px;">
 			<div style="width: 300px; color: gray;">联系人名称</div>
-			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>李四</b></div>
+			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${transaction.contactsId == null ? '&nbsp;' : transaction.contactsId}</b></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 60px;">
 			<div style="width: 300px; color: gray;">创建者</div>
-			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>zhangsan&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">2017-01-18 10:10:10</small></div>
+			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${transaction.createBy}&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">${transaction.createTime}</small></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 70px;">
 			<div style="width: 300px; color: gray;">修改者</div>
-			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>zhangsan&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">2017-01-19 10:10:10</small></div>
+			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${transaction.editBy}&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">${transaction.editTime}</small></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 80px;">
 			<div style="width: 300px; color: gray;">描述</div>
 			<div style="width: 630px;position: relative; left: 200px; top: -20px;">
 				<b>
-					这是一条线索的描述信息 （线索转换之后会将线索的描述转换到交易的描述中）
+					${transaction.description == null ? '&nbsp;' : transaction.description}
 				</b>
 			</div>
 			<div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
@@ -202,14 +198,14 @@
 			<div style="width: 300px; color: gray;">联系纪要</div>
 			<div style="width: 630px;position: relative; left: 200px; top: -20px;">
 				<b>
-					&nbsp;
+					${transaction.contactSummary == null ? '&nbsp;' : transaction.contactSummary}&nbsp;
 				</b>
 			</div>
 			<div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 100px;">
 			<div style="width: 300px; color: gray;">下次联系时间</div>
-			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>&nbsp;</b></div>
+			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${transaction.nextContactTime}&nbsp;</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 	</div>
@@ -220,33 +216,20 @@
 			<h4>备注</h4>
 		</div>
 		
-		<!-- 备注1 -->
+		<c:forEach items="${transactionRemarks}" var="transactionRemark">
 		<div class="remarkDiv" style="height: 60px;">
-			<img title="zhangsan" src="../../image/user-thumbnail.png" style="width: 30px; height:30px;">
+			<img title="${transactionRemark.owner}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 			<div style="position: relative; top: -40px; left: 40px;" >
-				<h5>哎呦！</h5>
-				<font color="gray">交易</font> <font color="gray">-</font> <b>动力节点-交易01</b> <small style="color: gray;"> 2017-01-22 10:10:10 由zhangsan</small>
+				<h5>${transactionRemark.noteContent}</h5>
+				<font color="gray">交易</font> <font color="gray">-</font> <b>${transaction.customerId}-${transaction.name}</b> <small style="color: gray;"> ${transactionRemark.editFlag == "1" ? transactionRemark.editTime : transactionRemark.createTime} 由 ${transactionRemark.editFlag == "1" ? transactionRemark.editBy : transactionRemark.createBy} ${transactionRemark.editFlag == "1" ? '修改' : '创建'}</small>
 				<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
+					<a remarkId="${transactionRemark.id}" class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
+					<a remarkId="${transactionRemark.id}" class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
 				</div>
 			</div>
 		</div>
-		
-		<!-- 备注2 -->
-		<div class="remarkDiv" style="height: 60px;">
-			<img title="zhangsan" src="../../image/user-thumbnail.png" style="width: 30px; height:30px;">
-			<div style="position: relative; top: -40px; left: 40px;" >
-				<h5>呵呵！</h5>
-				<font color="gray">交易</font> <font color="gray">-</font> <b>动力节点-交易01</b> <small style="color: gray;"> 2017-01-22 10:20:10 由zhangsan</small>
-				<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
-				</div>
-			</div>
-		</div>
+		</c:forEach>
 		
 		<div id="remarkDiv" style="background-color: #E6E6E6; width: 870px; height: 90px;">
 			<form role="form" style="position: relative;top: 10px; left: 10px;">
@@ -276,30 +259,18 @@
 							<td>创建人</td>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="tbody-transactionHistory">
+
+						<c:forEach items="${transactionHistories}" var="transactionHistory">
 						<tr>
-							<td>资质审查</td>
-							<td>5,000</td>
-							<td>2017-02-07</td>
-							<td>2016-10-10 10:10:10</td>
-							<td>zhangsan</td>
+							<td>${transactionHistory.stage}</td>
+							<td>${transactionHistory.money}</td>
+							<td>${transactionHistory.expectedDate}</td>
+							<td>${transactionHistory.createTime}</td>
+							<td>${transactionHistory.createBy}</td>
 						</tr>
-						<tr>
-							<td>需求分析</td>
-							<td>5,000</td>
-							<td>20</td>
-							<td>2017-02-07</td>
-							<td>2016-10-20 10:10:10</td>
-							<td>zhangsan</td>
-						</tr>
-						<tr>
-							<td>谈判/复审</td>
-							<td>5,000</td>
-							<td>90</td>
-							<td>2017-02-07</td>
-							<td>2017-02-09 10:10:10</td>
-							<td>zhangsan</td>
-						</tr>
+						</c:forEach>
+
 					</tbody>
 				</table>
 			</div>

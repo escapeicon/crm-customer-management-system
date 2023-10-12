@@ -28,9 +28,12 @@
 		})
 
 		/**
-		 * 跳转创建交易主页面
+		 * 跳转至交易详情页
 		 */
-
+		$("#tbody-transaction").on("click","a",function (){
+			const transactionId = $(this).attr("transactionId");
+			window.location.href = 'workbench/transaction/toTransactionDetail.do?transactionId='+transactionId;
+		})
 	});
 
 	/**

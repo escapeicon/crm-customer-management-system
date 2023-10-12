@@ -33,4 +33,6 @@ public interface TransactionMapper {
     List<Transaction> selectForRemarkPageByCustomerId(String customerId);
     //查询多条 用于备注页展示 根据联系人id
     List<Transaction> selectForRemarkPageByContactId(String contactId);
+    //查询单条 根据交易id
+    Transaction selectOneById(String id);
 }

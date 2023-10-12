@@ -617,7 +617,7 @@
 					<tbody id="tbody-transaction">
 						<c:forEach items="${transactions}" var="transaction">
 							<tr id="tr_${transaction.id}">
-								<td><a transactionId="${transaction.id}" href="../transaction/detail.html" style="text-decoration: none;">${transaction.customerId}-${transaction.name}</a></td>
+								<td><a transactionId="${transaction.id}" href="../transaction/detail.jsp" style="text-decoration: none;">${transaction.customerId}-${transaction.name}</a></td>
 								<td>${transaction.money}</td>
 								<td>${transaction.stage}</td>
 								<td>待定</td>
