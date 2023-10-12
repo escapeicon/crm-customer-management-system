@@ -235,6 +235,11 @@
 				})
 			}
 		})
+		//跳转至交易详情页
+		$("#tbody-transaction").on("click","a:even",function (){
+			const transactionId = $(this).attr("transactionId");//获取交易id
+			window.location.href = "workbench/transaction/toTransactionDetail.do?transactionId="+transactionId;
+		})
 
 		/**
 		 * 联系人
@@ -617,7 +622,7 @@
 					<tbody id="tbody-transaction">
 						<c:forEach items="${transactions}" var="transaction">
 							<tr id="tr_${transaction.id}">
-								<td><a transactionId="${transaction.id}" href="../transaction/detail.jsp" style="text-decoration: none;">${transaction.customerId}-${transaction.name}</a></td>
+								<td><a transactionId="${transaction.id}" style="text-decoration: none;">${transaction.customerId}-${transaction.name}</a></td>
 								<td>${transaction.money}</td>
 								<td>${transaction.stage}</td>
 								<td>待定</td>

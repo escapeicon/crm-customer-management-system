@@ -196,6 +196,11 @@
 				})
 			}
 		})
+		//跳转至交易详情页
+		$("#tbody-transaction").on("click","a:even",function (){
+			const transactionId = $(this).attr("transactionId");//获取交易id
+			window.location.href = "workbench/transaction/toTransactionDetail.do?transactionId="+transactionId;
+		})
 
 		/**
 		 * 市场活动
