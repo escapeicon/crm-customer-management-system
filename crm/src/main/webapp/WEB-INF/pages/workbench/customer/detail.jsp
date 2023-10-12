@@ -80,16 +80,16 @@
 			$("#remarkDiv").css("height","90px");
 			cancelAndSaveBtnDefault = true;
 		});
-		$(".remarkDiv").mouseover(function(){
+		$("#remarkDivList").on("mouseover",".remarkDiv",function(){
 			$(this).children("div").children("div").show();
-		});
-		$(".remarkDiv").mouseout(function(){
+		})
+		$("#remarkDivList").on("mouseout",".remarkDiv",function(){
 			$(this).children("div").children("div").hide();
 		});
-		$(".myHref").mouseover(function(){
+		$("#remarkDivList").on("mouseover",".myHref",function(){
 			$(this).children("span").css("color","red");
 		});
-		$(".myHref").mouseout(function(){
+		$("#remarkDivList").on("mouseout",".myHref",function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
 
@@ -115,15 +115,15 @@
 							let html = "";
 
 							//渲染列表
-							html += "<div id='div_"+customerRemark.id+"' className=\"remarkDiv\" style=\"height: 60px;\">";
+							html += "<div id='div_"+customerRemark.id+"' class=\"remarkDiv\" style=\"height: 60px;\">";
 							html += "	<img title=\"${customer.createBy}\" src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
 							html += "		<div style=\"position: relative; top: -40px; left: 40px;\">";
 							html += "			<h5>"+customerRemark.noteContent+"</h5>";
 							html += "			<font color=\"gray\">客户</font> <font color=\"gray\">-</font> <b>${customer.name}</b> <small style=\"color: gray;\"> "+customerRemark.createTime+" 由 ${customer.createBy} 创建</small>";
 							html += "			<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
-							html += "				<a remarkid="+customerRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+							html += "				<a remarkid="+customerRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
 							html += "				&nbsp;&nbsp;&nbsp;&nbsp;";
-							html += "				<a remarkid="+customerRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+							html += "				<a remarkid="+customerRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
 							html += "			</div>";
 							html += "		</div>";
 							html += "</div>";
@@ -178,9 +178,9 @@
 						html += "	<h5>"+customerRemark.noteContent+"</h5>";
 						html += "	<font color=\"gray\">客户</font> <font color=\"gray\">-</font> <b>${customer.name}</b> <small style=\"color: gray;\"> "+customerRemark.editTime+" 由 ${user.name} 修改</small>";
 						html += "	<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
-						html += "		<a remarkid="+customerRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "		<a remarkid="+customerRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
 						html += "		&nbsp;&nbsp;&nbsp;&nbsp;";
-						html += "		<a remarkid="+customerRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "		<a remarkid="+customerRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
 						html += "	</div>";
 						html += "</div>";
 
@@ -564,7 +564,7 @@
 	</div>
 	
 	<!-- 备注 -->
-	<div style="position: relative; top: 10px; left: 40px;">
+	<div id="remarkDivList" style="position: relative; top: 10px; left: 40px;">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>

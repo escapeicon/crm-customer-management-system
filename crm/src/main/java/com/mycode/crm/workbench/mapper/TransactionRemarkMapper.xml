@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.mycode.crm.workbench.mapper.TransactionRemarkMapper" >
-  <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.TransactionRemark" >
+    <resultMap id="BaseResultMap" type="com.mycode.crm.workbench.domain.TransactionRemark" >
     <id column="id" property="id" jdbcType="CHAR" />
     <result column="note_content" property="noteContent" jdbcType="VARCHAR" />
     <result column="create_by" property="createBy" jdbcType="VARCHAR" />
@@ -10,42 +10,87 @@
     <result column="edit_time" property="editTime" jdbcType="CHAR" />
     <result column="edit_flag" property="editFlag" jdbcType="CHAR" />
     <result column="transaction_id" property="transactionId" jdbcType="CHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+    </resultMap>
+    <sql id="Base_Column_List" >
     id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, transaction_id
-  </sql>
+    </sql>
 
-  <!--插入多条 交易备注 通过list集合-->
-  <insert id="insertTransactionRemarkByList" parameterType="transactionRemark">
-    insert into tbl_transaction_remark
-    (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,transaction_id)
-    values
-        <foreach collection="list" item="transactionRemark" separator=",">
-          (#{transactionRemark.id},#{transactionRemark.noteContent},#{transactionRemark.createBy},#{transactionRemark.createTime},
-          #{transactionRemark.editBy},#{transactionRemark.editTime},#{transactionRemark.editFlag},#{transactionRemark.transactionId})
-        </foreach>
-  </insert>
+    <!--插入多条 交易备注 通过list集合-->
+    <insert id="insertTransactionRemarkByList" parameterType="transactionRemark">
+        insert into tbl_transaction_remark
+        (id,note_content,create_by,create_time,edit_by,edit_time,edit_flag,transaction_id)
+        values
+            <foreach collection="list" item="transactionRemark" separator=",">
+              (#{transactionRemark.id},#{transactionRemark.noteContent},#{transactionRemark.createBy},#{transactionRemark.createTime},
+              #{transactionRemark.editBy},#{transactionRemark.editTime},#{transactionRemark.editFlag},#{transactionRemark.transactionId})
+            </foreach>
+    </insert>
+    <!--插入一条交易备注-->
+    <insert id="insertTransactionRemark" parameterType="transactionRemark" >
+        insert into tbl_transaction_remark
+            (id,note_content,create_by,create_time,edit_flag,transaction_id)
+        value
+        (
+            #{id},
+            #{noteContent},
+            #{createBy},
+            #{createTime},
+            #{editFlag},
+            #{transactionId}
+        )
+    </insert>
 
-  <!--删除多条交易备注 根据交易id-->
-  <delete id="deleteTransactionRemarkByTransactionId" parameterType="string">
-    delete from tbl_transaction_remark
-    where transaction_id = #{transactionId}
-  </delete>
+    <!--删除多条交易备注 根据交易id-->
+    <delete id="deleteTransactionRemarkByTransactionId" parameterType="string">
+        delete from tbl_transaction_remark
+        where transaction_id = #{transactionId}
+    </delete>
+    <!--删除一条交易备注 根据交易备注id-->
+    <delete id="deleteTransactionRemarkById" parameterType="string">
+        delete from tbl_transaction_remark
+        where id = #{id}
+    </delete>
 
-  <!--查询多条 交易备注 根据交易id-->
-  <select id="selectByTransactionIdForList" parameterType="string" resultMap="BaseResultMap">
-    select
-        remark.id,
-        remark.note_content,
-        user1.name as create_by,
-        remark.create_time,
-        user2.name as edit_by,
-        remark.edit_time,
-        remark.edit_flag,
-        remark.transaction_id
-    from tbl_transaction_remark as remark
-    join tbl_user as user1 on user1.id = remark.create_by
-    left join tbl_user as user2 on user2.id = remark.edit_by
-    where remark.transaction_id = #{transactionId}
-  </select>
+    <!--修改一条交易备注 根据id-->
+    <update id="updateTransactionRemarkById" parameterType="transactionRemark">
+        update tbl_transaction_remark set
+            note_content = #{noteContent},
+            edit_by = #{editBy},
+            edit_time = #{editTime},
+            edit_flag = #{editFlag}
+        where id = #{id}
+    </update>
+
+    <!--查询多条 交易备注 根据交易id-->
+    <select id="selectByTransactionIdForList" parameterType="string" resultMap="BaseResultMap">
+        select
+            remark.id,
+            remark.note_content,
+            user1.name as create_by,
+            remark.create_time,
+            user2.name as edit_by,
+            remark.edit_time,
+            remark.edit_flag,
+            remark.transaction_id
+        from tbl_transaction_remark as remark
+        join tbl_user as user1 on user1.id = remark.create_by
+        left join tbl_user as user2 on user2.id = remark.edit_by
+        where remark.transaction_id = #{transactionId}
+    </select>
+    <!--查询一条交易备注 根据交易备注id-->
+    <select id="selectOneByIdTransactionRemark" parameterType="string" resultMap="BaseResultMap">
+        select
+            remark.id,
+            remark.note_content,
+            user1.name as create_by,
+            remark.create_time,
+            user2.name as edit_by,
+            remark.edit_time,
+            remark.edit_flag,
+            remark.transaction_id
+        from tbl_transaction_remark as remark
+        join tbl_user as user1 on user1.id = remark.create_by
+        left join tbl_user as user2 on user2.id = remark.edit_by
+        where remark.id = #{id}
+    </select>
 </mapper>

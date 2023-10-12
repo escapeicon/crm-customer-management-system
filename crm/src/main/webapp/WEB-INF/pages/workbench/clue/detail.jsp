@@ -57,18 +57,17 @@
 			$("#remarkDiv").css("height","90px");
 			cancelAndSaveBtnDefault = true;
 		});
-		
-		$(".remarkDiv").mouseover(function(){
+
+		$("#remarkDivList").on("mouseover",".remarkDiv",function(){
 			$(this).children("div").children("div").show();
-		});
-		$(".remarkDiv").mouseout(function(){
+		})
+		$("#remarkDivList").on("mouseout",".remarkDiv",function(){
 			$(this).children("div").children("div").hide();
 		});
-		
-		$(".myHref").mouseover(function(){
+		$("#remarkDivList").on("mouseover",".myHref",function(){
 			$(this).children("span").css("color","red");
 		});
-		$(".myHref").mouseout(function(){
+		$("#remarkDivList").on("mouseout",".myHref",function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
 
@@ -112,7 +111,7 @@
 		})
 
 		//删除线索备注按钮
-		$("#remark-div-list").on("click",'a:odd',function (){
+		$("#remarkDivList").on("click",'a:odd',function (){
 			const remarkId = $(this).attr("clueRemarkId");
 			$.ajax({
 				url:"workbench/clue/deleteClueRemarkById.do",
@@ -131,7 +130,7 @@
 		})
 
 		//修改线索备注按钮
-		$("#remark-div-list").on("click","a:even",function (){
+		$("#remarkDivList").on("click","a:even",function (){
 			const remarkId = $(this).attr("clueRemarkId");//获取线索备注id
 			let noteContent = $("#div_" + remarkId + " h5").text();//获取线索备注的noteContent
 			$("#noteContent").val(noteContent);//设置修改模态窗口内容框显示内容
@@ -142,7 +141,7 @@
 		$("#updateRemarkBtn").click(function (){
 
 			const noteContent = $("#noteContent").val().trim();//获取用户输入的noteContent内容
-			const remarkId = $("#remarkId");//获取要修改的线索备注的id值
+			const remarkId = $("#remarkId").val();//获取要修改的线索备注的id值
 
 			$.ajax({
 				type:'post',
@@ -500,7 +499,7 @@
 	</div>
 	
 	<!-- 备注 -->
-	<div id="remark-div-list" style="position: relative; top: 40px; left: 40px;">
+	<div id="remarkDivList" style="position: relative; top: 40px; left: 40px;">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>

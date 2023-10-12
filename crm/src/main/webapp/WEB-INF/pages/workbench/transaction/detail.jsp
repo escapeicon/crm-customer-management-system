@@ -46,18 +46,20 @@
 			$("#remarkDiv").css("height","90px");
 			cancelAndSaveBtnDefault = true;
 		});
-		$(".remarkDiv").mouseover(function(){
+
+		$("#remarkDivList").on("mouseover",".remarkDiv",function(){
 			$(this).children("div").children("div").show();
-		});
-		$(".remarkDiv").mouseout(function(){
+		})
+		$("#remarkDivList").on("mouseout",".remarkDiv",function(){
 			$(this).children("div").children("div").hide();
 		});
-		$(".myHref").mouseover(function(){
+		$("#remarkDivList").on("mouseover",".myHref",function(){
 			$(this).children("span").css("color","red");
 		});
-		$(".myHref").mouseout(function(){
+		$("#remarkDivList").on("mouseout",".myHref",function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
+
 		//阶段提示框
 		$(".mystage").popover({
             trigger:'manual',
@@ -78,6 +80,121 @@
                         }
                     }, 100);
                 });
+
+		/**
+		 * 交易备注
+		 */
+		//添加交易备注
+		$("#saveRemark").click(function (){
+			const noteContent = $("#remark").val().trim();//获取备注信息
+
+			$.ajax({
+				type:'post',
+				url:'workbench/transaction/saveTransactionRemark.do',
+				data:{
+					noteContent:noteContent,
+					transactionId:'${transaction.id}'
+				},
+				success(data) {
+					if (+data.code) {
+						const transactionRemark = data.data;
+
+						$("#remark").val("");
+
+						let html = "";
+
+						html += "<div id='div_"+transactionRemark.id+"' class=\"remarkDiv\" style=\"height: 60px;\">";
+						html += "	<img title='"+transactionRemark.createBy+"' src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
+						html += "		<div style=\"position: relative; top: -40px; left: 40px;\">";
+						html += "			<h5>"+transactionRemark.noteContent+"</h5>";
+						html += "			<font color=\"gray\">交易</font> <font color=\"gray\">-</font> <b>${transaction.customerId}-${transaction.name}</b> <small style=\"color: gray;\">"+ transactionRemark.createTime +"由${transaction.createBy}创建</small>";
+						html += "			<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+						html += "				<a remarkId="+transactionRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "				&nbsp;&nbsp;&nbsp;&nbsp;";
+						html += "				<a remarkId="+transactionRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "			</div>";
+						html += "		</div>";
+						html += "</div>";
+
+						$("#remarkDiv").before(html);
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		})
+		//加载修改备注模态窗口数据
+		$(document).on("click",".myHref:even",function (){
+			const remarkId = $(this).attr("remarkId");
+			$.ajax({
+				type:'post',
+				url:'workbench/transaction/getUpdateTransactionRemark.do',
+				data:{
+					id:remarkId
+				},
+				success(data) {
+					$("#noteContent").val(data.noteContent)
+					$("#remarkId").val(data.id);
+					$("#editRemarkModal").modal("show");
+				}
+			})
+		})
+		//修改备注
+		$("#updateRemarkBtn").click(function (){
+			const noteContent = $("#noteContent").val().trim();
+			const id = $("#remarkId").val();
+
+			$.ajax({
+				type:'post',
+				url:'workbench/transaction/updateTransactionRemark.do',
+				data:{
+					id:id,
+					noteContent:noteContent
+				},
+				success(data){
+					if (+data.code) {
+						const transactionRemark = data.data;//获取客户备注
+
+						let html = "";
+						//渲染网页
+						html += "<img title='${transaction.owner}' src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
+						html += "<div style=\"position: relative; top: -40px; left: 40px;\">";
+						html += "	<h5>"+transactionRemark.noteContent+"</h5>";
+						html += "	<font color=\"gray\">联系人</font> <font color=\"gray\">-</font> <b>${transaction.customerId}-${transaction.name}</b> <small style=\"color: gray;\"> "+transactionRemark.editTime+" 由 ${transaction.owner} 修改</small>";
+						html += "	<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+						html += "		<a remarkid="+transactionRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "		&nbsp;&nbsp;&nbsp;&nbsp;";
+						html += "		<a remarkid="+transactionRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "	</div>";
+						html += "</div>";
+
+						$("#div_"+transactionRemark.id).html(html);
+						$("#editRemarkModal").modal("hide");
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		})
+		//删除备注
+		$(document).on("click",".myHref:odd",function (){
+			const remarkId = $(this).attr("remarkId");
+
+			$.ajax({
+				type:'post',
+				url:"workbench/transaction/deleteTransactionRemark.do",
+				data:{
+					transactionRemarkId:remarkId
+				},
+				success(data){
+					if (+data.code) {
+						$("#div_"+remarkId).remove();
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		})
 	});
 	
 	
@@ -86,6 +203,37 @@
 
 </head>
 <body>
+	<!-- 修改备注的模态窗口 -->
+	<div class="modal fade" id="editRemarkModal" role="dialog">
+		<%-- 备注的id --%>
+		<input type="hidden" id="remarkId">
+		<div class="modal-dialog" role="document" style="width: 40%;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">修改备注</h4>
+				</div>
+				<%--modal-body--%>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="noteContent" class="col-sm-2 control-label">内容</label>
+							<div class="col-sm-10" style="width: 81%;">
+								<textarea class="form-control" rows="3" id="noteContent"></textarea>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" id="updateRemarkBtn">更新</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	
 	<!-- 返回按钮 -->
 	<div style="position: relative; top: 35px; left: 10px;">
@@ -211,14 +359,14 @@
 	</div>
 	
 	<!-- 备注 -->
-	<div style="position: relative; top: 100px; left: 40px;">
+	<div id="remarkDivList" style="position: relative; top: 100px; left: 40px;">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
 		
 		<c:forEach items="${transactionRemarks}" var="transactionRemark">
-		<div class="remarkDiv" style="height: 60px;">
-			<img title="${transactionRemark.owner}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
+		<div id="div_${transactionRemark.id}" class="remarkDiv" style="height: 60px;">
+			<img title="${transactionRemark.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 			<div style="position: relative; top: -40px; left: 40px;" >
 				<h5>${transactionRemark.noteContent}</h5>
 				<font color="gray">交易</font> <font color="gray">-</font> <b>${transaction.customerId}-${transaction.name}</b> <small style="color: gray;"> ${transactionRemark.editFlag == "1" ? transactionRemark.editTime : transactionRemark.createTime} 由 ${transactionRemark.editFlag == "1" ? transactionRemark.editBy : transactionRemark.createBy} ${transactionRemark.editFlag == "1" ? '修改' : '创建'}</small>
@@ -236,7 +384,7 @@
 				<textarea id="remark" class="form-control" style="width: 850px; resize : none;" rows="2"  placeholder="添加备注..."></textarea>
 				<p id="cancelAndSaveBtn" style="position: relative;left: 737px; top: 10px; display: none;">
 					<button id="cancelBtn" type="button" class="btn btn-default">取消</button>
-					<button type="button" class="btn btn-primary">保存</button>
+					<button id="saveRemark" type="button" class="btn btn-primary">保存</button>
 				</p>
 			</form>
 		</div>

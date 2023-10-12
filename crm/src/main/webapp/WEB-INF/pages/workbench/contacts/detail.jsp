@@ -44,16 +44,16 @@
 			$("#remarkDiv").css("height","90px");
 			cancelAndSaveBtnDefault = true;
 		});
-		$(".remarkDiv").mouseover(function(){
+		$("#remarkDivList").on("mouseover",".remarkDiv",function(){
 			$(this).children("div").children("div").show();
-		});
-		$(".remarkDiv").mouseout(function(){
+		})
+		$("#remarkDivList").on("mouseout",".remarkDiv",function(){
 			$(this).children("div").children("div").hide();
 		});
-		$(".myHref").mouseover(function(){
+		$("#remarkDivList").on("mouseover",".myHref",function(){
 			$(this).children("span").css("color","red");
 		});
-		$(".myHref").mouseout(function(){
+		$("#remarkDivList").on("mouseout",".myHref",function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
 
@@ -79,15 +79,15 @@
 
 						let html = "";
 
-						html += "<div id='div_"+contactRemark.id+"' className=\"remarkDiv\" style=\"height: 60px;\">";
+						html += "<div id='div_"+contactRemark.id+"' class=\"remarkDiv\" style=\"height: 60px;\">";
 						html += "	<img title='${contact.owner}' src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
 						html += "		<div style=\"position: relative; top: -40px; left: 40px;\">";
 						html += "			<h5>"+contactRemark.noteContent+"</h5>";
 						html += "			<font color=\"gray\">联系人</font> <font color=\"gray\">-</font> <b>${contact.fullname}${contact.appellation}-${contact.customer}</b> <small style=\"color: gray;\">"+ contactRemark.createTime +"由${contact.createBy}创建</small>";
 						html += "			<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
-						html += "				<a remarkId="+contactRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "				<a remarkId="+contactRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
 						html += "				&nbsp;&nbsp;&nbsp;&nbsp;";
-						html += "				<a remarkId="+contactRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "				<a remarkId="+contactRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
 						html += "			</div>";
 						html += "		</div>";
 						html += "</div>";
@@ -138,9 +138,9 @@
 						html += "	<h5>"+contactRemark.noteContent+"</h5>";
 						html += "	<font color=\"gray\">联系人</font> <font color=\"gray\">-</font> <b>${contact.fullname}-${contact.customer}</b> <small style=\"color: gray;\"> "+contactRemark.editTime+" 由 ${contact.owner} 修改</small>";
 						html += "	<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
-						html += "		<a remarkid="+contactRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "		<a remarkid="+contactRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
 						html += "		&nbsp;&nbsp;&nbsp;&nbsp;";
-						html += "		<a remarkid="+contactRemark.id+" className=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						html += "		<a remarkid="+contactRemark.id+" class=\"myHref\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
 						html += "	</div>";
 						html += "</div>";
 
@@ -417,7 +417,7 @@
 		</div>
 	</div>
 
-	<!-- 修改市场活动备注的模态窗口 -->
+	<!-- 修改备注的模态窗口 -->
 	<div class="modal fade" id="editRemarkModal" role="dialog">
 		<%-- 备注的id --%>
 		<input type="hidden" id="remarkId">
@@ -541,7 +541,7 @@
         </div>
 	</div>
 	<!-- 备注 -->
-	<div style="position: relative; top: 20px; left: 40px;">
+	<div id="remarkDivList" style="position: relative; top: 20px; left: 40px;">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
