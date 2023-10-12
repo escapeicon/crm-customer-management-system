@@ -174,14 +174,6 @@
 			})
 
 		})
-
-
-		/**
-		 * 跳转回市场活动展示页面方法
-		 */
-		$("#backToActivityIndex").click(function(){
-			window.location.href = "workbench/activity/index.do";
-		})
 	});
 	
 </script>
@@ -221,7 +213,7 @@
 
 	<!-- 返回按钮 -->
 	<div style="position: relative; top: 35px; left: 10px;">
-		<a id="backToActivityIndex" href="javascript:void(0);"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
+		<a onclick="window.history.back()" href="javascript:void(0);"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
 	</div>
 	
 	<!-- 大标题 -->

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Date;
 
 @Controller
-public class ActivitiesRemarkController {
+public class ActivitiesDetailController {
 
     @Autowired
     private ActivitiesRemarkService activitiesRemarkService;

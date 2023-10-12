@@ -20,4 +20,10 @@
           (#{contactsActivityRelation.id},#{contactsActivityRelation.contactsId},#{contactsActivityRelation.activityId})
         </foreach>
   </insert>
+
+  <!--删除 联系人市场活动关联关系 通过联系人id和市场活动id-->
+  <delete id="deleteByContactIdAndActivityId" parameterType="string" >
+    delete from tbl_contacts_activity_relation
+    where contacts_id = #{contactId} and activity_id = #{activityId}
+  </delete>
 </mapper>

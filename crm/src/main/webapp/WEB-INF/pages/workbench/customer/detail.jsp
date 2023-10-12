@@ -216,7 +216,7 @@
 		 * 交易
 		 */
 		//删除交易
-		$("#tbody-transaction").on("click","a",function (){
+		$("#tbody-transaction").on("click","a:odd",function (){
 			if (confirm("你确定删除吗?")) {
 				const transactionId = $(this).attr("transactionId");
 				$.ajax({
@@ -286,7 +286,7 @@
 			})
 		})
 		//删除联系人
-		$("#tbody-contacts").on("click","a",function (){
+		$("#tbody-contacts").on("click","a:odd",function (){
 			if (confirm("你确认要删除该联系人吗?")) {
 				const contactId = $(this).attr("contactId");//交易id
 
@@ -305,6 +305,11 @@
 					}
 				})
 			}
+		})
+		//前往detail页面
+		$("#tbody-contacts").on("click","a:even",function (){
+			const contactId = $(this).attr("contactId");//交易id
+			window.location.href = "workbench/customer/toContactDetail.do?contactId="+contactId;
 		})
 
 		/**
@@ -650,7 +655,7 @@
 					<tbody id="tbody-contacts">
 						<c:forEach items="${contacts}" var="contact">
 							<tr>
-								<td><a contactId="${contact.id}" href="../contacts/detail.jsp" style="text-decoration: none;">${contact.fullname}</a></td>
+								<td><a contactId="${contact.id}" href="javascript:void(0);" style="text-decoration: none;">${contact.fullname}</a></td>
 								<td>${contact.email}</td>
 								<td>${contact.mphone}</td>
 								<td><a contactId="${contact.id}" href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>

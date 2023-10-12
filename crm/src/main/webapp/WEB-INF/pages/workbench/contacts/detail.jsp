@@ -23,6 +23,9 @@
 
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
+
+	//存放市场活动源 数据数组
+	let activities = null;
 	
 	$(function(){
 		$("#remark").focus(function(){
@@ -173,7 +176,7 @@
 		 * 交易
 		 */
 		//删除交易
-		$("#tbody-transaction").on("click","a",function (){
+		$("#tbody-transaction").on("click","a:odd",function (){
 			if (confirm("你确定要删除该交易吗?")) {
 				const transactionId = $(this).attr("transactionId");//获取交易id
 
@@ -193,7 +196,143 @@
 				})
 			}
 		})
+
+		/**
+		 * 市场活动
+		 */
+		$("#bundleActivities").click(function (){
+			//发送ajax请求获取 除过已经绑定了的所有市场活动
+			$.ajax({
+				type:'post',
+				url:'workbench/contacts/getAllActivitiesExcluedBundled.do',
+				data:{
+					contactId:'${contact.id}'
+				},
+				success(data){
+					if (+data.code) {
+						activities = data.data;
+						renderActivitiesForModal(activities);
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+
+			//显示模态窗口
+			$("#bundActivityModal").modal("show");
+		})
+		//实时搜索
+		$("#input-search-activities-fuzzy").keyup(function (){
+			const activityName = $(this).val();
+			let newActivities = activities.filter(activity => activity.name.includes(activityName));
+			renderActivitiesForModal(newActivities);
+		})
+		//全选 && 反选
+		$("#checkAll-activities").click(function (){
+			$("#tbody-modal-activities input[type='checkbox']").prop("checked",$("#checkAll-activities").prop("checked"));
+		})
+		$("#tbody-modal-activities").on("click","input[type='checkbox']",function (){
+			$("#checkAll-activities").prop("checked",$("#tbody-modal-activities input[type='checkbox']:checked").length == $("#tbody-modal-activities input[type='checkbox']").length);
+		})
+		//关联市场活动
+		$("#bundleBtn").click(function (){
+			const activitiesCheckBox = $("#tbody-modal-activities input[type='checkbox']:checked");
+			if (activitiesCheckBox.length > 0) {
+
+				let activityIds = [];
+
+				activitiesCheckBox.each(function (){
+					activityIds.push($(this).val())
+				})
+
+				//发送ajax请求
+				$.ajax({
+					type:'post',
+					url:'workbench/contacts/bundleContactActivity.do',
+					traditional:true,
+					data:{
+						activityIds:activityIds,
+						contactId:'${contact.id}'
+					},
+					success(data){
+						if (+data.code) {
+							//获取绑定的市场活动对象
+							bundledActivities = activities.filter(activity => activityIds.includes(activity.id));
+
+							//渲染页面
+							let html = "";
+							bundledActivities.forEach(activity => {
+								html += "<tr id='tr_"+activity.id+"'>";
+								html += "	<td><a activityid='"+activity.id+"' style=\"text-decoration: none;\">"+activity.name+"</a></td>";
+								html += "	<td>"+activity.startDate+"</td>";
+								html += "	<td>"+activity.endDate+"</td>";
+								html += "	<td>"+activity.owner+"</td>";
+								html += "	<td><a href=\"javascript:void(0);\" style=\"text-decoration: none;\"><span class=\"glyphicon glyphicon-remove\"></span>解除关联</a></td>";
+								html += "</tr>";
+							})
+							$("#tbody-activities").append(html);
+
+							//关闭模态窗口
+							$("#bundActivityModal").modal("hide");
+						}else {
+							alert(data.message);
+						}
+					}
+				})
+
+			}else {
+				alert("请至少选择一个市场活动进行关联...");
+			}
+		})
+		//解除市场活动关联
+		$("#tbody-activities").on("click","a:odd",function(){
+			if (confirm("你确认解绑该条市场活动吗?")) {
+				const activityId = $(this).attr("activityId");
+
+				$.ajax({
+					type:'post',
+					url:'workbench/contacts/unBundleContactActivity.do',
+					data:{
+						activityId:activityId,
+						contactId:'${contact.id}'
+					},
+					success(data){
+						if (+data.code) {
+							$("#tr_"+activityId).remove();
+						}else {
+							alert(data.message);
+						}
+					}
+				})
+			}
+		})
+		//前往市场活动详情页
+		$("#tbody-activities").on("click","a:even",function(){
+			const activityId = $(this).attr("activityId");
+			window.location.href = "workbench/contacts/toActivityDetail.do?activityId="+activityId;
+		})
 	});
+
+	/**
+	 * 渲染市场活动模态窗口列表方法
+	 * @param activities
+	 */
+	function renderActivitiesForModal(activities){
+
+		let html = "";
+
+		activities.forEach(function (activity){
+			html += "<tr>";
+			html += "	<td><input value='"+activity.id+"' type=\"checkbox\"/></td>";
+			html += "	<td>"+activity.name+"</td>";
+			html += "	<td>"+activity.startDate+"</td>";
+			html += "	<td>"+activity.endDate+"</td>";
+			html += "	<td>"+activity.owner+"</td>";
+			html += "</tr>";
+		})
+
+		$("#tbody-modal-activities").html(html);
+	}
 	
 </script>
 
@@ -232,10 +371,11 @@
 					<h4 class="modal-title">关联市场活动</h4>
 				</div>
 				<div class="modal-body">
+					<%--模糊查询input--%>
 					<div class="btn-group" style="position: relative; top: 18%; left: 8px;">
 						<form class="form-inline" role="form">
 						  <div class="form-group has-feedback">
-						    <input type="text" class="form-control" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
+						    <input id="input-search-activities-fuzzy" type="text" class="form-control" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
 						    <span class="glyphicon glyphicon-search form-control-feedback"></span>
 						  </div>
 						</form>
@@ -243,7 +383,7 @@
 					<table id="activityTable2" class="table table-hover" style="width: 900px; position: relative;top: 10px;">
 						<thead>
 							<tr style="color: #B3B3B3;">
-								<td><input type="checkbox"/></td>
+								<td><input id="checkAll-activities" type="checkbox"/></td>
 								<td>名称</td>
 								<td>开始日期</td>
 								<td>结束日期</td>
@@ -251,7 +391,7 @@
 								<td></td>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="tbody-modal-activities">
 							<tr>
 								<td><input type="checkbox"/></td>
 								<td>发传单</td>
@@ -271,7 +411,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">关联</button>
+					<button id="bundleBtn" type="button" class="btn btn-primary">关联</button>
 				</div>
 			</div>
 		</div>
@@ -311,7 +451,7 @@
 
 	<!-- 返回按钮 -->
 	<div style="position: relative; top: 35px; left: 10px;">
-		<a href="javascript:void(0);" onclick="window.location.href = 'workbench/contacts/index.do';"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
+		<a href="javascript:void(0);" onclick="window.history.back();"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
 	</div>
 	
 	<!-- 大标题 -->
@@ -492,12 +632,12 @@
 					</thead>
 					<tbody id="tbody-activities">
 						<c:forEach items="${activities}" var="activity">
-						<tr>
-							<td><a activityId="${activity.id}" style="text-decoration: none;">${activity.name}</a></td>
+						<tr id="tr_${activity.id}">
+							<td><a activityId="${activity.id}" href="javascript:void(0);" style="text-decoration: none;">${activity.name}</a></td>
 							<td>${activity.startDate}</td>
 							<td>${activity.endDate}</td>
 							<td>${activity.owner}</td>
-							<td><a href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
+							<td><a activityId="${activity.id}" href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
 						</tr>
 						</c:forEach>
 					</tbody>
@@ -505,7 +645,7 @@
 			</div>
 			
 			<div>
-				<a href="javascript:void(0);" data-toggle="modal" data-target="#bundActivityModal" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>关联市场活动</a>
+				<a id="bundleActivities" href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>关联市场活动</a>
 			</div>
 		</div>
 	</div>

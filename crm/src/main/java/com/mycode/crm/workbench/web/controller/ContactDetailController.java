@@ -5,14 +5,8 @@ import com.mycode.crm.commons.domain.ReturnInfo;
 import com.mycode.crm.commons.utils.DateFormat;
 import com.mycode.crm.commons.utils.UUIDUtil;
 import com.mycode.crm.settings.domain.User;
-import com.mycode.crm.workbench.domain.Activity;
-import com.mycode.crm.workbench.domain.Contacts;
-import com.mycode.crm.workbench.domain.ContactsRemark;
-import com.mycode.crm.workbench.domain.Transaction;
-import com.mycode.crm.workbench.service.ActivitiesService;
-import com.mycode.crm.workbench.service.ContactsRemarkService;
-import com.mycode.crm.workbench.service.ContactsService;
-import com.mycode.crm.workbench.service.TransactionService;
+import com.mycode.crm.workbench.domain.*;
+import com.mycode.crm.workbench.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +14,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 @Controller
-public class ContactRemarkController {
+public class ContactDetailController {
 
     @Autowired
     private ContactsService contactsService;
@@ -34,6 +30,8 @@ public class ContactRemarkController {
     private TransactionService transactionService;
     @Autowired
     private ActivitiesService activitiesService;
+    @Autowired
+    private ContactsActivityRelationService contactsActivityRelationService;
 
     /**
      * 跳转至联系人备注页
@@ -171,5 +169,92 @@ public class ContactRemarkController {
             throw new RuntimeException(e);
         }
         return returnInfo;
+    }
+
+    /**
+     * 加载绑定市场活动 的所有市场活动数据
+     * @param contactId
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/getAllActivitiesExcluedBundled.do")
+    public @ResponseBody Object getAllActivitiesExcluedBundled(String contactId){
+        ReturnInfo returnInfo = new ReturnInfo();
+        List<Activity> activities = activitiesService.queryActivitiesForContactUnBundledByContactId(contactId);
+        if (activities != null) {
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            returnInfo.setData(activities);
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 绑定联系人市场活动关联关系
+     * @param activityIds
+     * @param contactId
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/bundleContactActivity.do")
+    public @ResponseBody Object bundleContactActivity(String[] activityIds,String contactId){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            //封装关联关系实体类集合
+            ArrayList<ContactsActivityRelation> contactsActivityRelations = new ArrayList<>();
+            Arrays.stream(activityIds).forEach(activityId -> {
+                ContactsActivityRelation contactsActivityRelation = new ContactsActivityRelation();
+                contactsActivityRelation.setId(UUIDUtil.getUUID());
+                contactsActivityRelation.setActivityId(activityId);
+                contactsActivityRelation.setContactsId(contactId);
+                contactsActivityRelations.add(contactsActivityRelation);
+            });
+            int count = contactsActivityRelationService.saveContactsActivityForList(contactsActivityRelations);
+
+            if (count>0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙,请稍后重试...");
+            }
+        } catch (Exception e) {
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            throw new RuntimeException(e);
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 解绑联系人市场活动关联关系
+     * @param activityId
+     * @param contactId
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/unBundleContactActivity.do")
+    public @ResponseBody Object unBundleContactActivity(String activityId,String contactId){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            int count = contactsActivityRelationService.deleteByContactIdAndActivityId(contactId, activityId);
+
+            if (count > 0) {
+                returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+            }else {
+                returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+                returnInfo.setMessage("系统繁忙,请稍后重试...");
+            }
+        }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 跳转至市场活动页面
+     * @param activityId
+     * @return
+     */
+    @RequestMapping("/workbench/contacts/toActivityDetail.do")
+    public String toActivityDetail(String activityId){
+        return "redirect:/workbench/activity/detailActivity.do?id="+activityId;
     }
 }
