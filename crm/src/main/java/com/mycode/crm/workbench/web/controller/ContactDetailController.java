@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class ContactDetailController {
@@ -49,6 +46,14 @@ public class ContactDetailController {
         List<Transaction> transactions = transactionService.queryForRemarkPageByContactId(contactId);
         //关联市场活动
         List<Activity> activities = activitiesService.queryActivitiesForContactRelationByContactId(contactId);
+
+        //获取阶段可行性评估
+        transactions.forEach(transaction -> {
+            String stage = transaction.getStage();
+            ResourceBundle possibility = ResourceBundle.getBundle("possibility");
+            String possibilityString = possibility.getString(stage);
+            transaction.setPossibility(possibilityString);
+        });
 
         request.setAttribute("contact",contact);
         request.setAttribute("contactsRemarks",contactsRemarks);

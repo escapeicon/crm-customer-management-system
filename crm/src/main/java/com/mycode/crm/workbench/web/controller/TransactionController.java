@@ -214,6 +214,19 @@ public class TransactionController {
      */
     @RequestMapping("/workbench/transaction/toEditTransaction.do")
     public String toEditTransaction(String transactionId,HttpServletRequest request){
+        //所有者
+        List<User> users = userService.queryAllUsers();
+        //阶段
+        List<DicValue> stages = dicValueService.queryDicValueByTypeCode("stage");
+        //类型
+        List<DicValue> types = dicValueService.queryDicValueByTypeCode("transactionType");
+        //来源
+        List<DicValue> sources = dicValueService.queryDicValueByTypeCode("source");
+        request.setAttribute("users",users);
+        request.setAttribute("stages",stages);
+        request.setAttribute("types",types);
+        request.setAttribute("sources",sources);
+
         Transaction transaction = transactionService.queryOneByIdForSimple(transactionId);
 
         //获取交易的客户name
@@ -234,20 +247,21 @@ public class TransactionController {
             Contacts contacts = contactsService.queryOneById(contactsId);
             transaction.setContactsId(contacts.getFullname());
         }
+        //获取阶段可行性评估
+        String stage = transaction.getStage();
+
+        //获取阶段的value值
+        for (DicValue perStage:stages){
+            if (perStage.getId().equals(stage)) {
+                stage = perStage.getValue();
+                break;
+            }
+        }
+        ResourceBundle possibility = ResourceBundle.getBundle("possibility");
+        String possibilityString = possibility.getString(stage);
+        transaction.setPossibility(possibilityString);
 
         request.setAttribute("transaction",transaction);
-        //所有者
-        List<User> users = userService.queryAllUsers();
-        //阶段
-        List<DicValue> stages = dicValueService.queryDicValueByTypeCode("stage");
-        //类型
-        List<DicValue> types = dicValueService.queryDicValueByTypeCode("transactionType");
-        //来源
-        List<DicValue> sources = dicValueService.queryDicValueByTypeCode("source");
-        request.setAttribute("users",users);
-        request.setAttribute("stages",stages);
-        request.setAttribute("types",types);
-        request.setAttribute("sources",sources);
         return "workbench/transaction/edit";
     }
 

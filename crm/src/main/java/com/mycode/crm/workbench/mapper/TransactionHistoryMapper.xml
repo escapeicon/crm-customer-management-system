@@ -48,5 +48,21 @@
     join tbl_dic_value as dic on dic.id = history.stage
     join tbl_user as user on user.id = history.create_by
     where history.transaction_id = #{transactionId}
+    order by history.create_time desc
+    </select>
+    <!--查询一条交易历史 根据id-->
+    <select id="selectOneByIdTransactionHistory" parameterType="string" resultMap="BaseResultMap">
+        select
+            history.id,
+            dic.value as stage,
+            history.money,
+            history.expected_date,
+            history.create_time,
+            user.name as create_by,
+            history.transaction_id
+        from tbl_transaction_history as history
+        join tbl_dic_value as dic on dic.id = history.stage
+        join tbl_user as user on user.id = history.create_by
+        where history.id = #{id}
     </select>
 </mapper>

@@ -23,4 +23,9 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
     public List<TransactionHistory> queryByTransactionIdForList(String transactionId) {
         return transactionHistoryMapper.selectByTransactionIdForList(transactionId);
     }
+    //查询一条交易历史 根据id
+    @Override
+    public TransactionHistory queryOneById(String id) {
+        return transactionHistoryMapper.selectOneByIdTransactionHistory(id);
+    }
 }

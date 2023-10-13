@@ -233,7 +233,6 @@ String base = request.getScheme()+"://"+request.getServerName()+":"+request.getS
 			const customerId = $("#edit-customer-id").val().trim();
 			const stage = $("#edit-stage").val();
 			const type = $("#edit-type").val();
-			const possibility = $("#edit-possibility").val();
 			const source = $("#edit-source").val();
 			const activityId = $("#edit-activity-id").attr("activityId");
 			const contactsId = $("#edit-contacts-id").attr("contactsId");
@@ -253,7 +252,6 @@ String base = request.getScheme()+"://"+request.getServerName()+":"+request.getS
 					customerId:customerId,
 					stage:stage,
 					type:type,
-					possibility:possibility,
 					source:source,
 					activityId:activityId,
 					contactsId:contactsId,
@@ -298,7 +296,7 @@ String base = request.getScheme()+"://"+request.getServerName()+":"+request.getS
 		$("#edit-customer-id").val('${transaction.customerId}')
 		$("#edit-stage").val('${transaction.stage}')
 		$("#edit-type").val('${transaction.type}')
-		$("#edit-possibility").val('loading...')
+		$("#edit-possibility").val('${transaction.possibility}')
 		$("#edit-source").val('${transaction.source}')
 		$("#edit-activity-id").val('${transaction.activityId}')
 		$("#edit-contacts-id").val('${transaction.contactsId}')

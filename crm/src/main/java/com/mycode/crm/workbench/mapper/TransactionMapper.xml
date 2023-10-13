@@ -20,6 +20,7 @@
         <result column="description" property="description" jdbcType="VARCHAR" />
         <result column="contact_summary" property="contactSummary" jdbcType="VARCHAR" />
         <result column="next_contact_time" property="nextContactTime" jdbcType="CHAR" />
+        <result column="stage_order_no" property="stageOrderNo" jdbcType="CHAR" />
     </resultMap>
     <sql id="Base_Column_List" >
         id, owner, money, name, expected_date, customer_id, stage, type, source, activity_id,
@@ -247,6 +248,7 @@
             transaction.expected_date,
             customer.name as customer_id,
             dic1.value as stage,
+            dic1.order_no as stage_order_no,
             dic2.value as type,
             dic3.value as source,
             activity.name as activity_id,

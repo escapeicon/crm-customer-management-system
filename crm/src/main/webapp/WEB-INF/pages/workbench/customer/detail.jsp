@@ -622,10 +622,10 @@
 					<tbody id="tbody-transaction">
 						<c:forEach items="${transactions}" var="transaction">
 							<tr id="tr_${transaction.id}">
-								<td><a transactionId="${transaction.id}" style="text-decoration: none;">${transaction.customerId}-${transaction.name}</a></td>
+								<td><a transactionId="${transaction.id}" href="javascript:void(0);" style="text-decoration: none;">${transaction.customerId}-${transaction.name}</a></td>
 								<td>${transaction.money}</td>
 								<td>${transaction.stage}</td>
-								<td>待定</td>
+								<td>${transaction.possibility}</td>
 								<td>${transaction.expectedDate}</td>
 								<td>${transaction.type}</td>
 								<td><a transactionId="${transaction.id}" href="javascript:void(0);" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>

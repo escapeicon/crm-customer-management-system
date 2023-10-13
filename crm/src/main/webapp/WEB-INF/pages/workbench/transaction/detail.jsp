@@ -60,7 +60,9 @@
 			$(this).children("span").css("color","#E6E6E6");
 		});
 
-		//阶段提示框
+		/**
+		 * 阶段提示框
+		 */
 		$(".mystage").popover({
             trigger:'manual',
             placement : 'bottom',
@@ -80,6 +82,46 @@
                         }
                     }, 100);
                 });
+		//修改阶段
+		$("#stageDiv").on("click","span",function (){
+			const stageValue = $(this).attr("data-content");
+			const orderNo = $(this).attr("orderNo");
+
+			$.ajax({
+				type:'post',
+				url:'workbench/transaction/editStage.do',
+				data:{
+					stageValue:stageValue,
+					transactionId:'${transaction.id}'
+				},
+				success(data){
+					if (+data.code) {
+						const possibility = data.data.possibility;
+						const transactionHistory = data.data.transactionHistory;
+
+						//修改阶段&可能性
+						$("#b_stage").text(stageValue);
+						$("#b_possibility").text(possibility)
+						//添加一条成交历史
+						let html = "";
+
+						html += "<tr>";
+						html += "	<td>"+transactionHistory.stage+"</td>";
+						html += "	<td>"+transactionHistory.money+"</td>";
+						html += "	<td>"+transactionHistory.expectedDate+"</td>";
+						html += "	<td>"+transactionHistory.createTime+"</td>";
+						html += "	<td>"+transactionHistory.createBy+"</td>";
+						html += "</tr>";
+
+						$("#tbody-transactionHistory tr:eq(0)").before(html);
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+
+			renderStageList(orderNo);//动态渲染网页
+		})
 
 		/**
 		 * 交易备注
@@ -196,8 +238,22 @@
 			})
 		})
 	});
-	
-	
+
+	/**
+	 * 渲染阶段链
+	 */
+	function renderStageList(orderNo){
+		$("#stageDiv span").each(function (){
+			const nodeOrderNo = $(this).attr("orderNo");//获取每个节点的orderNo
+			if(orderNo > nodeOrderNo){
+				$(this).attr("class","glyphicon glyphicon-ok-circle  mystage").css("color","#90F790");
+			}else if(orderNo < nodeOrderNo){
+				$(this).attr("class","glyphicon glyphicon-record mystage").css("color","#333");
+			}else if(orderNo == nodeOrderNo){
+				$(this).attr("class","glyphicon glyphicon-map-marker mystage").css("color","#90F790");
+			}
+		})
+	}
 	
 </script>
 
@@ -253,31 +309,32 @@
 	<br/>
 
 	<!-- 阶段状态 -->
-	<div style="position: relative; left: 40px; top: -50px;">
+	<div id="stageDiv" style="position: relative; left: 40px; top: -50px;">
 		阶段&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<span class="glyphicon glyphicon-ok-circle mystage" data-toggle="popover" data-placement="bottom" data-content="资质审查" style="color: #90F790;"></span>
-		-----------
-		<span class="glyphicon glyphicon-ok-circle mystage" data-toggle="popover" data-placement="bottom" data-content="需求分析" style="color: #90F790;"></span>
-		-----------
-		<span class="glyphicon glyphicon-ok-circle mystage" data-toggle="popover" data-placement="bottom" data-content="价值建议" style="color: #90F790;"></span>
-		-----------
-		<span class="glyphicon glyphicon-ok-circle mystage" data-toggle="popover" data-placement="bottom" data-content="确定决策者" style="color: #90F790;"></span>
-		-----------
-		<span class="glyphicon glyphicon-map-marker mystage" data-toggle="popover" data-placement="bottom" data-content="提案/报价" style="color: #90F790;"></span>
-		-----------
-		<span class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="谈判/复审"></span>
-		-----------
-		<span class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="成交"></span>
-		-----------
-		<span class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="丢失的线索"></span>
-		-----------
-		<span class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="因竞争丢失关闭"></span>
-		-----------
-		<span class="closingDate">2010-10-10</span>
+		<c:forEach items="${stages}" var="stage">
+
+			<c:if test="${transaction.stage == stage.value}">
+				<span orderNo="${stage.orderNo}" class="glyphicon glyphicon-map-marker mystage" data-toggle="popover" data-placement="bottom" data-content="${stage.value}" style="color: #90F790;"></span>
+				-----------
+			</c:if>
+
+			<c:if test="${transaction.stageOrderNo > stage.orderNo}" >
+				<span orderNo="${stage.orderNo}" class="glyphicon glyphicon-ok-circle mystage" data-toggle="popover" data-placement="bottom" data-content="${stage.value}" style="color: #90F790;"></span>
+				-----------
+			</c:if>
+
+			<c:if test="${transaction.stageOrderNo < stage.orderNo}">
+				<span orderNo="${stage.orderNo}" class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="${stage.value}"></span>
+				-----------
+			</c:if>
+
+		</c:forEach>
+		<span class="closingDate">${transaction.expectedDate}</span>
 	</div>
 	
 	<!-- 详细信息 -->
 	<div style="position: relative; top: 0px;">
+		<%--所有者 金额--%>
 		<div style="position: relative; left: 40px; height: 30px;">
 			<div style="width: 300px; color: gray;">所有者</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.owner}</b></div>
@@ -286,6 +343,7 @@
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
+		<%--名称 预计成交日期--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 10px;">
 			<div style="width: 300px; color: gray;">名称</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.customerId}-${transaction.name}</b></div>
@@ -294,22 +352,25 @@
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
+		<%--客户名称 阶段--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 20px;">
 			<div style="width: 300px; color: gray;">客户名称</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.customerId}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">阶段</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${transaction.stage}</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b id="b_stage">${transaction.stage}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
+		<%--类型 可能性--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 30px;">
 			<div style="width: 300px; color: gray;">类型</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.type == null ? '&nbsp;' : transaction.type}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">可能性</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>待定</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b id="b_possibility">${transaction.possibility}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
+		<%--来源	市场活动源--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 40px;">
 			<div style="width: 300px; color: gray;">来源</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${transaction.source == null ? '&nbsp;' : transaction.source}</b></div>
@@ -318,21 +379,25 @@
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
+		<%--联系人名称--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 50px;">
 			<div style="width: 300px; color: gray;">联系人名称</div>
 			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${transaction.contactsId == null ? '&nbsp;' : transaction.contactsId}</b></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
+		<%--创建者--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 60px;">
 			<div style="width: 300px; color: gray;">创建者</div>
 			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${transaction.createBy}&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">${transaction.createTime}</small></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
+		<%--修改者--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 70px;">
 			<div style="width: 300px; color: gray;">修改者</div>
 			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${transaction.editBy}&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">${transaction.editTime}</small></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
+		<%--描述--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 80px;">
 			<div style="width: 300px; color: gray;">描述</div>
 			<div style="width: 630px;position: relative; left: 200px; top: -20px;">
@@ -342,6 +407,7 @@
 			</div>
 			<div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
+		<%--联系纪要--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 90px;">
 			<div style="width: 300px; color: gray;">联系纪要</div>
 			<div style="width: 630px;position: relative; left: 200px; top: -20px;">
@@ -351,6 +417,7 @@
 			</div>
 			<div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
+		<%--下次联系时间--%>
 		<div style="position: relative; left: 40px; height: 30px; top: 100px;">
 			<div style="width: 300px; color: gray;">下次联系时间</div>
 			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${transaction.nextContactTime}&nbsp;</b></div>

@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 @Controller
 public class CustomerDetailController {
@@ -64,6 +65,14 @@ public class CustomerDetailController {
             List<User> users = userService.queryAllUsers();//获取所有用户
             List<DicValue> sources = dicValueService.queryDicValueByTypeCode("source");//获取所有来源
             List<DicValue> appellations = dicValueService.queryDicValueByTypeCode("appellation");//获取所有来源
+
+            //获取阶段可行性评估
+            transactions.forEach(transaction -> {
+                String stage = transaction.getStage();
+                ResourceBundle possibility = ResourceBundle.getBundle("possibility");
+                String possibilityString = possibility.getString(stage);
+                transaction.setPossibility(possibilityString);
+            });
 
             request.setAttribute("customer",customer);
             request.setAttribute("customerRemarks",customerRemarks);

@@ -4,7 +4,9 @@ import com.mycode.crm.commons.constants.Constants;
 import com.mycode.crm.commons.domain.ReturnInfo;
 import com.mycode.crm.commons.utils.DateFormat;
 import com.mycode.crm.commons.utils.UUIDUtil;
+import com.mycode.crm.settings.domain.DicValue;
 import com.mycode.crm.settings.domain.User;
+import com.mycode.crm.settings.service.DicValueService;
 import com.mycode.crm.workbench.domain.Transaction;
 import com.mycode.crm.workbench.domain.TransactionHistory;
 import com.mycode.crm.workbench.domain.TransactionRemark;
@@ -18,8 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class TransactionDetailController {
@@ -30,6 +31,8 @@ public class TransactionDetailController {
     private TransactionHistoryService transactionHistoryService;
     @Autowired
     private TransactionRemarkService transactionRemarkService;
+    @Autowired
+    private DicValueService dicValueService;
 
     /**
      * 跳转至交易详情页
@@ -44,6 +47,16 @@ public class TransactionDetailController {
         List<TransactionRemark> transactionRemarks = transactionRemarkService.queryByTransactionIdForList(transactionId);
         //获取交易历史
         List<TransactionHistory> transactionHistories = transactionHistoryService.queryByTransactionIdForList(transactionId);
+
+        //获取阶段可行性评估
+        String stage = transaction.getStage();
+        ResourceBundle possibility = ResourceBundle.getBundle("possibility");
+        String possibilityString = possibility.getString(stage);
+        transaction.setPossibility(possibilityString);
+
+        //获取所有阶段
+        List<DicValue> stages = dicValueService.queryDicValueByTypeCode("stage");
+        request.setAttribute("stages",stages);
 
         request.setAttribute("transaction",transaction);
         request.setAttribute("transactionRemarks",transactionRemarks);
@@ -145,6 +158,49 @@ public class TransactionDetailController {
                 returnInfo.setMessage("系统繁忙,请稍后重试...");
             }
         }catch (Exception e){
+            returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
+            returnInfo.setMessage("系统繁忙,请稍后重试...");
+            e.printStackTrace();
+        }
+        return returnInfo;
+    }
+
+    /**
+     * 修改当前交易的阶段
+     * @param stageValue
+     * @return 交易历史、当前阶段可行性数值
+     */
+    @RequestMapping("/workbench/transaction/editStage.do")
+    public @ResponseBody Object editStage(String stageValue,String transactionId,HttpSession session){
+        ReturnInfo returnInfo = new ReturnInfo();
+        try {
+            //封装交易id 阶段val 用户对象
+            Map<String, Object> map = new HashMap<>();
+            map.put("transactionId",transactionId);
+            map.put("stageValue",stageValue);
+            map.put("user",session.getAttribute(Constants.SESSION_USER_KEY));
+            String transactionHistoryId = UUIDUtil.getUUID();
+            map.put("transactionHistoryId",transactionHistoryId);
+
+            //调用修改交易方法
+            transactionService.updateTransactionStageById(map);
+
+            //修改成功设置返回成功响应码
+            returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
+
+            //获取交易历史
+            TransactionHistory transactionHistory = transactionHistoryService.queryOneById(transactionHistoryId);
+            //获取交易阶段可行性
+            ResourceBundle possibilityProp = ResourceBundle.getBundle("possibility");
+            String possibility = possibilityProp.getString(stageValue);
+
+            //封装返回信息
+            HashMap<String, Object> returnData = new HashMap<>();
+            returnData.put("possibility",possibility);
+            returnData.put("transactionHistory",transactionHistory);
+
+            returnInfo.setData(returnData);
+        } catch (Exception e) {
             returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);
             returnInfo.setMessage("系统繁忙,请稍后重试...");
             e.printStackTrace();

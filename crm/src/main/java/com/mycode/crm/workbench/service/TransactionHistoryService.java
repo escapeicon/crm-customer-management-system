@@ -7,4 +7,5 @@ import java.util.List;
 public interface TransactionHistoryService {
 
     List<TransactionHistory> queryByTransactionIdForList(String transactionId);
+    TransactionHistory queryOneById(String id);
 }

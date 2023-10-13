@@ -1,8 +1,11 @@
 package com.mycode.crm.workbench.service.impl;
 
+import com.mycode.crm.commons.constants.Constants;
 import com.mycode.crm.commons.utils.DateFormat;
 import com.mycode.crm.commons.utils.UUIDUtil;
+import com.mycode.crm.settings.domain.DicValue;
 import com.mycode.crm.settings.domain.User;
+import com.mycode.crm.settings.mapper.DicValueMapper;
 import com.mycode.crm.settings.mapper.UserMapper;
 import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Customer;
@@ -33,6 +36,8 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionRemarkMapper transactionRemarkMapper;
     @Autowired
     private TransactionHistoryMapper transactionHistoryMapper;
+    @Autowired
+    private DicValueMapper dicValueMapper;
 
     /**
      * 添加 交易
@@ -153,6 +158,41 @@ public class TransactionServiceImpl implements TransactionService {
         transactionHistory.setCreateBy(user.getId());
         transactionHistory.setTransactionId(transaction.getId());
 
+        transactionHistoryMapper.insertTransactionHistory(transactionHistory);
+    }
+    /**
+     * 修改交易阶段
+     * @param map 需要用户对象、交易id、交易历史id（自建）
+     * @throws Exception
+     */
+    @Override
+    public void updateTransactionStageById(Map<String, Object> map) throws Exception {
+        User user = (User) map.get("user");//获取用户
+        String transactionId = (String) map.get("transactionId");//获取交易id
+        String stageValue = (String) map.get("stageValue");//获取阶段value
+        String transactionHistoryId = (String) map.get("transactionHistoryId");//获取交易历史id
+
+        //获取交易
+        Transaction transaction = transactionMapper.selectOneByIdForSimple(transactionId);
+        //获取阶段
+        DicValue stage = dicValueMapper.selectDicValueByValue(stageValue);
+
+        //修改阶段id
+        transaction.setStage(stage.getId());
+
+        //创建封装交易历史
+        TransactionHistory transactionHistory = new TransactionHistory();
+        transactionHistory.setId(transactionHistoryId);
+        transactionHistory.setStage(stage.getId());
+        transactionHistory.setMoney(transaction.getMoney());
+        transactionHistory.setExpectedDate(transaction.getExpectedDate());
+        transactionHistory.setCreateTime(DateFormat.formatDateTime(new Date()));
+        transactionHistory.setCreateBy(user.getId());
+        transactionHistory.setTransactionId(transaction.getId());
+
+        //保存交易
+        transactionMapper.updateTransactionById(transaction);
+        //保存交易历史
         transactionHistoryMapper.insertTransactionHistory(transactionHistory);
     }
 

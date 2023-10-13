@@ -28,4 +28,6 @@ public interface TransactionHistoryMapper {
      * @return
      */
     List<TransactionHistory> selectByTransactionIdForList(String transactionId);
+    //查询一条交易历史 根据id
+    TransactionHistory selectOneByIdTransactionHistory(String id);
 }

@@ -20,6 +20,7 @@
         <include refid="Base_Column_List" />
     from tbl_dic_value
     where type_code = #{typeCode}
+    order by order_no asc
   </select>
   <!--查询单条信息 通过类型名-->
   <select id="selectDicValueByValue" parameterType="string" resultMap="BaseResultMap">

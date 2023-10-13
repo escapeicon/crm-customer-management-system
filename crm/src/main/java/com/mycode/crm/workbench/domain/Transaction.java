@@ -36,6 +36,26 @@ public class Transaction {
     private String contactSummary;
 
     private String nextContactTime;
+    //用于详情信息展示可能性属性
+    private String possibility;
+    //用于详情信息展示线性图标逻辑判断属性
+    private String stageOrderNo;
+
+    public String getStageOrderNo() {
+        return stageOrderNo;
+    }
+
+    public void setStageOrderNo(String stageOrderNo) {
+        this.stageOrderNo = stageOrderNo;
+    }
+
+    public String getPossibility() {
+        return possibility;
+    }
+
+    public void setPossibility(String possibility) {
+        this.possibility = possibility;
+    }
 
     public String getId() {
         return id;

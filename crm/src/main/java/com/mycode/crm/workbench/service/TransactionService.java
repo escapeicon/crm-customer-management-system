@@ -14,6 +14,7 @@ public interface TransactionService {
     void deleteTransactionByIds(String[] ids) throws Exception;
 
     void updateTransactionById(Map<String,Object> map) throws Exception;
+    void updateTransactionStageById(Map<String,Object> map) throws Exception;
 
     List<Transaction> queryForPageByCondition(Map<String,Object> pageInfo);
     int queryCountByCondition(Map<String,Object> pageInfo);
