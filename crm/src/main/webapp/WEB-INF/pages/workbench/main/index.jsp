@@ -207,7 +207,7 @@
 		#transaction{
 			grid-area: 1/5/2/2;
 		}
-		#activity{
+		#customerAndContact{
 			grid-area: 2/-1/-1/1;
 		}
 		.chart{
