@@ -3,6 +3,7 @@ package com.mycode.crm.workbench.service.impl;
 import com.mycode.crm.commons.utils.DateFormat;
 import com.mycode.crm.commons.utils.UUIDUtil;
 import com.mycode.crm.settings.domain.User;
+import com.mycode.crm.workbench.domain.ChartObj;
 import com.mycode.crm.workbench.domain.Contacts;
 import com.mycode.crm.workbench.domain.Customer;
 import com.mycode.crm.workbench.mapper.ContactsMapper;
@@ -166,5 +167,10 @@ public class ContactsServiceImpl implements ContactsService {
             contacts.setCustomer(null);
         }
         return contacts;
+    }
+    //查询客户根据客户分组
+    @Override
+    public List<ChartObj> queryCountGroupByCustomer() {
+        return contactsMapper.selectCountGroupByCustomer();
     }
 }

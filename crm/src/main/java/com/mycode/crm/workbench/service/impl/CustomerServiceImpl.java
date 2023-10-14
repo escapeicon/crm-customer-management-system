@@ -1,6 +1,7 @@
 package com.mycode.crm.workbench.service.impl;
 
 import com.mycode.crm.workbench.domain.Customer;
+import com.mycode.crm.workbench.mapper.ContactsMapper;
 import com.mycode.crm.workbench.mapper.CustomerMapper;
 import com.mycode.crm.workbench.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private CustomerMapper customerMapper;
+    @Autowired
+    private ContactsMapper contactsMapper;
 
     /**
      * 保存客户
@@ -32,7 +35,9 @@ public class CustomerServiceImpl implements CustomerService {
      */
     @Override
     public int deleteCustomerByIds(String[] ids) {
-        return customerMapper.deleteByIds(ids);
+        int count = contactsMapper.deleteContactByCustomerIds(ids);
+        count += customerMapper.deleteByIds(ids);
+        return count;
     }
 
     /**

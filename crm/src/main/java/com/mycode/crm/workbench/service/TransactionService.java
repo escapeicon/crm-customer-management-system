@@ -1,7 +1,7 @@
 package com.mycode.crm.workbench.service;
 
+import com.mycode.crm.workbench.domain.ChartObj;
 import com.mycode.crm.workbench.domain.Transaction;
-import com.mycode.crm.workbench.mapper.TransactionMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -22,4 +22,5 @@ public interface TransactionService {
     List<Transaction> queryForRemarkPageByContactId(String contactId);
     Transaction queryOneById(String id);
     Transaction queryOneByIdForSimple(String id);
+    List<ChartObj> queryCountGroupByStage();
 }

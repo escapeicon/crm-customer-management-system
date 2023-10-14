@@ -489,4 +489,13 @@
     left join tbl_user as u3 on c.edit_by = u3.id
     where c.id = #{id}
   </select>
+  <!--根据状态分类查询总数-->
+  <select id="selectCountGroupByState" resultType="com.mycode.crm.workbench.domain.ChartObj">
+    select
+        count(*) as value,
+        dic.value as name
+    from tbl_clue as clue
+    left join tbl_dic_value as dic on dic.id = clue.state
+    group by clue.state
+  </select>
 </mapper>

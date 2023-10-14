@@ -1,6 +1,7 @@
 package com.mycode.crm.workbench.mapper;
 
 import com.mycode.crm.workbench.domain.Contacts;
+import com.mycode.crm.workbench.domain.ChartObj;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ public interface ContactsMapper {
     int deleteContactByIds(String[] ids);
     //删除联系人 根据id
     int deleteContactById(String id);
+    int deleteContactByCustomerIds(String[] customerIds);
+    int deleteContactByCustomerId(String customerId);
 
     /**
      * 修改联系人 根据id
@@ -46,4 +49,6 @@ public interface ContactsMapper {
     Contacts selectOneByIdForDetail(String id);
     //快速查询单条 根据id
     Contacts selectOneByIdContacts(String id);
+    //查询客户根据客户分组
+    List<ChartObj> selectCountGroupByCustomer();
 }

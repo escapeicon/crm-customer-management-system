@@ -276,4 +276,9 @@ public class ClueServiceImpl implements ClueService {
     public Clue queryClueForRemarkById(String id) {
         return clueMapper.selectClueForRemarkById(id);
     }
+    //根据状态分类查询总数
+    @Override
+    public List<ChartObj> queryCountGroupByState() {
+        return clueMapper.selectCountGroupByState();
+    }
 }

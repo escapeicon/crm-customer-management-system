@@ -1,14 +1,13 @@
 package com.mycode.crm.workbench.service.impl;
 
-import com.mycode.crm.commons.constants.Constants;
 import com.mycode.crm.commons.utils.DateFormat;
 import com.mycode.crm.commons.utils.UUIDUtil;
 import com.mycode.crm.settings.domain.DicValue;
 import com.mycode.crm.settings.domain.User;
 import com.mycode.crm.settings.mapper.DicValueMapper;
 import com.mycode.crm.settings.mapper.UserMapper;
-import com.mycode.crm.settings.service.UserService;
 import com.mycode.crm.workbench.domain.Customer;
+import com.mycode.crm.workbench.domain.ChartObj;
 import com.mycode.crm.workbench.domain.Transaction;
 import com.mycode.crm.workbench.domain.TransactionHistory;
 import com.mycode.crm.workbench.mapper.CustomerMapper;
@@ -229,5 +228,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction queryOneByIdForSimple(String id) {
         return transactionMapper.selectOneByIdForSimple(id);
+    }
+    //查询交易总数 根据stage分组
+    @Override
+    public List<ChartObj> queryCountGroupByStage() {
+        return transactionMapper.selectCountGroupByStage();
     }
 }

@@ -1,5 +1,6 @@
 package com.mycode.crm.workbench.mapper;
 
+import com.mycode.crm.workbench.domain.ChartObj;
 import com.mycode.crm.workbench.domain.Clue;
 
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.Map;
 public interface ClueMapper {
 
     int insert(Clue record);
-    int insertSelective(Clue record);
 
     int deleteById(String id);
 
@@ -60,4 +60,6 @@ public interface ClueMapper {
      * @return 线索实体类
      */
     Clue selectClueForRemarkById(String id);
+    //根据状态分类查询总数
+    List<ChartObj> selectCountGroupByState();
 }

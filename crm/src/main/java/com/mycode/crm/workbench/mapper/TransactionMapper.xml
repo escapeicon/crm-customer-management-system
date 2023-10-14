@@ -279,4 +279,13 @@
         from tbl_transaction
         where id = #{id}
     </select>
+    <!--查询交易总数 根据stage分组-->
+    <select id="selectCountGroupByStage" resultType="com.mycode.crm.workbench.domain.ChartObj">
+        select
+            count(*) as value,
+            dic.value as name
+        from tbl_transaction as transaction
+        join tbl_dic_value as dic on dic.id = transaction.stage
+        group by transaction.stage
+    </select>
 </mapper>

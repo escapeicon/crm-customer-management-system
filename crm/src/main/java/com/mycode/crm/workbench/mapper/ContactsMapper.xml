@@ -49,6 +49,17 @@
         delete from tbl_contacts
         where id = #{id}
     </delete>
+    <delete id="deleteContactByCustomerIds" parameterType="string">
+        delete from tbl_contacts
+        where customer in
+        <foreach collection="array" item="customerId" open="(" close=")" separator=",">
+            #{customerId}
+        </foreach>
+    </delete>
+    <delete id="deleteContactByCustomerId" parameterType="string">
+        delete from tbl_contacts
+        where customer = #{customerId}
+    </delete>
 
     <!--修改联系人 根据id-->
     <update id="updateContactById" parameterType="contacts" >
@@ -213,5 +224,14 @@
             <include refid="Base_Column_List" />
         from tbl_contacts
         where id = #{id}
+    </select>
+    <!--查询客户根据客户分组-->
+    <select id="selectCountGroupByCustomer" resultType="com.mycode.crm.workbench.domain.ChartObj">
+        select
+            count(*) as value,
+            customer.name as name
+        from tbl_contacts as contact
+        left join tbl_customer as customer on customer.id = contact.customer
+        group by contact.customer
     </select>
 </mapper>

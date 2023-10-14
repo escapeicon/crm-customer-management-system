@@ -1,5 +1,6 @@
 package com.mycode.crm.workbench.service;
 
+import com.mycode.crm.workbench.domain.ChartObj;
 import com.mycode.crm.workbench.domain.Contacts;
 
 import java.util.List;
@@ -21,4 +22,5 @@ public interface ContactsService {
     List<Contacts> queryAllForDetail();
     Contacts queryOneForDetail(String id);
     Contacts queryOneById(String id);
+    List<ChartObj> queryCountGroupByCustomer();
 }

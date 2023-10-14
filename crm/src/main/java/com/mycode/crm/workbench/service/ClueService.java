@@ -1,5 +1,6 @@
 package com.mycode.crm.workbench.service;
 
+import com.mycode.crm.workbench.domain.ChartObj;
 import com.mycode.crm.workbench.domain.Clue;
 
 import java.util.List;
@@ -19,4 +20,5 @@ public interface ClueService {
     List<Clue> queryAllClue();
     Clue queryClueById(String id);
     Clue queryClueForRemarkById(String id);
+    List<ChartObj> queryCountGroupByState();
 }

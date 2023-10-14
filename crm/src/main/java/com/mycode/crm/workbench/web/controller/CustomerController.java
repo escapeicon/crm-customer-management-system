@@ -188,7 +188,7 @@ public class CustomerController {
         ReturnInfo returnInfo = new ReturnInfo();
         try {
             int count = customerService.deleteCustomerByIds(ids);
-            if (count > 0) {
+            if (count > 1) {
                 returnInfo.setCode(Constants.RESPONSE_CODE_SUCCESS);
             }else {
                 returnInfo.setCode(Constants.RESPONSE_CODE_ERROR);

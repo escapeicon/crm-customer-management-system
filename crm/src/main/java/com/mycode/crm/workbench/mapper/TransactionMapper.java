@@ -1,5 +1,6 @@
 package com.mycode.crm.workbench.mapper;
 
+import com.mycode.crm.workbench.domain.ChartObj;
 import com.mycode.crm.workbench.domain.Transaction;
 
 import java.util.List;
@@ -46,4 +47,6 @@ public interface TransactionMapper {
     Transaction selectOneById(String id);
     //精简查询单条 根据交易id
     Transaction selectOneByIdForSimple(String id);
+    //查询交易总数 根据stage分组
+    List<ChartObj> selectCountGroupByStage();
 }
